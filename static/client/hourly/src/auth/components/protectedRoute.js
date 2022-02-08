@@ -10,26 +10,38 @@ import React, {useEffect} from 'react'
  * @param {JSX.Element} element represents the inner component to render
  * @param {any} props represents the props to be passed
  */
-const ProtectedRoute = ({element, ...props}) => {
+class ProtectedRoute extends React.Component {
 
-    // Store the auth state. Pass in JWT as credentials.
-    let isAuthorized = Authentication.isAuthenticated()
+    constructor(...props) {
+        this.props = {...props}
+        this.state = {
+            authenticated: Authentication.isAuthenticated()
+        }
+    }
 
-    useEffect(() => {
-        isAuthorized = Authentication.isAuthenticated()
-    });
+    /**
+     * Represents action taken should the component update. Each
+     * render, we do a 'pulse' check to ensure that our auth state
+     * is still intact.
+     */
+    componentDidUpdate() {
+        this.setState({
+            ...this.state,
+            authenticated: Authentication.isAuthenticated()
+        })
+    }
     
 
     // Conditionally, if the user is authenticated, display the
     // component. Otherwise, redirect to the login screen.
-    return (
-        isAuthorized ? element : <Navigate to={{
-                                    pathname: '/login',
-                                    state: {
-                                        from: props.location
-                                    }
-                                }}/>
-    )
+    render() {
+        return this.state.authenticated ? this.props.element : <Navigate to={{
+                                        pathname: '/login',
+                                        state: {
+                                            from: this.props.location
+                                        }
+                                    }}/>  
+    }
 }
 
 export default ProtectedRoute
