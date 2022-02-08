@@ -1,0 +1,40 @@
+.clockin-container {
+    background-color: var(--primary-dark);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-clockin {
+    width: 150px;
+}
+
+.login_prompt {
+    color: var(--offwhite);
+}
+
+.login_prompt a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all ease-in-out 200ms;
+}
+
+.login_prompt a:hover {
+    color: var(--offwhite);
+    transition: all ease-in-out 200ms;
+}
+
+.employee_code-input {
+    border-style: none;
+    border-radius: 2px;
+    min-width: 200px;
+    min-height: 30px;
+    padding-left: 7px;
+}
+
+.employee_code-input:focus {
+    outline-color: var(--primary-color);
+}

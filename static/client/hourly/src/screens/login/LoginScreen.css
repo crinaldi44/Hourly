@@ -1,0 +1,20 @@
+.login-screen_container {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--primary-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.login-back-prompt {
+    color: var(--offwhite);
+    margin-top: 20px;
+    font-size: 12px;
+}
+
+.login-back-prompt a {
+    color: var(--primary-color);
+    text-decoration: none;
+}

@@ -1,0 +1,46 @@
+.App {
+  text-align: center;
+}
+
+/* CONFIGURATION */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary-color: #BD3643;
+  --background-color: #2E3453;
+  --primary-dark: #2A3448;
+  --offwhite: #E5E7EF;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 25px;
+}
+
+h4 {
+  font-size: 20px;
+}
+
+h5 {
+  font-size: 15px;
+}
+
+h6 {
+  font-size: 14px;
+}
+
+p {
+  font-size: 14px;
+}
+
