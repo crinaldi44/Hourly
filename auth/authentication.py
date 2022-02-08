@@ -2,8 +2,8 @@ from email.headerregistry import HeaderRegistry
 from flask import Flask, Blueprint, jsonify, request
 from sqlalchemy.exc import NoResultFound
 from datetime import timedelta, datetime
-from app import app
 import jwt
+from flask import current_app
 
 from models.employees.employees import Department, Employee
 from models.database import Session
@@ -19,7 +19,10 @@ authentication = Blueprint('authentication', __name__, template_folder='template
 #    manager ID is equal to the employee's ID OR
 # 2) The employee is of the manager department.
 def validate_credentials(session, req):
-    employee_id = req.form['id']
+    
+    auth_req = req.json['data']
+
+    employee_id = auth_req['id']
 
     # Check the provided employee ID.
     try:
@@ -30,12 +33,13 @@ def validate_credentials(session, req):
     else:
 
         # Verify the password.
-        if result.as_dict()['password'] == req.form['password']:
+        if result.as_dict()['password'] == auth_req['password']:
             try:
                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
                 dept_query = session.query(Department).filter_by(id=result.as_dict()['department_id']).one()
                 if dept_query.as_dict()['manager_id'] == result.as_dict()['id']:
-                    return jsonify({'message': 'You would be authenticated.'}), 501
+                    token = jwt.encode({'user': auth_req['id'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
+                    return jsonify({'token': token}), 200
             except NoResultFound as e:
                 return jsonify({'message': 'No department exists with that ID.'})
             else:
@@ -68,7 +72,7 @@ def token_required(func):
 # Authenticates a user.
 @authentication.post('/login')
 def authenticate():
-    if not request.form['id'] or not request.form['password']:
+    if not 'id' in request.json['data'].keys() or not 'password' in request.json['data'].keys():
         return jsonify({'message': 'Invalid request.'}), 400
     else:
         with Session() as session:

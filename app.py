@@ -4,9 +4,11 @@ from auth.authentication import authentication
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
 app.register_blueprint(employees)
 app.register_blueprint(authentication)
+
+# Represents the JWT secret key.
+app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
 
 
 @app.route('/')

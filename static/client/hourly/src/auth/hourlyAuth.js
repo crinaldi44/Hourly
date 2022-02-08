@@ -13,14 +13,22 @@ export default function useAuthenticator(credentials) {
     */
     const [isAuthenticated, setAuthenticated] = useState(false)
 
+    /**
+     * Represents the instantiated result.
+     */
     let result;
 
     /**
      * When the component mounts, authenticate a user.
      */
     useEffect(async () => {
+
+        // Store the result.
         result = await Authentication.authenticate(credentials)
-        setAuthenticated(result) // Set the auth state to the result.
+
+        // If success, set authenticated to true. We will need to store
+        // the JWT in local storage.
+        if (result.status === 200) setAuthenticated(true)
     }, [])
 
     return isAuthenticated

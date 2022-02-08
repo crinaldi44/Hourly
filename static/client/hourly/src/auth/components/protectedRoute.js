@@ -1,6 +1,7 @@
 import useAuthenticator from '../hourlyAuth'
 import {Route, Navigate} from 'react-router-dom'
 import Authentication from '../authentication'
+import React, {useEffect} from 'react'
 
 /**
  * Represents a route or chain of routes protected by the
@@ -12,7 +13,12 @@ import Authentication from '../authentication'
 const ProtectedRoute = ({element, ...props}) => {
 
     // Store the auth state. Pass in JWT as credentials.
-    let isAuthorized = useAuthenticator({})
+    let isAuthorized = Authentication.isAuthenticated()
+
+    useEffect(() => {
+        isAuthorized = Authentication.isAuthenticated()
+    });
+    
 
     // Conditionally, if the user is authenticated, display the
     // component. Otherwise, redirect to the login screen.
