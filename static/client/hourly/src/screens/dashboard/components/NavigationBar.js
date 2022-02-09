@@ -17,6 +17,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import authentication from '../../../auth/authentication';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../../auth/hourlyAuth';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,7 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+export default function PrimarySearchAppBar(props) {
 
   const navigate = useNavigate()
 
@@ -67,6 +68,8 @@ export default function PrimarySearchAppBar() {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  let credentials = useAuth()
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -161,13 +164,13 @@ export default function PrimarySearchAppBar() {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p>Account</p>
       </MenuItem>
     </Menu>
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{...props.sx}}>
       <AppBar position="static" sx={{
         backgroundColor: 'var(--primary-dark)'
       }}>
@@ -207,15 +210,21 @@ export default function PrimarySearchAppBar() {
               </Badge>
             </IconButton>
             <IconButton
-              size="large"
+              size="medium"
               edge="end"
               aria-label="account of current user"
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
               color="inherit"
+              sx={{
+                fontWeight: '600', backgroundColor: 'var(--offwhite)', ml: '10px', width: '35px', height: '35px', color: 'var(--primary-dark)', fontSize: '15px',
+                ':hover': {
+                  backgroundColor: 'var(--offwhite)'
+                }
+              }}
             >
-              <AccountCircle />
+              {credentials['name'].split(' ')[0][0] + credentials['name'].split(' ')[1][0]}
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

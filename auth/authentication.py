@@ -4,6 +4,7 @@ from sqlalchemy.exc import NoResultFound
 from datetime import timedelta, datetime
 import jwt
 from flask import current_app
+from functools import wraps
 
 from models.employees.employees import Department, Employee
 from models.database import Session
@@ -26,6 +27,8 @@ def validate_credentials(session, req):
 
     # Check the provided employee ID.
     try:
+
+        # Represents a stored instance of the employee's account.
         result = session.query(Employee).filter_by(id=employee_id).one()
     except NoResultFound as e:  # If no result found, inform the employee and deny the auth token.
         print(e)
@@ -38,7 +41,7 @@ def validate_credentials(session, req):
                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
                 dept_query = session.query(Department).filter_by(id=result.as_dict()['department_id']).one()
                 if dept_query.as_dict()['manager_id'] == result.as_dict()['id']:
-                    token = jwt.encode({'user': auth_req['id'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
+                    token = jwt.encode({'employee_id': auth_req['id'], 'department_id': result.as_dict()['department_id'], 'name': result.as_dict()['name'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
                     return jsonify({'token': token}), 200
             except NoResultFound as e:
                 return jsonify({'message': 'No department exists with that ID.'})
@@ -60,9 +63,10 @@ def token_required(func):
             return jsonify({'message': 'The required authorization token is missing.'}), 403
         
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = Employee.query.filter_by(id=data['employee_id']).first()
-            # Perform some logic here
+            if data['exp'] - datetime.now() < 0:
+                return jsonify({'message': 'Authentication token has expired.'}), 403
         except:
             return jsonify({'message': 'Authorization token is invalid.'}), 403
         return func(*args, **kwargs)

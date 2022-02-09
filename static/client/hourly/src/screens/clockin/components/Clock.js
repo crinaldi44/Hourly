@@ -3,9 +3,9 @@ import {CircularProgress} from "@mui/material";
 
 /**
  * The Clock represents a live display of the current time.
- * @constructor
+ * @property style represents extra style elements to be passed
  */
-const Clock = () => {
+const Clock = (props) => {
 
     // Represents the current time.
     const [currentTime, setCurrentTime] = useState('')
@@ -37,13 +37,15 @@ const Clock = () => {
         let date = new Date();
 
         let hours = date.getHours();
-        let minutes = date.getMinutes().toLocaleString();
+        let minutes = date.getMinutes();
         let amPmString = 'AM'
 
         if (date.getHours() > 12) {
             hours = hours - 12
             amPmString = 'PM'
         }
+
+        minutes = minutes < 10 ? (0 + minutes.toLocaleString()) : minutes.toLocaleString()
 
         if (!loaded) setLoaded(true)
 
@@ -55,8 +57,10 @@ const Clock = () => {
      * @type {{color: string, fontSize: string}}
      */
     const clockStyle = {
+        ...props.style,
         color: 'var(--offwhite)',
-        fontSize: '30px'
+        fontSize: '40px',
+        fontWeight: '700'
     }
 
     return(

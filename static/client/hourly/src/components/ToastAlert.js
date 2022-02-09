@@ -37,7 +37,7 @@ class ToastAlert extends React.Component {
         return (
             <Snackbar open={this.props.open} autoHideDuration={3000} onClose={this.props.onClose}>
                 <Alert severity={this.props.severity ? this.props.severity : 'info'}>
-                    {this.props.title ? (<AlertTitle>{this.props.title}</AlertTitle>) : null}
+                    {this.props.title ? (<AlertTitle sx={{mb: '0', textAlign: 'left'}}><b>{this.props.title}</b></AlertTitle>) : null}
                     {this.props.message}
                 </Alert>
             </Snackbar>

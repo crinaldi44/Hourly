@@ -10,6 +10,7 @@
 
 .logo-clockin {
     width: 150px;
+    margin-bottom: 30px;
 }
 
 .login_prompt {
@@ -33,6 +34,7 @@
     min-width: 200px;
     min-height: 30px;
     padding-left: 7px;
+    margin-bottom: 20px;
 }
 
 .employee_code-input:focus {

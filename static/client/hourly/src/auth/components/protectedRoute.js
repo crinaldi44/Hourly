@@ -12,8 +12,8 @@ import React, {useEffect} from 'react'
  */
 class ProtectedRoute extends React.Component {
 
-    constructor(...props) {
-        this.props = {...props}
+    constructor(props) {
+        super(props)
         this.state = {
             authenticated: Authentication.isAuthenticated()
         }

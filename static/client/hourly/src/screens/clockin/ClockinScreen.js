@@ -65,6 +65,8 @@ class ClockinScreen extends React.Component {
 
         let result;
 
+        if (this.state.employeeId === '') return
+
         try {
             result = await axios.post(`/employees/${this.state.employeeId}/clockin`)
         } catch (err) {
@@ -82,7 +84,8 @@ class ClockinScreen extends React.Component {
         this.setState({
             ...this.state,
             alertMessage: result.data.message,
-            alertSeverity: (result.status === 201 || result.status === 200) ? 'success' : 'error'
+            alertSeverity: (result.status === 201 || result.status === 200) ? 'success' : 'error',
+            employeeId: '',
         })
         document.getElementById('clockin').value = "" // Clear the input field
         this.openAlert(); // Present the alert to the user.
@@ -109,14 +112,15 @@ class ClockinScreen extends React.Component {
     render() {
         return (
             <div className='clockin-container'>
+                <Clock style={{marginBottom: '6rem'}}/>
                 <img src={Logo} className='logo-clockin'/>
-                <Clock/>
                 <input id="clockin"
+                        required
                        type="password"
                        className='employee_code-input'
                        placeholder='Enter your 6-digit employee ID.'
                        onChange={this.handleChange}/>
-                <Button label='CLOCK IN / OUT' onClick={this.punchInOut}/>
+                <Button label='CLOCK IN / OUT' onClick={this.punchInOut} style={{marginBottom: '20px'}}/>
                 <p className='login_prompt'>Access your dashboard. <Link to='/login'>Click here</Link> to login.</p>
                 <ToastAlert open={this.state.alertActive} onClose={this.handleClose} message={this.state.alertMessage} severity={this.state.alertSeverity}/>
             </div>

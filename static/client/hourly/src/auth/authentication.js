@@ -44,7 +44,7 @@ class Authentication {
         }
         let result = await axios.post('/login', options) // Initiate the request to the server.
         localStorage.setItem('employee', result.data['token'])
-        return result // Return the JWT
+        return result // Return the server response
     }
 
     /**
@@ -62,15 +62,51 @@ class Authentication {
     isAuthenticated() {
         // This should 1) check to verify 'employee' is in local storage and
         // 2), verify that the 'exp' field in the JWT payload has not expired.
-        return localStorage.getItem('employee') || false
+        return this.checkCredentials() || false
     }
 
     /**
-     * 
+     * Checks whether auth credentials are valid.
+     * @returns {boolean} whether the auth credentials are valid or not
+     */
+    checkCredentials() {
+
+        let authCredentials = localStorage.getItem('employee')
+        let payload;
+
+        // Verify that the value of the token is a JSON.
+        try {
+            payload = JSON.parse(window.atob(authCredentials.split('.')[1]))
+        } catch (error) {
+            return false;
+        }
+
+        // Verify the token has not expired.
+        if (Date.now() - payload['exp'] < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Decodes the auth JWT, returns a JSON containing
+     * only the payload.
+     */
+    jwtDecodePayload(token) {
+
+        token = token.split('.');
+        token[1] = JSON.parse(window.atob(token[1]))
+
+        return token[1]
+    }
+
+    /**
+     * Returns the active employee payload/credentials.
      * @returns {JSON} a representation of the active employee
      */
     getActiveEmployee() {
-        return JSON.parse(localStorage.getItem('employee'))
+        return this.jwtDecodePayload(localStorage.getItem('employee'))
     }
 
 }

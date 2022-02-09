@@ -1,17 +1,22 @@
+from pickletools import float8
 import sys
 from email import message
+from tokenize import Double, Floatnumber, Number
 
 import sqlalchemy.exc
+from auth.authentication import token_required
 from flask import Flask, Blueprint, jsonify, request
 from sqlalchemy import exc
 
 from models.database import Session
-from models.employees.employees import Employee, Clockin
+from models.employees.employees import Department, Employee, Clockin
 
 employees = Blueprint('employees', __name__, template_folder='templates')
 
 # TODO: Encrypt password with passlib.
 # TODO: All CRUD-type routes must be secured with JWT, with the exception of clockin.
+# For this, we should check that the payload providing the employee id matches that of
+# the department manager.
 
 
 # Gets all employees from the database. If GET is requested,
@@ -59,19 +64,36 @@ def add_employee():
         return jsonify({'message': 'The content type must be provided as JSON or the request was too large.'}), 400
 
     # If any fields are missed, provide an error message.
-    if not all(x in data.keys() for x in ['first_name', 'last_name', 'password', 'email', 'role']):
+    if not all(x in data.keys() for x in ['name', 'password', 'email', 'pay_rate', 'title', 'department_id', 'covid_status']):
         return jsonify({'message': "Invalid POST request data. Perhaps you've forgotten a field."}), 400
+
+    # Check that there is a first and a last name.
+    if not len(str(data['name']).split(' ')) == 2:
+        return jsonify({'message': 'Employee name must be at least, but no greater than, 2 space-separated strings.'}), 400
 
     with Session() as session:
         with session.begin():
-            empl = Employee(first_name=data['first_name'], password=data['password'], email=data['email'],
-                            last_name=data['last_name'], role=data['role'])
+
+            # Validate/verify that the department exists.
+            if session.query(Department).filter_by(id=data['department_id']) is None: 
+                return jsonify({'message': 'Invalid department ID specified.'})
+
+            # Verify that we are specifying a valid type of pay rate.
+            try:
+                pay_rate = float(data['pay_rate'])
+            except e:
+                return jsonify({'message': 'Invalid pay rate specified.'})
+
+            empl = Employee(name=data['name'], password=data['password'], email=data['email'], 
+            pay_rate=data['pay_rate'], title=data['title'], department_id=data['department_id'], covid_status=['covid_status'])
+
             session.add(empl)
             return jsonify({'message': 'Success'}), 201
 
 
 # Deletes an employee from the database.
 @employees.delete('/employees/<id>')
+@token_required
 def delete_employee(id):
     # If params are not specified, notify the user they messed up.
     if not id:
@@ -105,6 +127,12 @@ def log_time(id):
     # a new one.
     with Session() as session:
         with session.begin():
+
+            try:
+                int(id)
+            except:
+                return jsonify({'message': 'An error occurred.'})
+                
             result_query_set = session.query(Clockin).filter_by(employee_id=id, clockout_time=None)
             result = result_query_set.all()
             if result:
@@ -124,8 +152,33 @@ def log_time(id):
 def get_clock_ins(id):
     with Session() as session:
         with session.begin():
-            result = session.query.filter_by(employee_id=id).all()
-            if result is None:
-                return jsonify({'message': 'No clock-ins found for that employee.'})
+            result = session.query(Clockin).filter_by(employee_id=id).all()
+            if result == []:
+                return jsonify({'message': 'No clock-ins found for that employee.'}), 404
             else:
-                return jsonify(list(result)), 200
+                iterator = map(lambda res: res.as_dict(), result)
+                return jsonify(list(iterator)), 200
+
+
+# Gets all departments.
+@employees.get('/employees/departments')
+def get_departments():
+    with Session() as session:
+        with session.begin():
+            result = session.query(Department).all()
+            iterator = map(lambda res: res.as_dict(), result)
+            return jsonify(list(iterator)), 200
+
+
+# Gets a specified department by id.
+@employees.get('/employees/departments/<id>')
+def get_department(id):
+    if not int(id):
+        return jsonify({'message': 'Invalid department ID specified.'}), 400
+    with Session() as session:
+        with session.begin():
+            result = session.query(Department).filter_by(id=id).first()
+            if result is None:
+                return jsonify({'message': 'Department id not found.'}), 404
+            else:
+                return jsonify(result.as_dict()) # Return the department.

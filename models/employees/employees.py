@@ -9,13 +9,15 @@ class Employee(Base):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True)
+
     password = Column(String(255))
     email = Column(String(255))
-    first_name = Column(String(255))
-    last_name = Column(String(255))
+    name = Column(String(255))
     pay_rate = Column(Float)
     title = Column(String(255))
     department_id = Column(Integer(), ForeignKey('departments.id'))
+    covid_status = Column(String(255))
+
     children = relationship("Clockin")
     parent = relationship("Department", back_populates="children")
 
@@ -26,18 +28,18 @@ class Employee(Base):
             'id': self.id,
             'password': self.password,
             'email': self.email,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
+            'name': self.name,
             'pay_rate': self.pay_rate,
             'title': self.title,
             'department_id': self.department_id,
+            'covid_status': self.covid_status
         }
 
     # Represents a machine-readable representation of the state of the
     # Employee.
     def __repr__(self):
-        return "<User(email='%s', password='%s', firstname='%s', lastname='%s'" % (
-            self.email, self.password, self.first_name, self.last_name,
+        return "<User(email='%s', password='%s', name='%s', covid_status='%s' department='%s'" % (
+            self.email, self.password, self.name, self.covid_status, self.department_id
         )
 
 
@@ -72,6 +74,15 @@ class Clockin(Base):
     clockin_time = Column(DateTime(), server_default=func.now())
     clockout_time = Column(DateTime(), onupdate=func.now(), server_default=None)
     parent = relationship("Employee", back_populates="children")
+
+    # Returns a dictionary representation of the Clockin.
+    def as_dict(self):
+        return {
+            'id': self.id,
+            'employee_id': self.employee_id,
+            'clockin_time': self.clockin_time,
+            'clockout_time': self.clockout_time,
+        }
 
 
 # If a table does not yet exist, create one on the database with
