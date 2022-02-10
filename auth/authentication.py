@@ -41,7 +41,7 @@ def validate_credentials(session, req):
                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
                 dept_query = session.query(Department).filter_by(id=result.as_dict()['department_id']).one()
                 if dept_query.as_dict()['manager_id'] == result.as_dict()['id']:
-                    token = jwt.encode({'employee_id': auth_req['id'], 'department_id': result.as_dict()['department_id'], 'name': result.as_dict()['name'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
+                    token = jwt.encode({'employee_id': auth_req['id'], 'department_id': result.as_dict()['department_id'], 'department_name': dept_query.as_dict()['name'], 'name': result.as_dict()['name'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
                     return jsonify({'token': token}), 200
             except NoResultFound as e:
                 return jsonify({'message': 'No department exists with that ID.'})

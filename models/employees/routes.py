@@ -64,7 +64,7 @@ def add_employee():
         return jsonify({'message': 'The content type must be provided as JSON or the request was too large.'}), 400
 
     # If any fields are missed, provide an error message.
-    if not all(x in data.keys() for x in ['name', 'password', 'email', 'pay_rate', 'title', 'department_id', 'covid_status']):
+    if not all(x in data.keys() for x in ['name', 'password', 'email', 'pay_rate', 'title', 'department_id']):
         return jsonify({'message': "Invalid POST request data. Perhaps you've forgotten a field."}), 400
 
     # Check that there is a first and a last name.
@@ -85,7 +85,7 @@ def add_employee():
                 return jsonify({'message': 'Invalid pay rate specified.'})
 
             empl = Employee(name=data['name'], password=data['password'], email=data['email'], 
-            pay_rate=data['pay_rate'], title=data['title'], department_id=data['department_id'], covid_status=['covid_status'])
+            pay_rate=data['pay_rate'], title=data['title'], department_id=data['department_id'], covid_status='Healthy')
 
             session.add(empl)
             return jsonify({'message': 'Success'}), 201

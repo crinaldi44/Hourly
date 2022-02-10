@@ -10,7 +10,7 @@ import Authentication from './authentication'
  * The hook returns a JSON-based payload obtained from the JWT that stores the credentials,
  * in the following format: 
  * 
- * {employee_id, department_id, name, exp}
+ * {employee_id, department_id, department_name, name, exp}
  * 
  * @param {JSON} credentials the credentials to pass
  */

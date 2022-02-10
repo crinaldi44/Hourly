@@ -16,7 +16,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import authentication from '../../../auth/authentication';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import useAuth from '../../../auth/hourlyAuth';
 
 const Search = styled('div')(({ theme }) => ({
@@ -88,6 +88,11 @@ export default function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const pushNavManage = () => {
+    navigate('/dashboard/manage')
+    handleMenuClose()
+  }
+
   const signOut = () => {
     authentication.deAuthenticate()
     navigate('/login')
@@ -111,7 +116,7 @@ export default function PrimarySearchAppBar(props) {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Manage employees</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Manage timesheets</MenuItem>
+      <MenuItem onClick={pushNavManage}>Manage timesheets</MenuItem>
       <MenuItem onClick={handleMenuClose}>Account settings</MenuItem>
       <MenuItem onClick={signOut}>Sign out</MenuItem>
     </Menu>
