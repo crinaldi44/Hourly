@@ -3,6 +3,7 @@ import NavigationBar from './components/NavigationBar'
 import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
 import TimesheetsScreen from "./screens/TimesheetsScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
+import ProtectedRoute from '../../auth/components/ProtectedRoute'
 
 /**
  * Represents the Dashboard Screen.
@@ -25,7 +26,7 @@ const Dashboard = (props) => {
                     <Routes>
                         <Route path='/*' element={defaultRoute}/>
                         <Route path='/' exact element={<TimesheetsScreen/>}/>
-                        <Route path='/manage' exact element={<ManageEmployeesScreen/>}/>
+                        <Route path='/manage' exact element={<ProtectedRoute element={<ManageEmployeesScreen/>}/>}/>
                     </Routes>
                 </div>
         </div>

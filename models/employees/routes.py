@@ -1,6 +1,7 @@
 from pickletools import float8
 import sys
 from email import message
+from tkinter import E
 from tokenize import Double, Floatnumber, Number
 
 import sqlalchemy.exc
@@ -43,14 +44,15 @@ def get_employees():
 def get_employee(id):
     with Session() as session:
         with session.begin():
-            result = session.query(Employee).filter_by(id=id)
 
-            if not result:
-                return 'Not found', 404
+            # Attempt to retrieve the employee corresponding to that ID and inner join
+            # with their respective department.
+            try: 
+                result = session.query(Employee).filter_by(id=id).one()
+            except exc.NoResultFound:
+                return jsonify({'message': 'No employee found with that ID!'}), 404
 
-            iterator = map(lambda res: res.as_dict(), result)
-
-            return jsonify(list(iterator)), 200
+            return jsonify(result.as_dict()), 200
 
 
 @employees.post('/employees')
@@ -75,8 +77,10 @@ def add_employee():
         with session.begin():
 
             # Validate/verify that the department exists.
-            if session.query(Department).filter_by(id=data['department_id']) is None: 
-                return jsonify({'message': 'Invalid department ID specified.'})
+            try:
+                departments = session.query(Department).filter_by(department_id=data['department_id']).one()
+            except exc.NoResultFound:
+                return jsonify({'message': 'Invalid department ID specified.'}), 404
 
             # Verify that we are specifying a valid type of pay rate.
             try:
@@ -114,6 +118,21 @@ def delete_employee(id):
 # TODO: Implement patch request for employees on the database.
 @employees.patch('/employees/<id>')
 def update_employee(id):
+
+    with Session() as session:
+        with session.begin():
+            
+            # Attempt to verify that employee exists and update
+            try:
+                session.query(Employee).filter_by(id=id).update(request.json)
+            except:
+                return jsonify({'message': 'No employee found with that ID.'}), 404
+
+            
+            return jsonify({'message': 'Success!'})
+
+
+
     return 'Not yet supported', 501
 
 
@@ -177,7 +196,7 @@ def get_department(id):
         return jsonify({'message': 'Invalid department ID specified.'}), 400
     with Session() as session:
         with session.begin():
-            result = session.query(Department).filter_by(id=id).first()
+            result = session.query(Department).filter_by(department_id=id).first()
             if result is None:
                 return jsonify({'message': 'Department id not found.'}), 404
             else:

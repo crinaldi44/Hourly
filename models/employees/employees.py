@@ -15,7 +15,7 @@ class Employee(Base):
     name = Column(String(255))
     pay_rate = Column(Float)
     title = Column(String(255))
-    department_id = Column(Integer(), ForeignKey('departments.id'))
+    department_id = Column(Integer(), ForeignKey('departments.department_id'))
     covid_status = Column(String(255))
 
     children = relationship("Clockin")
@@ -31,8 +31,8 @@ class Employee(Base):
             'name': self.name,
             'pay_rate': self.pay_rate,
             'title': self.title,
-            'department_id': self.department_id,
-            'covid_status': self.covid_status
+            'covid_status': self.covid_status,
+            'department': self.parent.as_dict(),
         }
 
     # Represents a machine-readable representation of the state of the
@@ -47,16 +47,16 @@ class Employee(Base):
 # Departments contain an ID, a name, and a respective description
 class Department(Base):
     __tablename__ = "departments"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255))
+    department_id = Column(Integer, primary_key=True, autoincrement=True)
+    department_name = Column(String(255))
     manager_id = Column(Integer)
     children = relationship('Employee')
 
     # Represents a Department in dictionary form.
     def as_dict(self):
         return {
-            "id": self.id,
-            "name": self.name,
+            "department_id": self.department_id,
+            "department_name": self.department_name,
             "manager_id": self.manager_id
         }
 

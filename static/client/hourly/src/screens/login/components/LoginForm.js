@@ -63,11 +63,6 @@ const LoginForm = () => {
                 setAlertOpen(true)
             }
         } catch (error) {
-            if (error.response) {
-                setAlertMessage(error.response.message)
-                setAlertOpen(true)
-                return
-            }
                 setAlertMessage('An unknown error occurred.')
                 setAlertOpen(true)
         }

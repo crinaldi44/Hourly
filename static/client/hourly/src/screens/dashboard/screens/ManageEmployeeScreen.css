@@ -1,0 +1,10 @@
+.manage-header {
+
+}
+
+.manage-add {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 30px;
+}

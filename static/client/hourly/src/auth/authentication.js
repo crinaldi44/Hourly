@@ -83,7 +83,7 @@ class Authentication {
 
         // Verify the token has not expired.
         if (Date.now() - payload['exp'] < 0) {
-            localStorage.removeItem('employee')
+            this.deAuthenticate()
             return false;
         }
 

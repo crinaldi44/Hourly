@@ -39,16 +39,15 @@ def validate_credentials(session, req):
         if result.as_dict()['password'] == auth_req['password']:
             try:
                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
-                dept_query = session.query(Department).filter_by(id=result.as_dict()['department_id']).one()
-                if dept_query.as_dict()['manager_id'] == result.as_dict()['id']:
-                    token = jwt.encode({'employee_id': auth_req['id'], 'department_id': result.as_dict()['department_id'], 'department_name': dept_query.as_dict()['name'], 'name': result.as_dict()['name'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
+                if (result.as_dict()['department']['manager_id'] == result.as_dict()['id']):
+                    token = jwt.encode({'employee_id': auth_req['id'], 'department_id': result.as_dict()['department']['department_id'], 'department_name': result.as_dict()['department']['department_name'], 'name': result.as_dict()['name'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, current_app.config['SECRET_KEY'])
                     return jsonify({'token': token}), 200
             except NoResultFound as e:
                 return jsonify({'message': 'No department exists with that ID.'})
             else:
                 return jsonify({'message': 'You do not have the correct privileges. Please contact HR.'})
         else:
-            return jsonify({'message': 'Invalid employee ID or password.'})
+            return jsonify({'message': 'Invalid employee ID or password.'}), 403
 
 # Defines a type of middleware decorator that validates against a token being
 # provided in the request headers.
