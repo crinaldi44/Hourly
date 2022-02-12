@@ -37,7 +37,7 @@ const FullscreenDialog = (props) => {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                 {props.title}
             </Typography>
-            <Button autoFocus color="inherit" onClick={props.handleClose} variant="contained" sx={{backgroundColor: 'var(--primary-color)', 
+            <Button autoFocus color="inherit" onClick={props.handleConfirm} variant="contained" sx={{backgroundColor: 'var(--primary-color)', 
                 ':hover': { backgroundColor: 'var(--primary-color)', filter: 'brightness(110%)'}}}>
               Confirm
             </Button>

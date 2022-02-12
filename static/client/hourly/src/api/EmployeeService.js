@@ -1,5 +1,6 @@
 import axios from "axios"
 import Authentication from '../auth/authentication'
+import ApiResponseError from './ApiResponseError'
 
 /**
  * The employee service manages communication with the API endpoints in a restful fashion.
@@ -79,7 +80,7 @@ class EmployeeService {
      * Retrieves all employees.
      * @returns response the response
      */
-    getAllEmployees() {
+    async getAllEmployees() {
 
         let options = {
             method: 'GET',
@@ -88,7 +89,7 @@ class EmployeeService {
             }
         }
 
-        const response = axios.get('/employees', options)
+        const response = await axios.get('/employees', options)
 
         if (!(this.successStatus.includes(response.status))) { 
             throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
