@@ -88,7 +88,7 @@ export default function PrimarySearchAppBar(props) {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const pushNavManage = () => {
+  const pushNavManageEmployees = () => {
     navigate('/dashboard/manage')
     handleMenuClose()
   }
@@ -115,8 +115,8 @@ export default function PrimarySearchAppBar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Manage employees</MenuItem>
-      <MenuItem onClick={pushNavManage}>Manage timesheets</MenuItem>
+      <MenuItem onClick={pushNavManageEmployees}>Manage employees</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Manage timesheets</MenuItem>
       <MenuItem onClick={handleMenuClose}>Account settings</MenuItem>
       <MenuItem onClick={signOut}>Sign out</MenuItem>
     </Menu>

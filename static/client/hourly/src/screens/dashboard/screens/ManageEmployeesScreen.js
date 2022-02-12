@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import useAuth from '../../../auth/hourlyAuth'
 import axios from 'axios';
-import { Button, Snackbar, ListItem, Divider, ListItemText, List, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import './ManageEmployeeScreen.css'
-import FullscreenDialog from '../components/FullscreenDialog';
+import FullscreenDialog from '../../../components/FullscreenDialog';
+import AddEmployeesDialog from '../components/AddEmployeesDialog';
 
 /**
  * The ManageEmployesScreen is meant to display a table of all active employees
@@ -128,25 +129,7 @@ const ManageEmployeesScreen = () => {
               disableSelectionOnClick
               components={{Toolbar: GridToolbar}} />}
       </div>
-      <FullscreenDialog open={addOpen} title="Add Employee" handleClose={handleCloseAdd}>
-        <List>
-          <ListItem>
-            <TextField sx={{width: '30%', ml: '30px'}} placeholder="Full name"/>
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <TextField sx={{width: '90%', ml: 'auto', mr: 'auto'}} placeholder="Email address"/>
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <TextField sx={{width: '90%', ml: 'auto', mr: 'auto'}} placeholder="Email address"/>
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <TextField sx={{width: '90%', ml: 'auto', mr: 'auto'}} placeholder="Full name"/>
-          </ListItem>
-        </List>
-      </FullscreenDialog>
+      <AddEmployeesDialog open={addOpen} handleClose={handleCloseAdd}/>
     </>
   )
 };
