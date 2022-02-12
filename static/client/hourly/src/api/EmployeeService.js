@@ -7,6 +7,17 @@ import Authentication from '../auth/authentication'
 class EmployeeService {
 
     /**
+     * Represents the success statuses.
+     */
+    successStatus = [
+        200,
+        201,
+        202,
+        203,
+        204
+    ]
+
+    /**
      * Builds an employee an sends to the database. Specifies the auth token
      * in the header.
      * @param {JSON} employee represents an employee in JSON form to send
@@ -21,17 +32,39 @@ class EmployeeService {
             body: employee
         }
         
-        const response = await axios.post('/employees', options)
+        const response = await axios.post('/employees', options).catch(err => {
+            throw new Error('Exception during response: ' + err)
+        })
 
+        if (!(this.successStatus.includes(response.status))) { 
+            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`);
+        }
 
+        return response;
     }
 
     /**
      * Deletes an employee
      * @param {number} id
+     * @returns response the response from the server
      */
-    deleteEmployee(id) {
+    async deleteEmployee(id) {
+        let options = {
+            method: 'DELETE',
+            header: {
+                'x-access-tokens': Authentication.getActiveEmployee()
+            }
+        }
 
+        const response = await axios.delete(`/employees/${id}`).catch(err => {
+            throw new Error('An exception occurred during the response: ' + err)
+        })
+
+        if (!(this.successStatus.includes(response.status))) {
+            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
+        }
+
+        return response;
     }
 
     /**
@@ -44,9 +77,24 @@ class EmployeeService {
 
     /**
      * Retrieves all employees.
+     * @returns response the response
      */
     getAllEmployees() {
 
+        let options = {
+            method: 'GET',
+            header: {
+                'x-access-tokens': Authentication.getActiveEmployee()
+            }
+        }
+
+        const response = axios.get('/employees', options)
+
+        if (!(this.successStatus.includes(response.status))) { 
+            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
+        }
+
+        return response;
     }
 
 
