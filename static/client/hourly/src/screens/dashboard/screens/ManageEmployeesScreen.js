@@ -1,10 +1,13 @@
 import React, {useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Button, IconButton } from '@mui/material';
+import { DataGrid, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid';
 import './ManageEmployeeScreen.css'
 import AddEmployeesDialog from '../components/AddEmployeesDialog';
 import useToast from '../../../hooks/ui/Toast'
+import EmployeeService from '../../../services/EmployeeService';
+import useConfirmationDialog from '../../../hooks/ui/Confirmation';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 /**
  * The ManageEmployesScreen is meant to display a table of all active employees
@@ -39,9 +42,39 @@ const ManageEmployeesScreen = () => {
   const [addOpen, setAddOpen] = useState(false)
 
   /**
+   * Represents a listing of the currently selected employees,
+   * obtained via onSelectionModelChanged.
+   */
+  const [selectedEmployees, setSelectedEmployees] = useState([])
+
+  /**
    * Represents the toast.
    */
   const [setToastMessage, setToastOpen, setToastSeverity, Toast] = useToast()
+
+  /**
+   * Handles action taken when employees are selected and confirmed
+   * for deletion.
+   */
+   const handleDeleteEmployees = async () => {
+    setToastSeverity('info')
+    let response = await Promise.all(selectedEmployees.map(employee => {
+      return EmployeeService.deleteEmployee(employee)
+    })).finally(() => {
+        setSelectedEmployees([])
+        setToastMessage('Action performed.')
+        setToastOpen(true)
+        setTimeout(() => {
+          fetchData()
+        }, 1500) // Refresh after 1500ms
+      }
+    )
+  }
+
+  /**
+   * Represents the confirmation dialog.
+   */
+  const [setDialogOpen, setDialogTitle, setDialogMessage, ConfirmDialog] = useConfirmationDialog(handleDeleteEmployees)
 
   /**
    * Handles action taken when the add modal closes.
@@ -62,7 +95,7 @@ const ManageEmployeesScreen = () => {
    * @param response represents the response returned from building an employee
    */
   const handleAddEmployee = (response) => {
-    if (response.status != 201) {
+    if (response.status !== 201) {
       setToastSeverity('error')
     } else {
       setToastSeverity('success')
@@ -129,6 +162,21 @@ const ManageEmployeesScreen = () => {
     }
   ]
 
+  const toolbar = () => {
+    return ( <GridToolbarContainer>
+        <GridToolbar/>
+        { selectedEmployees.length > 0 ? <Button sx={{color: '#e36464'}} onClick={() => {
+          setDialogTitle("Confirm employee deletion")
+          setDialogMessage(`Are you sure you want to delete ${selectedEmployees.length} employees?`)
+          setDialogOpen(true)
+        }}>
+          <DeleteIcon/>
+          Delete
+        </Button> : null}
+      </GridToolbarContainer>
+    )
+  } 
+
   return (
     <>
       <div className='manage-header'>
@@ -145,10 +193,12 @@ const ManageEmployeesScreen = () => {
               rowsPerPageOptions={[5]}
               checkboxSelection
               disableSelectionOnClick
-              components={{Toolbar: GridToolbar}} />}
+              onSelectionModelChange={sel => {setSelectedEmployees(sel)}}
+              components={{Toolbar: toolbar}} />}
       </div>
       <AddEmployeesDialog open={addOpen} handleClose={handleCloseAdd} onConfirm={res => {handleAddEmployee(res)}} />
       {Toast}
+      {ConfirmDialog}
     </>
   )
 };

@@ -7,6 +7,8 @@ import ToastAlert from "../../components/ToastAlert"
  * well as the corresponding JSX element.
  * @param {Function} onCloseCallback You can specify any cleanup or 'on close' functionality that must be performed
  * @returns {Array} [message, setMessage, setOpen, Toast] an array of four reusable components.
+ * @author Chris Rinaldi
+ * @see <ToastAlert>
  */
 const useToast = (onCloseCallback) => {
 

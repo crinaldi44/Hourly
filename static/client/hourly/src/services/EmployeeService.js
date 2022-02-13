@@ -45,21 +45,22 @@ class EmployeeService {
      */
     async deleteEmployee(id) {
         let options = {
-            method: 'DELETE',
-            header: {
-                'x-access-tokens': Authentication.getActiveEmployee()
+            headers: {
+                'x-access-tokens': Authentication.getToken()
             }
         }
 
-        const response = await axios.delete(`/employees/${id}`).catch(err => {
-            throw new Error('An exception occurred during the response: ' + err)
-        })
+        let response;
 
-        if (!(this.successStatus.includes(response.status))) {
-            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
+        try {
+            response = await axios.delete(`/employees/${id}`, options)
+        } catch (err) {
+            if (err.response) {
+                response = err.response
+            }
         }
 
-        return response.data;
+        return response;
     }
 
     /**

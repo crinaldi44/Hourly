@@ -110,6 +110,14 @@ class Authentication {
         return this.jwtDecodePayload(localStorage.getItem('employee'))
     }
 
+    /**
+     * Returns the active authentication JWT.
+     * @returns {JWT}
+     */
+    getToken() {
+        return localStorage.getItem('employee')
+    }
+
 }
 
 export default new Authentication()

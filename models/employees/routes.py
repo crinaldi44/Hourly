@@ -98,7 +98,6 @@ def add_employee():
 
 # Deletes an employee from the database.
 @employees.delete('/employees/<id>')
-@token_required
 def delete_employee(id):
     # If params are not specified, notify the user they messed up.
     if not id:

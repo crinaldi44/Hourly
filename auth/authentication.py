@@ -1,5 +1,6 @@
 from email.headerregistry import HeaderRegistry
 from flask import Flask, Blueprint, jsonify, request
+from pymysql import IntegrityError
 from sqlalchemy.exc import NoResultFound
 from datetime import timedelta, datetime
 import jwt
@@ -57,17 +58,21 @@ def token_required(func):
         token = None
         if 'x-access-tokens' in request.headers:
             token = request.headers['x-access-tokens']
-
-        if not token:
+        else:
             return jsonify({'message': 'The required authorization token is missing.'}), 403
         
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = Employee.query.filter_by(id=data['employee_id']).first()
-            if data['exp'] - datetime.now() < 0:
-                return jsonify({'message': 'Authentication token has expired.'}), 403
-        except:
-            return jsonify({'message': 'Authorization token is invalid.'}), 403
+        with Session() as session:
+                with session.begin():
+                    try:
+                        data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+                        current_user = session.query(Employee).filter_by(id=data['employee_id']).first()
+                        time_passed = data['exp'] - datetime.now()
+                        if time_passed > timedelta(minutes=30):
+                            return jsonify({'message': 'Authentication token has expired.'}), 403
+                    except IntegrityError as E:
+                        print(E)
+                        return jsonify({'message': 'Authorization token is invalid.'}), 403
+
         return func(*args, **kwargs)
     return decorator
 
