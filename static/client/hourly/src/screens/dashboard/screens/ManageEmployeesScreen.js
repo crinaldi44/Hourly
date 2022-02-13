@@ -108,6 +108,7 @@ const ManageEmployeesScreen = () => {
       }, 1000)
     }
   }
+  
 
 
   /**
@@ -165,12 +166,11 @@ const ManageEmployeesScreen = () => {
   const toolbar = () => {
     return ( <GridToolbarContainer>
         <GridToolbar/>
-        { selectedEmployees.length > 0 ? <Button sx={{color: '#e36464'}} onClick={() => {
+        { selectedEmployees.length > 0 ? <Button onClick={() => {
           setDialogTitle("Confirm employee deletion")
           setDialogMessage(`Are you sure you want to delete ${selectedEmployees.length} employees?`)
           setDialogOpen(true)
-        }}>
-          <DeleteIcon/>
+        }} startIcon={<DeleteIcon/>} variant="outlined" color='error'>
           Delete
         </Button> : null}
       </GridToolbarContainer>
@@ -182,7 +182,7 @@ const ManageEmployeesScreen = () => {
       <div className='manage-header'>
         <div className='manage-add'>
           <h1 style={{display: 'inline-block', textAlign: 'left', color: 'var(--primary-dark)'}}>Manage Employees</h1>
-          <Button onClick={(handleOpenAdd)}>+ Add Employee</Button>
+          <Button onClick={(handleOpenAdd)} variant="contained">+ Add Employee</Button>
         </div>
 
       </div>

@@ -3,6 +3,7 @@ import sys
 from email import message
 from tkinter import E
 from tokenize import Double, Floatnumber, Number
+from pymysql import IntegrityError
 
 import sqlalchemy.exc
 from auth.authentication import token_required
@@ -125,7 +126,7 @@ def update_employee(id):
             # Attempt to verify that employee exists and update
             try:
                 session.query(Employee).filter_by(id=id).update(request.json)
-            except:
+            except IntegrityError as E:
                 return jsonify({'message': 'No employee found with that ID.'}), 404
 
             

@@ -65,10 +65,27 @@ class EmployeeService {
 
     /**
      * Updates the employee.
-     * @param {JSON} employee 
+     * @param id the id
+     * @param {JSON} employee the updated employee object
      */
-    updateEmployee(employee) {
+    updateEmployee(id, employee) {
+        let options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
 
+        let response;
+
+        try {
+            response = axios.patch(`/employees/${id}`, employee, options)
+        } catch (err) {
+            if (err.response) {
+                response = err.response
+            }
+        }
+
+        return response
     }
 
     /**
