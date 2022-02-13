@@ -4,6 +4,7 @@ import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
 import TimesheetsScreen from "./screens/TimesheetsScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
 import ProtectedRoute from '../../hooks/auth/components/ProtectedRoute'
+import DepartmentsScreen from "./screens/DepartmentsScreen";
 
 /**
  * Represents the Dashboard Screen.
@@ -26,6 +27,7 @@ const Dashboard = (props) => {
                     <Routes>
                         <Route path='/*' element={defaultRoute}/>
                         <Route path='/' exact element={<TimesheetsScreen/>}/>
+                        <Route path='/departments' exact element={<DepartmentsScreen/>}/>
                         <Route path='/manage' exact element={<ProtectedRoute element={<ManageEmployeesScreen/>}/>}/>
                     </Routes>
                 </div>

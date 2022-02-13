@@ -53,7 +53,7 @@ const TabView = (props) => {
     ));
 
     return (
-        <Box sx={{ width: '100%', typography: 'body1', borderRadius: '2px', ...props.sx }}>
+        <Box sx={{ width: '100%', typography: 'body1', borderRadius: '2px', backgroundColor: 'white', ...props.sx }}>
         <TabContext value={currentTab}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
