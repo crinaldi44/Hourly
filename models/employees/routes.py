@@ -160,7 +160,12 @@ def log_time(id):
                 return jsonify({'message': 'You have been successfully clocked out.'})
             else:
                 try:  # Attempt to add the record. If the employee !exists, return an error.
-                    session.add(Clockin(employee_id=id))
+                    try:
+                        active_employee = session.query(Employee).filter_by(id=id).one()
+                    except exc.NoResultFound as Ex:
+                        print(Ex)
+                        return jsonify({'message': 'No employee exists by that ID!'}), 404
+                    session.add(Clockin(employee_id=id, department_id=active_employee.department_id))
                     session.commit()
                     return jsonify({'message': 'You have been successfully clocked in.'}), 201
                 except exc.IntegrityError:
@@ -173,11 +178,26 @@ def get_clock_ins(id):
     with Session() as session:
         with session.begin():
             result = session.query(Clockin).filter_by(employee_id=id).all()
-            if result == []:
+            if not result:
                 return jsonify({'message': 'No clock-ins found for that employee.'}), 404
             else:
                 iterator = map(lambda res: res.as_dict(), result)
                 return jsonify(list(iterator)), 200
+
+
+# Obtains clock-ins for each department.
+@employees.get('/departments/<id>/clockin')
+def get_dept_clockins(id):
+    with Session() as session:
+        with session.begin():
+            result = session.query(Clockin).filter_by(department_id=id).all()
+
+            # If no clock-ins found, return an error.
+            if not result:
+                return jsonify({'message': 'No clockins found for that department.'}), 404
+            else:
+                list_result = map(lambda res: res.as_dict(), result)
+                return jsonify(list(list_result)), 200
 
 
 # Gets all departments.

@@ -73,7 +73,9 @@ class Clockin(Base):
     employee_id = Column(Integer(), ForeignKey('employees.id'))
     clockin_time = Column(DateTime(), server_default=func.now())
     clockout_time = Column(DateTime(), onupdate=func.now(), server_default=None)
+    department_id = Column(Integer(), ForeignKey('departments.department_id'))
     parent = relationship("Employee", back_populates="children")
+    department = relationship("Department")
 
     # Returns a dictionary representation of the Clockin.
     def as_dict(self):
@@ -82,6 +84,7 @@ class Clockin(Base):
             'employee_id': self.employee_id,
             'clockin_time': self.clockin_time,
             'clockout_time': self.clockout_time,
+            'department': self.department.as_dict()
         }
 
 
