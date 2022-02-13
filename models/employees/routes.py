@@ -87,7 +87,7 @@ def add_employee():
             # Verify that we are specifying a valid type of pay rate.
             try:
                 pay_rate = float(data['pay_rate'])
-            except e:
+            except:
                 return jsonify({'message': 'Invalid pay rate specified.'})
 
             empl = Employee(name=data['name'], password=data['password'], email=data['email'], 
