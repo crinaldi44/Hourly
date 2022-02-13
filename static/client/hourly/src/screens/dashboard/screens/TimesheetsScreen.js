@@ -5,7 +5,9 @@ import React from 'react';
  * @returns {JSX.Element}
  */
 const TimesheetsScreen = () => {
-  return (<div><h1>Timesheets</h1></div>);
+  return (<div>
+    <h1>Timesheets</h1>
+    </div>);
 };
 
 export default TimesheetsScreen;
