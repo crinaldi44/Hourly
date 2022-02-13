@@ -167,7 +167,6 @@ const ManageEmployeesScreen = () => {
     return ( <GridToolbarContainer>
         <GridToolbar/>
         { selectedEmployees.length > 0 ? <Button onClick={() => {
-          setDialogTitle("Confirm employee deletion")
           setDialogMessage(`Are you sure you want to delete ${selectedEmployees.length} employees?`)
           setDialogOpen(true)
         }} startIcon={<DeleteIcon/>} variant="outlined" color='error'>
@@ -193,6 +192,8 @@ const ManageEmployeesScreen = () => {
               rowsPerPageOptions={[5]}
               checkboxSelection
               disableSelectionOnClick
+              density='compact'
+              sx={{backgroundColor: 'white'}}
               onSelectionModelChange={sel => {setSelectedEmployees(sel)}}
               components={{Toolbar: toolbar}} />}
       </div>

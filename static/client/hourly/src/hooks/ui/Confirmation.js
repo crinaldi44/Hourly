@@ -36,7 +36,7 @@ const useConfirmationDialog = (onConfirmCallback) => {
     /**
      * Represents the title of the dialog.
      */
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState("Confirm Action");
 
     /**
      * Handles action taken when the dialog modal should
