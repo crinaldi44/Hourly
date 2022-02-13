@@ -139,7 +139,7 @@ const AddEmployeesDialog = (props) => {
             </Stack>
             <Stack direction='row'>
                 <ListItem sx={{width: '1fr'}}>
-                    <FormControl>
+                    <FormControl sx={{minWidth: '100%'}}>
                         <InputLabel>Department</InputLabel>
                         <Select
                         label="Department"

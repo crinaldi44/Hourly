@@ -189,7 +189,7 @@ const ManageEmployeesScreen = () => {
       {!loaded ? <div></div> : <DataGrid rows={dataSet}
               columns={columns}
               pageSize={15}
-              rowsPerPageOptions={[5]}
+              rowsPerPageOptions={[15]}
               checkboxSelection
               disableSelectionOnClick
               density='compact'
