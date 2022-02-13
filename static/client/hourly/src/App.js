@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom
 import ClockinScreen from './screens/clockin/ClockinScreen'
 import LoginScreen from './screens/login/LoginScreen'
 import Dashboard from './screens/dashboard/Dashboard';
-import ProtectedRoute from './auth/components/ProtectedRoute';
+import ProtectedRoute from './hooks/auth/components/ProtectedRoute';
 
 /**
  * Represents the entry point for the application.

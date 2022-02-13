@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import './LoginForm.css'
 import Logo from '../../../assets/images/logo-clock.png'
-import authentication from "../../../auth/authentication";
+import authentication from "../../../hooks/auth/authentication";
 import {useNavigate} from 'react-router-dom'
 import ToastAlert from '../../../components/ToastAlert'
 

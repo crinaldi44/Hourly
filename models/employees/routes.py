@@ -67,7 +67,8 @@ def add_employee():
 
     # If any fields are missed, provide an error message.
     if not all(x in data.keys() for x in ['name', 'password', 'email', 'pay_rate', 'title', 'department_id']):
-        return jsonify({'message': "Invalid POST request data. Perhaps you've forgotten a field."}), 400
+        print(str(data.keys()))
+        return jsonify({'message': "Invalid employee specified! Perhaps you've forgotten a field."}), 400
 
     # Check that there is a first and a last name.
     if not len(str(data['name']).split(' ')) == 2:

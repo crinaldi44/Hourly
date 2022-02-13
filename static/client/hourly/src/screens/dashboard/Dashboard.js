@@ -3,7 +3,7 @@ import NavigationBar from './components/NavigationBar'
 import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
 import TimesheetsScreen from "./screens/TimesheetsScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
-import ProtectedRoute from '../../auth/components/ProtectedRoute'
+import ProtectedRoute from '../../hooks/auth/components/ProtectedRoute'
 
 /**
  * Represents the Dashboard Screen.

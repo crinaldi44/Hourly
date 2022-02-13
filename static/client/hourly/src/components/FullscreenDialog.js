@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dialog, Toolbar, AppBar, Button, IconButton, Typography} from '@mui/material'
+import {Dialog, Toolbar, AppBar, Button, IconButton, Typography, Slide} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 
 /**
@@ -19,10 +19,12 @@ import CloseIcon from '@mui/icons-material/Close';
  */
 const FullscreenDialog = (props) => {
 
+
     return <Dialog
         fullScreen
         open={props.open}
         onClose={props.handleClose}
+        TransitionComponent={Transition}
       >
         <AppBar sx={{ position: 'relative', backgroundColor: 'var(--primary-dark)' }}>
           <Toolbar>
@@ -46,6 +48,10 @@ const FullscreenDialog = (props) => {
           {props.children}
       </Dialog>
 };
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 /**
  * A FullscreenDialog is a component that presents a fullscreen interface

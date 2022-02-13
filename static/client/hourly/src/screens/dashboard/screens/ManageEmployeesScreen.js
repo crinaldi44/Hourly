@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import useAuth from '../../../auth/hourlyAuth'
+import React, {useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import './ManageEmployeeScreen.css'
-import FullscreenDialog from '../../../components/FullscreenDialog';
 import AddEmployeesDialog from '../components/AddEmployeesDialog';
+import useToast from '../../../hooks/ui/Toast'
 
 /**
  * The ManageEmployesScreen is meant to display a table of all active employees
@@ -15,11 +14,6 @@ import AddEmployeesDialog from '../components/AddEmployeesDialog';
  * @returns {JSX.Element}
  */
 const ManageEmployeesScreen = () => {
-
-  /**
-   * Get the active credentials.
-   */
-  let creds = useAuth()
 
   /**
    * Fetches data from the database, sets the dataSet state
@@ -45,6 +39,11 @@ const ManageEmployeesScreen = () => {
   const [addOpen, setAddOpen] = useState(false)
 
   /**
+   * Represents the toast.
+   */
+  const [setToastMessage, setToastOpen, setToastSeverity, Toast] = useToast()
+
+  /**
    * Handles action taken when the add modal closes.
    */
   const handleCloseAdd = () => {
@@ -56,6 +55,25 @@ const ManageEmployeesScreen = () => {
    */
   const handleOpenAdd = () => {
     setAddOpen(true)
+  }
+
+  /**
+   * Handles action taken when an employee is added.
+   * @param response represents the response returned from building an employee
+   */
+  const handleAddEmployee = (response) => {
+    if (response.status != 201) {
+      setToastSeverity('error')
+    } else {
+      setToastSeverity('success')
+    }
+    setToastMessage(response.data.message)
+    setToastOpen(true)
+    if (response.status === 201) {
+      setTimeout(() => {
+        fetchData()
+      }, 1000)
+    }
   }
 
 
@@ -116,7 +134,7 @@ const ManageEmployeesScreen = () => {
       <div className='manage-header'>
         <div className='manage-add'>
           <h1 style={{display: 'inline-block', textAlign: 'left', color: 'var(--primary-dark)'}}>Manage Employees</h1>
-          <Button onClick={handleOpenAdd}>+ Add Employee</Button>
+          <Button onClick={(handleOpenAdd)}>+ Add Employee</Button>
         </div>
 
       </div>
@@ -129,7 +147,8 @@ const ManageEmployeesScreen = () => {
               disableSelectionOnClick
               components={{Toolbar: GridToolbar}} />}
       </div>
-      <AddEmployeesDialog open={addOpen} handleClose={handleCloseAdd}/>
+      <AddEmployeesDialog open={addOpen} handleClose={handleCloseAdd} onConfirm={res => {handleAddEmployee(res)}} />
+      {Toast}
     </>
   )
 };

@@ -1,5 +1,5 @@
 import axios from "axios"
-import Authentication from '../auth/authentication'
+import Authentication from '../hooks/auth/authentication'
 import ApiResponseError from './ApiResponseError'
 
 /**
@@ -25,23 +25,17 @@ class EmployeeService {
      */
     async buildEmployee(employee) {
 
-        let options = {
-            method: 'POST',
-            header: {
-                'x-access-tokens': Authentication.getActiveEmployee()
-            },
-            body: employee
+        let response;
+
+        try {
+            response = await axios.post('/employees', employee)
+        } catch (err) {
+            if (err.response) { 
+                response = err.response
+            }
         }
         
-        const response = await axios.post('/employees', options).catch(err => {
-            throw new Error('Exception during response: ' + err)
-        })
-
-        if (!(this.successStatus.includes(response.status))) { 
-            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`);
-        }
-
-        return response;
+        return response
     }
 
     /**
@@ -65,7 +59,7 @@ class EmployeeService {
             throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
         }
 
-        return response;
+        return response.data;
     }
 
     /**
@@ -95,7 +89,28 @@ class EmployeeService {
             throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
         }
 
-        return response;
+        return response.data;
+    }
+
+    /**
+     * Retrieves all active departments.
+     */
+    async getAllDepartments() {
+
+        let options = {
+            method: 'GET',
+            header: {
+                'x-access-token': Authentication.getActiveEmployee()
+            }
+        }
+
+        const response = await axios.get('/employees/departments', options)
+
+        if (!(this.successStatus.includes(response.status))) {
+            throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
+        }
+
+        return response.data
     }
 
 
