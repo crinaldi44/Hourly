@@ -1,7 +1,7 @@
 import React from "react";
 import NavigationBar from './components/NavigationBar'
 import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
-import TimesheetsScreen from "./screens/TimesheetsScreen";
+import DashboardHomeScreen from "./screens/DashboardHomeScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
 import ProtectedRoute from '../../hooks/auth/components/ProtectedRoute'
 import DepartmentsScreen from "./screens/DepartmentsScreen";
@@ -26,7 +26,7 @@ const Dashboard = (props) => {
                 <div style={{flexGrow: 1, backgroundColor: 'var(--offwhite)'}}>
                     <Routes>
                         <Route path='/*' element={defaultRoute}/>
-                        <Route path='/' exact element={<TimesheetsScreen/>}/>
+                        <Route path='/' exact element={<DashboardHomeScreen/>}/>
                         <Route path='/departments' exact element={<DepartmentsScreen/>}/>
                         <Route path='/manage' exact element={<ProtectedRoute element={<ManageEmployeesScreen/>}/>}/>
                     </Routes>
