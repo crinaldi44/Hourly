@@ -222,3 +222,22 @@ def get_department(id):
                 return jsonify({'message': 'Department id not found.'}), 404
             else:
                 return jsonify(result.as_dict()) # Return the department.
+
+
+# Deletes the specified department.
+@employees.delete('/employees/departments/<id>')
+def delete_department(id):
+    if not int(id):
+        return jsonify({'message': 'Invalid department ID specified.'}), 400
+    with Session() as session:
+        with session.begin():
+            result = session.query(Department).filter_by(department_id=id)
+            if result is None:
+                print(err)
+                return jsonify({'message': 'No department found with that ID!'}), 404
+            else:
+                try:
+                    result.delete()
+                except:
+                    return jsonify({'message': 'The department contains employees! Please move all employees before deleting!'}), 400
+                return jsonify({'message': 'Success!'}), 204

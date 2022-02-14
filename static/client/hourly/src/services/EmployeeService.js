@@ -131,6 +131,29 @@ class EmployeeService {
         return response.data
     }
 
+    /**
+     * Deletes the specified department.
+     * @param {number} id represents id of department to delete
+     */
+    async deleteDepartment(id) {
+        let options = {
+            header: {
+                'x-access-token': Authentication.getActiveEmployee()
+            }
+        }
+
+        let response;
+        try {
+            response = await axios.delete(`/employees/departments/${id}`, options)   
+        } catch (error) {
+            if (error.response) {
+                response = error.response
+            }
+        }
+
+        return response.data
+    }
+
 
 }
 

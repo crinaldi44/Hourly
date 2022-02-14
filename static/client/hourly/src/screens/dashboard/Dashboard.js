@@ -4,7 +4,7 @@ import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
 import DashboardHomeScreen from "./screens/DashboardHomeScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
 import ProtectedRoute from '../../hooks/auth/components/ProtectedRoute'
-import DepartmentsScreen from "./screens/DepartmentsScreen";
+import DepartmentsScreen from "./screens/departments/DepartmentsScreen";
 
 /**
  * Represents the Dashboard Screen.

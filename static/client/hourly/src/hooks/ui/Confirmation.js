@@ -50,7 +50,7 @@ const useConfirmationDialog = (onConfirmCallback) => {
      * Handles action taken on confirm.
      */
     const handleConfirm = () => {
-        if (onConfirmCallback) {
+        if (onConfirmCallback != null) {
             onConfirmCallback();
         }
         handleClose();

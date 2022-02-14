@@ -9,6 +9,10 @@ app.register_blueprint(authentication)
 
 # Represents the JWT secret key.
 app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
+app.config['PRODUCTION'] = False
+app.config['DEV_DATABASE_URI'] = 'mysql+pymysql://root:test123@localhost:3306/employees'
+app.config['DEV_DATABASE_URI2'] = 'mysql+pymysql://crinaldi:7539mmr@localhost:3306/hourly'
+app.config['PROD_DATABASE_URI'] = 'mysql+pymysql://root:test123@localhost:3306/employees' # Update for production
 
 
 @app.route('/')
