@@ -1,6 +1,7 @@
 import {
     Typography,
     Box,
+    Button
 } from '@mui/material';
 import React from 'react';
 import Header from '../../components/Header';
@@ -14,7 +15,9 @@ import Departments from './Departments';
 const DepartmentsScreen = () => {
 
   return <>
-    <Header>Manage Departments</Header>
+    <Header
+        action={<Button variant='contained'>Add Department</Button>}
+    >Manage Departments</Header>
     <TabView sx={{width: '95%', ml: 'auto', mr: 'auto'}}>
         <Box label='Departments'>
             <Departments/>

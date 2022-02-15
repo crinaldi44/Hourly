@@ -48,32 +48,38 @@ const DepartmentDetails = (props) => {
       manager_id: selected
     }
     await EmployeeService.updateDepartment(department)
+    props.setToast('Action completed.')
+    props.setToastOpen(true)
   }
-  
+
 
   return (
-    !employees ? <LoadingCircle/> : 
-    <AccordionDetails>
+    !employees ? <LoadingCircle /> :
+      <AccordionDetails>
+        <Typography textAlign='left' marginBottom='20px'><b>Employees:</b> {employees.length}</Typography>
+        <Stack direction='column'>
           <Typography textAlign='left'><b>Manager: </b></Typography>
-          <Stack direction='row' sx={{ mt: 5 }}>
-            <Button variant="contained" color="error" onClick={() => {
-              props.setConfirm(`Are you sure you wish to delete the ${props.department.department_name} department?`)
-              props.setConfirmOpen(true);
-             }}>Delete</Button>
-             <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={selected}
-                label="Age"
-                onChange={handleChange}
-              >
-                {employees.map(employee => (
-                  <MenuItem value={employee.id}>{employee.name}</MenuItem>
-                ))}
-              </Select>
-            <Button sx={{ ml: 2 }} disabled={selected === props.department.manager_id} variant='contained' onClick={handleSubmit}>Submit</Button>
-          </Stack>
-    </AccordionDetails>
+          <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selected}
+              label="Age"
+              onChange={handleChange}
+              sx={{height: '40px', maxWidth: '175px'}}
+            >
+              {employees.map(employee => (
+                <MenuItem value={employee.id}>{employee.name}</MenuItem>
+              ))}
+            </Select>
+        </Stack>
+        <Stack direction='row' sx={{ mt: 5 }}>
+          <Button variant="contained" color="error" onClick={() => {
+            props.setConfirm(`Are you sure you wish to delete the ${props.department.department_name} department?`)
+            props.setConfirmOpen(true);
+          }}>Delete</Button>
+          <Button sx={{ ml: 2 }} disabled={selected === props.department.manager_id} variant='contained' onClick={handleSubmit}>Submit</Button>
+        </Stack>
+      </AccordionDetails>
   )
 }
 
@@ -92,12 +98,12 @@ const Departments = () => {
   /**
    * Represents the currently opened department
    */
-     const [currentDepartment, setCurrentDepartment] = useState(0)
+  const [currentDepartment, setCurrentDepartment] = useState(0)
 
-     /**
-   * Deletes the specified department.
-   */
-   async function deleteDepartment() {
+  /**
+* Deletes the specified department.
+*/
+  async function deleteDepartment() {
     await EmployeeService.deleteDepartment(currentDepartment);
     setTimeout(() => {
       fetchData();
@@ -107,8 +113,10 @@ const Departments = () => {
   /**
    * Represents the Confirmation dialog for deletion.
    */
-   const [setConfirmOpen, setConfirmAction, setConfirmMessage, Confirm] = useConfirmationDialog(deleteDepartment)
-   
+  const [setConfirmOpen, setConfirmAction, setConfirmMessage, Confirm] = useConfirmationDialog(deleteDepartment)
+
+  const [setToastMsg, setToastOpen, setToastSeverity, Toast] = useToast()
+
 
   /**
    * Fetches data from the server.
@@ -129,12 +137,12 @@ const Departments = () => {
     departments.map(department => (
       <Accordion expanded={currentDepartment === department.department_id} onChange={() => {
         setCurrentDepartment(currentDepartment === department.department_id ? null : department.department_id)
-        }}>
+      }}>
         <AccordionSummary
           expandIcon={<ExpandMore />}>
           <Typography>{department.department_name}</Typography>
         </AccordionSummary>
-        <DepartmentDetails department={department} setConfirm={setConfirmMessage} setConfirmOpen={setConfirmOpen}/>
+        <DepartmentDetails department={department} setConfirm={setConfirmMessage} setConfirmOpen={setConfirmOpen} setToast={setToastMsg} setToastOpen={setToastOpen} />
       </Accordion>
     ))
   )
@@ -144,6 +152,7 @@ const Departments = () => {
     <div>
       {departments.length > 0 ? renderDepartments : <LoadingCircle />}
       {Confirm}
+      {Toast}
     </div>
   )
 }
