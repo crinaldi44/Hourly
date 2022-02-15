@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, Chip } from '@mui/material';
 import { DataGrid, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid';
 import './ManageEmployeeScreen.css'
 import AddEmployeesDialog from '../components/AddEmployeesDialog';
@@ -160,6 +160,10 @@ const ManageEmployeesScreen = () => {
       headerName: 'COVID-19 Status',
       width: 150,
       editable: false,
+      renderCell: (params) => {
+        const chipColor = params.value === 'Healthy' ? '#64e064' : '#ff5c33'
+        return <Chip variant='outlined' sx={{height: '25px', minWidth: '90px', borderColor: chipColor, color: chipColor}} label={params.value}/>
+      }
     }
   ]
 
