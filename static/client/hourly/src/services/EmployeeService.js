@@ -68,7 +68,7 @@ class EmployeeService {
      * @param id the id
      * @param {JSON} employee the updated employee object
      */
-    updateEmployee(id, employee) {
+    async updateEmployee(id, employee) {
         let options = {
             headers: {
                 'x-access-tokens': Authentication.getToken()
@@ -78,7 +78,7 @@ class EmployeeService {
         let response;
 
         try {
-            response = axios.patch(`/employees/${id}`, employee, options)
+            response = await axios.patch(`/employees/${id}`, employee, options)
         } catch (err) {
             if (err.response) {
                 response = err.response
@@ -97,7 +97,7 @@ class EmployeeService {
         let options = {
             method: 'GET',
             header: {
-                'x-access-tokens': Authentication.getActiveEmployee()
+                'x-access-tokens': Authentication.getToken()
             }
         }
 
@@ -108,6 +108,31 @@ class EmployeeService {
         }
 
         return response.data;
+    }
+
+    /**
+     * Gets employees by the provided department id.
+     * @param {number} id 
+     * @returns 
+     */
+    async getEmployeesForDepartment(id) {
+        let options = {
+            header: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+        
+        let response
+        
+        try {
+            response = await axios.get(`/employees?department=${id}`)
+        } catch (error) {
+            if (error.response) {
+                response = error.response
+            }
+        }
+
+        return response.data
     }
 
     /**
@@ -129,6 +154,29 @@ class EmployeeService {
         }
 
         return response.data
+    }
+
+    /**
+     * Updates the specified department.
+     */
+    async updateDepartment(department) {
+        let options = {
+            header: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+
+        let response
+        
+        try {
+            response = await axios.patch(`/employees/departments/${department.department_id}`, department, options)
+        } catch (err) {
+            if (err.response) {
+                response = err.response
+            }
+        }
+
+        return response.data;
     }
 
     /**

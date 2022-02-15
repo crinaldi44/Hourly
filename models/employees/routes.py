@@ -29,8 +29,14 @@ employees = Blueprint('employees', __name__, template_folder='templates')
 def get_employees():
     with Session() as session:
         with session.begin():
-            # Query for the results set.
-            result = session.query(Employee).all()
+
+            department = request.args.get('department')
+
+            # Query the database. If a department id is specified, filter by department.
+            if not department is None:
+                result = session.query(Employee).filter_by(department_id=int(department)).all()
+            else:
+                result = session.query(Employee).all()
 
             # For each element in the result set, convert to a 
             # dictionary.

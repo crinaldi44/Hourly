@@ -4,12 +4,78 @@ import { ExpandMore } from "@mui/icons-material";
 import {
   Typography,
   Button,
-  Stack
+  Stack,
+  Select,
+  MenuItem
 } from '@mui/material'
 import LoadingCircle from '../../../../components/LoadingCircle';
 import EmployeeService from '../../../../services/EmployeeService'
 import useToast from '../../../../hooks/ui/Toast';
 import useConfirmationDialog from '../../../../hooks/ui/Confirmation';
+
+
+/**
+ * DepartmentDetails will allow us to render a department's details within the accordion while
+ * also allowing us to submit changes to that department.
+ * @param {*} props 
+ */
+const DepartmentDetails = (props) => {
+
+  const [employees, setEmployees] = useState(null)
+
+  const [selected, setSelected] = useState(props.department.manager_id)
+
+  const fetchEmployees = async () => {
+    let response = await EmployeeService.getEmployeesForDepartment(props.department.department_id)
+    setEmployees(response)
+  }
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [])
+
+  const handleChange = (event) => {
+    setSelected(event.target.value)
+  }
+
+  /**
+   * Updates the manager of department to the selected.
+   */
+  const handleSubmit = async () => {
+
+    let department = {
+      ...props.department,
+      manager_id: selected
+    }
+    await EmployeeService.updateDepartment(department)
+  }
+  
+
+  return (
+    !employees ? <LoadingCircle/> : 
+    <AccordionDetails>
+          <Typography textAlign='left'><b>Manager: </b></Typography>
+          <Stack direction='row' sx={{ mt: 5 }}>
+            <Button variant="contained" color="error" onClick={() => {
+              props.setConfirm(`Are you sure you wish to delete the ${props.department.department_name} department?`)
+              props.setConfirmOpen(true);
+             }}>Delete</Button>
+             <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selected}
+                label="Age"
+                onChange={handleChange}
+              >
+                {employees.map(employee => (
+                  <MenuItem value={employee.id}>{employee.name}</MenuItem>
+                ))}
+              </Select>
+            <Button sx={{ ml: 2 }} disabled={selected === props.department.manager_id} variant='contained' onClick={handleSubmit}>Submit</Button>
+          </Stack>
+    </AccordionDetails>
+  )
+}
 
 /**
  * The Departments accordion is meant to display a listing of all active
@@ -28,7 +94,6 @@ const Departments = () => {
    */
      const [currentDepartment, setCurrentDepartment] = useState(0)
 
-
      /**
    * Deletes the specified department.
    */
@@ -38,11 +103,12 @@ const Departments = () => {
       fetchData();
     }, 1000)
   }
-  
+
   /**
    * Represents the Confirmation dialog for deletion.
    */
-  const [setConfirmOpen, setConfirmAction, setConfirmMessage, Confirm] = useConfirmationDialog(deleteDepartment)
+   const [setConfirmOpen, setConfirmAction, setConfirmMessage, Confirm] = useConfirmationDialog(deleteDepartment)
+   
 
   /**
    * Fetches data from the server.
@@ -68,16 +134,7 @@ const Departments = () => {
           expandIcon={<ExpandMore />}>
           <Typography>{department.department_name}</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Typography textAlign='left'><b>Manager: </b></Typography>
-          <Stack direction='row' sx={{ mt: 5 }}>
-            <Button variant="contained" color="error" onClick={() => {
-              setConfirmMessage(`Are you sure you wish to delete the ${department.department_name} department?`)
-              setConfirmOpen(true);
-             }}>Delete</Button>
-            <Button sx={{ ml: 2 }} disabled variant='contained'>Submit</Button>
-          </Stack>
-        </AccordionDetails>
+        <DepartmentDetails department={department} setConfirm={setConfirmMessage} setConfirmOpen={setConfirmOpen}/>
       </Accordion>
     ))
   )
