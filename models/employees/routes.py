@@ -3,6 +3,7 @@ import sys
 from email import message
 from tkinter import E
 from tokenize import Double, Floatnumber, Number
+from unittest import result
 from pymysql import IntegrityError
 
 import sqlalchemy.exc
@@ -214,6 +215,27 @@ def get_departments():
             result = session.query(Department).all()
             iterator = map(lambda res: res.as_dict(), result)
             return jsonify(list(iterator)), 200
+
+
+# Adds a new department.
+@employees.post('/employees/departments')
+def add_department():
+        department = request.json
+
+        if department is None or not all(x in department.keys() for x in ['department_name', 'manager_id']):
+            return jsonify({'message': 'Invalid department provided! Please sure all fields are filled out!'}), 400
+        else:
+            with Session() as session:
+                with session.begin():
+                    
+                    result = session.query(Department).filter_by(department_name=request.json['department_name']).all()
+
+                    if len(result) > 0:
+                        return jsonify({'message': 'Department with that name already exists.'})
+
+                    dept = Department(department_name=request.json['department_name'], manager_id=request.json['manager_id'])
+                    session.add(dept)
+                    return jsonify({'message': 'Success'}), 201
 
 
 # Gets a specified department by id.
