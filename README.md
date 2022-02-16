@@ -10,3 +10,7 @@ The application hosts all build/start scripts from the client side. Simply run t
 ** npm start-api **
 
 From the client directory.
+
+# TODO
+Add routes for payroll reporting*
+Add calculations for employee hours

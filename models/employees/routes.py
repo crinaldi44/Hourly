@@ -8,7 +8,7 @@ from pymysql import IntegrityError
 
 import sqlalchemy.exc
 from auth.authentication import token_required
-from flask import Flask, Blueprint, jsonify, request
+from flask import Flask, Blueprint, jsonify, request, session
 from sqlalchemy import exc
 
 from models.database import Session
@@ -288,3 +288,75 @@ def update_department(id):
                     return jsonify({'message': 'An error occurred!'}), 400
                 else:
                     return jsonify({'message': 'Success!'}), 204
+
+
+# Obtains a summary of all payroll for a given pay period. A department
+# can be specified to filter out this data.
+@employees.get('/employees/payroll')
+def get_payroll():
+
+    # Represents the department ID query string, if one is provided.
+    department = request.args.get('department')
+
+    # Represents the active employee.
+    employee_arg = request.args.get('employee')
+
+    # Check all values whose department matches one in query string.
+    # IMPORTANT: Ensure that the value of clockout_time is ! None/NULL
+    with Session() as session:
+        with session.begin():
+            if department is not None:
+                result = session.query(Clockin).filter_by(department_id=department).filter(Clockin.clockout_time != None).all()
+            else: # Else, check all values
+                result = session.query(Clockin).filter(Clockin.clockout_time != None).all()
+            if not result: # If no result, 404 error
+                        return jsonify({'message': 'No active clockins were found!'}), 404
+
+            payroll_sum = 0
+
+            # Generate one giant payroll sum, calculated
+            # as clockin-clockout * hourly.
+            for value in result:
+
+                # Represents time between clockout and in as a timedelta.
+                time_distance = value.clockout_time - value.clockin_time
+
+                # Represents total hours on the clock.
+                clock_hours = float("{:.2f}".format(time_distance.total_seconds() / 60 / 60))
+
+                # Add to the accumulator variable.
+                payroll_sum += (clock_hours * value.parent.pay_rate)
+
+        # Return the generated payroll sum.
+        return jsonify({'result': payroll_sum})
+
+
+# Retrieves and returns hours
+@employees.get('/employees/hours')
+def get_hours():
+    
+    requested_department = request.args.get('department')
+
+    with Session() as session:
+        with session.begin():
+
+            if (requested_department is not None):
+                result = session.query(Clockin).filter_by(department_id=requested_department).filter(Clockin.clockout_time != None)
+            else:
+                result = session.query(Clockin)
+            
+            result = result.all()
+
+            if not result:
+                return jsonify({'message': 'No clockins found!'}), 404
+            else:
+                hours_sum = 0
+
+                for value in result:
+                    clockin = value.clockout_time
+                    clockout = value.clockout_time
+                    clock_hours = float("{:.2f}".format((clockin - clockout).total_seconds() / 60 / 60))
+                    hours_sum += clock_hours
+                
+                return jsonify({'result': hours_sum})
+
