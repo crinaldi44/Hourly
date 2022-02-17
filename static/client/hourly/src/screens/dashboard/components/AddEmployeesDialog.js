@@ -151,7 +151,7 @@ const AddEmployeesDialog = (props) => {
                     </FormControl>
                 </ListItem>
             <ListItem sx={{width: '1fr'}}>
-                <FormControl fullWidth sx={{minWidth: 300}}>
+                <FormControl fullWidth>
                     <InputLabel htmlFor="outlined-adornment-amount">Pay Rate</InputLabel>
                     <OutlinedInput
                         id="outlined-adornment-amount"
