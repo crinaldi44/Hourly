@@ -81,8 +81,13 @@ class Authentication {
             return false;
         }
 
+        console.log('Date now: ' + Date.now())
+        console.log('expiration: ' + (payload['exp'] * 1000))
+
+        console.log(Date.now() > (payload['exp'] * 1000))
+
         // Verify the token has not expired.
-        if (Date.now() - payload['exp'] < 0) {
+        if (Date.now() > (payload['exp'] * 1000)) {
             this.deAuthenticate()
             return false;
         }
