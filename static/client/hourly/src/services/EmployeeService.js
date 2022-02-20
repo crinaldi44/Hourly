@@ -163,6 +163,34 @@ class EmployeeService {
     }
 
     /**
+     * Adds the specified department to the database.
+     * @param {JSON} department represents the department to add
+     */
+    async addDepartment(department) {
+
+        if (!Object.keys(department).includes('department_name')) {
+            throw new Error('Invalid department object specified.');
+        }
+
+        let options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+
+        let response;
+        
+        try {
+            response = await axios.post('/employees/departments', department, options)
+        } catch (error) {
+            if (error.response) response = error.response   
+        }
+
+        return response.data;
+
+    }
+
+    /**
      * Updates the specified department.
      */
     async updateDepartment(department) {

@@ -21,7 +21,7 @@ const LoginScreen = () => {
       } else {
           Authentication.deAuthenticate()
       }
-    }, [])
+    })
     
 
     return (

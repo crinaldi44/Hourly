@@ -1,4 +1,5 @@
 import useAuthenticator from '../hourlyAuth'
+import { useNavigate } from 'react-router-dom'
 import {Route, Navigate} from 'react-router-dom'
 import Authentication from '../authentication'
 import React, {useEffect} from 'react'
@@ -10,38 +11,32 @@ import React, {useEffect} from 'react'
  * @param {JSX.Element} element represents the inner component to render
  * @param {any} props represents the props to be passed
  */
-class ProtectedRoute extends React.Component {
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            authenticated: Authentication.isAuthenticated()
-        }
-    }
+const ProtectedRoute = (props) => {
 
     /**
-     * Represents action taken should the component update. Each
-     * render, we do a 'pulse' check to ensure that our auth state
-     * is still intact.
+     * Represents the navigation hook.
      */
-    componentDidUpdate() {
-        this.setState({
-            ...this.state,
-            authenticated: Authentication.isAuthenticated()
-        })
-    }
+    const navigate = useNavigate()
+
+    /**
+     * On render/re-render, verify to ensure the user authentication token is still valid.
+     */
+    useEffect(() => {
+        if (!Authentication.isAuthenticated()) {
+            Authentication.deAuthenticate()
+            navigate('/login')
+        }   
+    })
     
 
     // Conditionally, if the user is authenticated, display the
     // component. Otherwise, redirect to the login screen.
-    render() {
-        return this.state.authenticated ? this.props.element : <Navigate to={{
+    return Authentication.isAuthenticated() ? props.element : <Navigate to={{
                                         pathname: '/login',
                                         state: {
-                                            from: this.props.location
+                                            from: props.location
                                         }
-                                    }}/>  
-    }
+                                    }}/>
 }
 
 export default ProtectedRoute

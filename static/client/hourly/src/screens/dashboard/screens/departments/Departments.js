@@ -23,7 +23,7 @@ const DepartmentDetails = (props) => {
 
   const [employees, setEmployees] = useState(null)
 
-  const [selected, setSelected] = useState(props.department.manager_id)
+  const [selected, setSelected] = useState(props.department.manager_id || 0)
 
   const fetchEmployees = async () => {
     let response = await EmployeeService.getEmployeesForDepartment(props.department.department_id)
@@ -67,8 +67,9 @@ const DepartmentDetails = (props) => {
               onChange={handleChange}
               sx={{height: '40px', maxWidth: '175px'}}
             >
+              <MenuItem value={0}><i>None</i></MenuItem>
               {employees.map(employee => (
-                <MenuItem value={employee.id}>{employee.name}</MenuItem>
+                <MenuItem key={employee.id} value={employee.id}>{employee.name}</MenuItem>
               ))}
             </Select>
         </Stack>
@@ -135,7 +136,7 @@ const Departments = () => {
 
   const renderDepartments = (
     departments.map(department => (
-      <Accordion expanded={currentDepartment === department.department_id} onChange={() => {
+      <Accordion key={department.department_id} expanded={currentDepartment === department.department_id} onChange={() => {
         setCurrentDepartment(currentDepartment === department.department_id ? null : department.department_id)
       }}>
         <AccordionSummary

@@ -36,25 +36,30 @@ const TabView = (props) => {
     /**
      * Represents the currently selected tab.
      */
-    const [currentTab, setCurrentTab] = useState(0);
+    const [currentTab, setCurrentTab] = useState("0" || '');
 
     /**
      * Represents the tabs corresponding to a child.
      */
-    const tabs = props.children.map(child => (
-        <Tab label={child.props.label || "Tab"} value={props.children.indexOf(child)}/>
-    ));
+    const tabs = 
+        props.children.map(child => {
+            const id = props.children.indexOf(child)
+            return (
+                <Tab key={id} label={child.props.label} value={`${id}`}/>
+            )
+        })
 
     /**
      * Represents the panels.
      */
-    const panels = props.children.map(child => (
-        <TabPanel value={props.children.indexOf(child)}>{child}</TabPanel>
-    ));
+    const panels = props.children.map(child => {
+        const id = props.children.indexOf(child)
+        return <TabPanel key={id} value={`${id}`}>{child}</TabPanel>
+    });
 
     return (
         <Box sx={{ width: '100%', typography: 'body1', borderRadius: '2px', backgroundColor: 'white', ...props.sx }}>
-        <TabContext value={currentTab}>
+        <TabContext value={`${currentTab}`}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChange} aria-label="lab API tabs example">
                 {tabs}

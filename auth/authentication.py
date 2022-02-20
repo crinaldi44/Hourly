@@ -76,9 +76,9 @@ def token_required(func):
                        # time_passed = data['exp'] - datetime.utcnow()
                        # if time_passed > timedelta(minutes=30):
                         #    return jsonify({'message': 'Authentication token has expired.'}), 403
-                    except IntegrityError as E:
+                    except jwt.exeptions.ExpiredSignatureError as E:
                         print(E)
-                        return jsonify({'message': 'Authorization token is invalid.'}), 403
+                        return jsonify({'message': 'Authorization token is expired or invalid.'}), 403
 
         return func(*args, **kwargs)
     return decorator

@@ -231,8 +231,8 @@ def get_departments():
 def add_department():
         department = request.json
 
-        if department is None or not all(x in department.keys() for x in ['department_name', 'manager_id']):
-            return jsonify({'message': 'Invalid department provided! Please sure all fields are filled out!'}), 400
+        if department is None or not 'department_name' in department.keys():
+            return jsonify({'message': 'Invalid department provided! Please be sure all fields are filled out!'}), 400
         else:
             with Session() as session:
                 with session.begin():
@@ -242,7 +242,7 @@ def add_department():
                     if len(result) > 0:
                         return jsonify({'message': 'Department with that name already exists.'})
 
-                    dept = Department(department_name=request.json['department_name'], manager_id=request.json['manager_id'])
+                    dept = Department(department_name=request.json['department_name'])
                     session.add(dept)
                     return jsonify({'message': 'Success'}), 201
 
