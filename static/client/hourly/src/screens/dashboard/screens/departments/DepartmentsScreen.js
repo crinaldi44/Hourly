@@ -3,9 +3,10 @@ import {
     Box,
     Button
 } from '@mui/material';
-import React from 'react';
+import React, {useState} from 'react';
 import Header from '../../components/Header';
 import TabView from '../../components/TabView';
+import AddDepartmentForm from './AddDepartmentForm';
 import Departments from './Departments';
 
 /**
@@ -14,9 +15,22 @@ import Departments from './Departments';
  */
 const DepartmentsScreen = () => {
 
+  const [addDeptOpen, setAddDeptOpen] = useState(false);
+
+  /**
+   * Handles opening the add department modal.
+   */
+  const handleAddDeptOpen = () => {
+    setAddDeptOpen(true)
+  }
+
+  const handleAddDeptClose = () => {
+    setAddDeptOpen(false)
+  }
+
   return <>
     <Header
-        action={<Button variant='contained'>Add Department</Button>}
+        action={<Button variant='contained' onClick={handleAddDeptOpen}>Add Department</Button>}
     >Manage Departments</Header>
     <TabView sx={{width: '95%', ml: 'auto', mr: 'auto'}}>
         <Box label='Departments'>
@@ -24,6 +38,7 @@ const DepartmentsScreen = () => {
         </Box>
         <Typography label="Timesheets"></Typography>
     </TabView>
+    <AddDepartmentForm open={addDeptOpen} handleClose={handleAddDeptClose} />
   </>;
 
 };
