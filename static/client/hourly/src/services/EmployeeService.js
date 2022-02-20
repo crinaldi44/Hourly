@@ -25,10 +25,16 @@ class EmployeeService {
      */
     async buildEmployee(employee) {
 
+        let options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+
         let response;
 
         try {
-            response = await axios.post('/employees', employee)
+            response = await axios.post('/employees', employee, options)
         } catch (err) {
             if (err.response) { 
                 response = err.response
@@ -96,7 +102,7 @@ class EmployeeService {
 
         let options = {
             method: 'GET',
-            header: {
+            headers: {
                 'x-access-tokens': Authentication.getToken()
             }
         }
@@ -117,7 +123,7 @@ class EmployeeService {
      */
     async getEmployeesForDepartment(id) {
         let options = {
-            header: {
+            headers: {
                 'x-access-tokens': Authentication.getToken()
             }
         }
@@ -125,7 +131,7 @@ class EmployeeService {
         let response
         
         try {
-            response = await axios.get(`/employees?department=${id}`)
+            response = await axios.get(`/employees?department=${id}`, options)
         } catch (error) {
             if (error.response) {
                 response = error.response
@@ -142,8 +148,8 @@ class EmployeeService {
 
         let options = {
             method: 'GET',
-            header: {
-                'x-access-token': Authentication.getActiveEmployee()
+            headers: {
+                'x-access-tokens': Authentication.getToken()
             }
         }
 
@@ -161,7 +167,7 @@ class EmployeeService {
      */
     async updateDepartment(department) {
         let options = {
-            header: {
+            headers: {
                 'x-access-tokens': Authentication.getToken()
             }
         }
@@ -185,8 +191,8 @@ class EmployeeService {
      */
     async deleteDepartment(id) {
         let options = {
-            header: {
-                'x-access-token': Authentication.getActiveEmployee()
+            headers: {
+                'x-access-tokens': Authentication.getToken()
             }
         }
 
@@ -210,7 +216,7 @@ class EmployeeService {
     async getPayroll(id) {
 
         let options = {
-            header: {
+            headers: {
                 'x-access-tokens': Authentication.getToken()
             }
         }

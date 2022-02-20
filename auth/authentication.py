@@ -65,10 +65,17 @@ def token_required(func):
                 with session.begin():
                     try:
                         data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-                        current_user = session.query(Employee).filter_by(id=data['employee_id']).first()
-                        time_passed = data['exp'] - datetime.now()
-                        if time_passed > timedelta(minutes=30):
-                            return jsonify({'message': 'Authentication token has expired.'}), 403
+
+                        # Verify that the user exists.
+                        try: 
+                            current_user = session.query(Employee).filter_by(id=data['employee_id']).first()
+                        except: 
+                            print(E)
+                            return jsonify({'message': 'Authorization token provided is invalid.'}), 403
+
+                       # time_passed = data['exp'] - datetime.utcnow()
+                       # if time_passed > timedelta(minutes=30):
+                        #    return jsonify({'message': 'Authentication token has expired.'}), 403
                     except IntegrityError as E:
                         print(E)
                         return jsonify({'message': 'Authorization token is invalid.'}), 403

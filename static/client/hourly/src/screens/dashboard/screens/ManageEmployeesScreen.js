@@ -23,7 +23,7 @@ const ManageEmployeesScreen = () => {
    * variable to the promisified data.
    */
   const fetchData = () => {
-    axios.get('/employees').then(res => setDataSet(res.data)).finally(setLoaded(true))
+    EmployeeService.getAllEmployees().then(res => setDataSet(res)).finally(setLoaded(true))
   }
 
   /**
