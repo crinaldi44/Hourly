@@ -203,6 +203,33 @@ class EmployeeService {
     }
 
 
+    /**
+     * Gets the payroll information for a specified department.
+     * @param {number} id represents the id of the department
+     */
+    async getPayroll(id) {
+
+        let options = {
+            header: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+        
+        let route = id ? `/employees/payroll?department=${id}` : '/employees/payroll'
+
+        let result;
+
+        try {
+            result = axios.get(route, options)
+        } catch (error) {
+            if (error.response) result = error.response
+        }
+
+        return result.data;
+
+    }
+
+
 }
 
 export default new EmployeeService()

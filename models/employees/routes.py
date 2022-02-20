@@ -27,6 +27,7 @@ employees = Blueprint('employees', __name__, template_folder='templates')
 # Employee model. Then, iterate over all instances, store
 # the
 @employees.get('/employees')
+@token_required
 def get_employees():
     with Session() as session:
         with session.begin():
@@ -49,6 +50,7 @@ def get_employees():
 
 # Retrieves an employee by their identifier.
 @employees.get('/employees/<id>')
+@token_required
 def get_employee(id):
     with Session() as session:
         with session.begin():
@@ -64,6 +66,7 @@ def get_employee(id):
 
 
 @employees.post('/employees')
+@token_required
 def add_employee():
     # Store the data in a JSON object.
     data = request.get_json()
@@ -106,6 +109,7 @@ def add_employee():
 
 # Deletes an employee from the database.
 @employees.delete('/employees/<id>')
+@token_required
 def delete_employee(id):
     # If params are not specified, notify the user they messed up.
     if not id:
@@ -125,6 +129,7 @@ def delete_employee(id):
 
 # TODO: Implement patch request for employees on the database.
 @employees.patch('/employees/<id>')
+@token_required
 def update_employee(id):
 
     with Session() as session:
@@ -181,6 +186,7 @@ def log_time(id):
 
 
 @employees.get('/employees/<id>/clockin')
+@token_required
 def get_clock_ins(id):
     with Session() as session:
         with session.begin():
@@ -194,6 +200,7 @@ def get_clock_ins(id):
 
 # Obtains clock-ins for each department.
 @employees.get('/departments/<id>/clockin')
+@token_required
 def get_dept_clockins(id):
     with Session() as session:
         with session.begin():
@@ -209,6 +216,7 @@ def get_dept_clockins(id):
 
 # Gets all departments.
 @employees.get('/employees/departments')
+@token_required
 def get_departments():
     with Session() as session:
         with session.begin():
@@ -219,6 +227,7 @@ def get_departments():
 
 # Adds a new department.
 @employees.post('/employees/departments')
+@token_required
 def add_department():
         department = request.json
 
