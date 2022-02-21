@@ -48,7 +48,7 @@ const DepartmentDetails = (props) => {
       manager_id: selected
     }
     const response = await EmployeeService.updateDepartment(department)
-    props.setToast('Action completed.')
+    props.setToast('Action performed.')
     props.setToastOpen(true)
   }
 

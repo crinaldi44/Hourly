@@ -94,6 +94,10 @@
     margin: 0;
 }
 
+.login-form .login-input::placeholder {
+    font-weight: 500;
+}
+
 .login-form .login-input[type='submit']:hover {
     background-position: left bottom;
     transition: all ease-in-out 300ms;
