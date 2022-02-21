@@ -19,6 +19,28 @@ class EmployeeService {
     ]
 
     /**
+     * Retrieves clockins for the specified department.
+     * @param {number} department represents the department to obtain for.
+     */
+    async getClockinsForDepartment(department) {
+        const options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+
+        let result;
+
+        try {
+            result = axios.get(`/departments/${department}/clockin`, options)
+        } catch (error) {
+            if (error.response) result = error.response
+        }
+
+        return result.data;
+    }
+
+    /**
      * Builds an employee an sends to the database. Specifies the auth token
      * in the header.
      * @param {JSON} employee represents an employee in JSON form to send

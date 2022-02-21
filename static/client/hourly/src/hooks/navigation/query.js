@@ -25,3 +25,5 @@ const useQuery = () => {
     return useMemo(() => {return new URLSearchParams(params)}, [params])
 
 }
+
+export default useQuery;

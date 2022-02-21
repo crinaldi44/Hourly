@@ -72,7 +72,7 @@ const LoginForm = () => {
         <form method='POST' className='login-form' onSubmit={e => {handleSubmit(e)}}>
             <div className='form-logo-wrapper'>
                 <img className='form-logo' src={Logo} alt='Logo'/>
-                <h2>Log In</h2>
+                <h2>Sign In</h2>
             </div>
             <div style={{marginTop: '15px'}}>
                 <span className='input-wrapper' data-label='&#xf007;'>
@@ -83,7 +83,7 @@ const LoginForm = () => {
                 </span>
                 <p className='form-header-text'>To request access to this portal, please contact Human Resources.</p>
             </div>
-            <input className='login-input' type='submit' value={'LOG IN'}/>
+            <input className='login-input' type='submit' value={'SIGN IN'}/>
             <ToastAlert open={alertOpen} onClose={handleClose} severity='error' message={alertMessage}/>
         </form>
     )

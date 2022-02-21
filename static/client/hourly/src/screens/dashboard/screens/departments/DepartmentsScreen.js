@@ -8,6 +8,7 @@ import Header from '../../components/Header';
 import TabView from '../../components/TabView';
 import AddDepartmentForm from './AddDepartmentForm';
 import Departments from './Departments';
+import Timesheets from './Timesheets';
 
 /**
  * Represents the departments screen.
@@ -36,7 +37,9 @@ const DepartmentsScreen = () => {
         <Box label='Departments'>
             <Departments/>
         </Box>
-        <Typography label="Timesheets"></Typography>
+        <Box label="Timesheets">
+          <Timesheets/>
+        </Box>
     </TabView>
     <AddDepartmentForm open={addDeptOpen} handleClose={handleAddDeptClose} />
   </>;
