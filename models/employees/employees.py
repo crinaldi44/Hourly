@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float
 from sqlalchemy.orm import declarative_base, relationship
-from models.database import engine, Base
+from models.database import engine, Base, Session
+from models.employees.utils import get_or_create
 
 
 # Represents an employee.
@@ -91,3 +92,7 @@ class Clockin(Base):
 # If a table does not yet exist, create one on the database with
 # the schema provided by Declarative relational mapping in SQLAlchemy.
 Base.metadata.create_all(engine)
+
+# By default, at least one 'primary'/'admin' department must exist
+# by the name of management. Create if it does not exists.
+get_or_create(Session, Department, department_name="Management")
