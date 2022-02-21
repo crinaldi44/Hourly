@@ -50,6 +50,22 @@ def validate_credentials(session, req):
         else:
             return jsonify({'message': 'Invalid employee ID or password.'}), 403
 
+
+# Filters the specified model based on the params specified in the JWT token.
+# Note that routes must be wrapped with @token_required.
+def protected_filter(session, model):
+    token = None
+    if 'x-access-tokens' in request.headers:
+        token = request.headers['x-access-tokens']
+        payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+    else:
+        return jsonify({'message': 'Token is missing or invalid.'})
+    if payload['department_id'] == 1 and payload['department_name'] == 'Management':
+        return session.query(model)
+    else: 
+        return session.query(model).filter_by(department_id=payload['department_id'])
+
+
 # Defines a type of middleware decorator that validates against a token being
 # provided in the request headers.
 def token_required(func):

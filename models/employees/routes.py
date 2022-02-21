@@ -7,7 +7,7 @@ from unittest import result
 from pymysql import IntegrityError
 
 import sqlalchemy.exc
-from auth.authentication import token_required
+from auth.authentication import token_required, protected_filter
 from flask import Flask, Blueprint, jsonify, request, session
 from sqlalchemy import exc
 
@@ -38,7 +38,8 @@ def get_employees():
             if not department is None:
                 result = session.query(Employee).filter_by(department_id=int(department)).all()
             else:
-                result = session.query(Employee).all()
+                # result = session.query(Employee).all()
+                result = protected_filter(session, Employee).all()
 
             # For each element in the result set, convert to a 
             # dictionary.
@@ -119,7 +120,9 @@ def delete_employee(id):
     # released from memory once transaction has completed.
     with Session() as session:
         with session.begin():
-            result = session.query(Employee).filter_by(id=id)
+
+            result = protected_filter(session, Employee).filter_by(id=id)
+
             if not result or result == []:
                 return jsonify({'message': 'The requested resource was not found on the server!'}), 404
             else:
@@ -137,7 +140,7 @@ def update_employee(id):
             
             # Attempt to verify that employee exists and update
             try:
-                session.query(Employee).filter_by(id=id).update(request.json)
+                protected_filter(session, Employee).filter_by(id=id).update(request.json)
             except IntegrityError as E:
                 return jsonify({'message': 'No employee found with that ID.'}), 404
 
@@ -220,7 +223,7 @@ def get_dept_clockins(id):
 def get_departments():
     with Session() as session:
         with session.begin():
-            result = session.query(Department).all()
+            result = protected_filter(session, Department).all()
             iterator = map(lambda res: res.as_dict(), result)
             return jsonify(list(iterator)), 200
 
@@ -254,7 +257,7 @@ def get_department(id):
         return jsonify({'message': 'Invalid department ID specified.'}), 400
     with Session() as session:
         with session.begin():
-            result = session.query(Department).filter_by(department_id=id).first()
+            result = protected_filter(session, Department).filter_by(department_id=id).first()
             if result is None:
                 return jsonify({'message': 'Department id not found.'}), 404
             else:
@@ -268,7 +271,7 @@ def delete_department(id):
         return jsonify({'message': 'Invalid department ID specified.'}), 400
     with Session() as session:
         with session.begin():
-            result = session.query(Department).filter_by(department_id=id)
+            result = protected_filter(session, Department).filter_by(department_id=id)
             if result is None:
                 return jsonify({'message': 'No department found with that ID!'}), 404
             else:
@@ -286,7 +289,7 @@ def update_department(id):
         return jsonify({'message': 'Invalid department ID specified.'}), 400
     with Session() as session:
         with session.begin():
-            result = session.query(Department).filter_by(department_id=id)
+            result = protected_filter(session, Department).filter_by(department_id=id)
 
             if result is None:
                 return jsonify({'message': 'No department found with that ID!'}), 404
@@ -302,6 +305,7 @@ def update_department(id):
 # Obtains a summary of all payroll for a given pay period. A department
 # can be specified to filter out this data.
 @employees.get('/employees/payroll')
+@token_required
 def get_payroll():
 
     # Represents the department ID query string, if one is provided.
@@ -342,6 +346,7 @@ def get_payroll():
 
 # Retrieves and returns hours
 @employees.get('/employees/hours')
+@token_required
 def get_hours():
     
     requested_department = request.args.get('department')

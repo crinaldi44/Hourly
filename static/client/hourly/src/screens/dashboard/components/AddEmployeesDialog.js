@@ -36,7 +36,7 @@ const AddEmployeesDialog = (props) => {
         'email': '',
         'password': '',
         'title': '',
-        'department_id': 1,
+        'department_id': "none",
         'pay_rate': 0.0,
         'covid_status': 'Healthy'
       })
@@ -47,7 +47,7 @@ const AddEmployeesDialog = (props) => {
             'email': '',
             'password': '',
             'title': '',
-            'department_id': 1,
+            'department_id': "none",
             'pay_rate': 0.0,
             'covid_status': 'Healthy'
           })
@@ -63,6 +63,7 @@ const AddEmployeesDialog = (props) => {
      * Adds the employee to the DB.
      */
     const addEmployee = () => {
+        if (responseObject.department_id === 'none') return
         EmployeeService.buildEmployee(responseObject).then(res => {
             props.onConfirm(res)
             if (res.status === 201) props.handleClose()
@@ -146,6 +147,7 @@ const AddEmployeesDialog = (props) => {
                         onChange={e => {handleChange(e, 'department_id')}}
                         value={responseObject.department_id}
                         >
+                            <MenuItem key={`none`} value="none"><i>Select a department...</i></MenuItem>
                         {departmentMenuItems}
                         </Select>
                     </FormControl>
