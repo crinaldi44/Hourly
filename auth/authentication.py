@@ -46,7 +46,7 @@ def validate_credentials(session, req):
             except NoResultFound as e:
                 return jsonify({'message': 'No department exists with that ID.'})
             else:
-                return jsonify({'message': 'You do not have the correct privileges. Please contact HR.'})
+                return jsonify({'message': 'You do not have the correct privileges. Please contact HR.'}), 403
         else:
             return jsonify({'message': 'Invalid employee ID or password.'}), 403
 

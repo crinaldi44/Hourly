@@ -42,9 +42,18 @@ class Authentication {
                 'password': password
             }
         }
-        let result = await axios.post('/login', options) // Initiate the request to the server.
-        localStorage.setItem('employee', result.data['token'])
-        return result // Return the server response
+
+        let result;
+
+        try {
+            result = await axios.post('/login', options)
+            localStorage.setItem('employee', result.data['token'])
+        } catch (error) {
+            if (error.response) { 
+                result = error.response 
+            }
+        }
+        return result
     }
 
     /**

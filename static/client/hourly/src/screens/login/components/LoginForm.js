@@ -55,16 +55,11 @@ const LoginForm = () => {
      */
     const handleSubmit = async e => {
         e.preventDefault();
-        try { 
-            let response = await authentication.authenticate(id, password).catch(err => {})
-            if (response.status === 200) navigate('/dashboard')
-            else {
-                setAlertMessage(response.data.message)
-                setAlertOpen(true)
-            }
-        } catch (error) {
-                setAlertMessage('An unknown error occurred.')
-                setAlertOpen(true)
+        let response = await authentication.authenticate(id, password)
+        if (response.status === 200) navigate('/dashboard')
+        else {
+            setAlertMessage(`${response.data.message}`)
+            setAlertOpen(true)
         }
     }
 
