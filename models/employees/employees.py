@@ -83,6 +83,7 @@ class Clockin(Base):
         return {
             'id': self.id,
             'employee_id': self.employee_id,
+            'employee_name': self.parent.name,
             'clockin_time': self.clockin_time,
             'clockout_time': self.clockout_time,
             'department': self.department.as_dict()

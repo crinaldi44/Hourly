@@ -32,7 +32,7 @@ class EmployeeService {
         let result;
 
         try {
-            result = axios.get(`/departments/${department}/clockin`, options)
+            result = await axios.get(`/departments/${department}/clockin`, options)
         } catch (error) {
             if (error.response) result = error.response
         }
