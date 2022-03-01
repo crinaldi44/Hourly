@@ -266,6 +266,7 @@ def get_department(id):
 
 # Deletes the specified department.
 @employees.delete('/employees/departments/<id>')
+@token_required
 def delete_department(id):
     if not int(id):
         return jsonify({'message': 'Invalid department ID specified.'}), 400
@@ -274,6 +275,8 @@ def delete_department(id):
             result = protected_filter(session, Department).filter_by(department_id=id)
             if result is None:
                 return jsonify({'message': 'No department found with that ID!'}), 404
+            if result.one().department_name == "Management" and result.one().department_id == 1:
+                return jsonify({'message': 'Cannot delete the default department!'}), 400
             else:
                 try:
                     result.delete()

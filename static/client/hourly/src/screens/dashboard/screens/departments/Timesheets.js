@@ -6,6 +6,7 @@ import {
     Typography,
     Chip,
 } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { DataGrid, GridToolbar, GridToolbarContainer } from '@mui/x-data-grid'
 import React, { useState, useEffect } from 'react'
 import useQuery from '../../../../hooks/navigation/query'
@@ -151,6 +152,7 @@ const Timesheets = () => {
             <Button sx={{ display: 'block', mt: 2 }} variant="contained" onClick={async () => {
                 if (selectedDepartment !== 'none') {
                     await fetchClockins(selectedDepartment);
+                    sessionStorage.setItem('dept', selectedDepartment)
                     setCurrentDepartment(departments.filter(dep => dep.department_id == selectedDepartment)[0])
                 }
             }}>RUN TIMESHEETS</Button>
@@ -199,19 +201,27 @@ const Timesheets = () => {
       ]
 
       const toolbar = () => {
-          return (<GridToolbarContainer>
+          return (<GridToolbarContainer sx={{display: 'flex', justifyContent: 'space-between'}}>
               <GridToolbar/>
+              <Button onClick={() => {
+                  sessionStorage.removeItem('dep')
+                  setCurrentDepartment()
+                  }}>
+                  <ArrowBackIcon fontSize='14px'/>
+                  Back</Button>
           </GridToolbarContainer>)
       }
 
     return (
-        !currentDepartment ? departmentSelector : <div style={{ height: '50vh', width: '100%', marginLeft: 'auto', marginRight: 'auto' }}><DataGrid
+        !currentDepartment ? departmentSelector : <div style={{ height: '50vh', width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
+            <DataGrid
             columns={columns}
             rows={clockins}
             checkboxSelection
             disableSelectionOnClick
             components={{Toolbar: toolbar}}
-        /></div>
+        />
+        </div>
   )
 }
 
