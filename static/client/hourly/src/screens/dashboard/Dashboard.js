@@ -1,10 +1,11 @@
 import React from "react";
 import NavigationBar from './components/NavigationBar'
-import {Routes, Route, Navigate, useLocation} from 'react-router-dom'
+import {Routes, Route, Navigate } from 'react-router-dom'
 import DashboardHomeScreen from "./screens/DashboardHomeScreen";
 import ManageEmployeesScreen from "./screens/ManageEmployeesScreen";
 import ProtectedRoute from '../../hooks/auth/components/ProtectedRoute'
 import DepartmentsScreen from "./screens/departments/DepartmentsScreen";
+import AccountSettingsScreen from "./screens/settings/AccountSettingsScreen";
 
 /**
  * Represents the Dashboard Screen.
@@ -29,6 +30,7 @@ const Dashboard = (props) => {
                         <Route path='/' exact element={<DashboardHomeScreen/>}/>
                         <Route path='/departments' exact element={<DepartmentsScreen/>}/>
                         <Route path='/manage' exact element={<ProtectedRoute element={<ManageEmployeesScreen/>}/>}/>
+                        <Route path='/settings' exact element={<ProtectedRoute element={<AccountSettingsScreen/>}/>}/>
                     </Routes>
                 </div>
         </div>

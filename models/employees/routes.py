@@ -377,3 +377,16 @@ def get_hours():
                 
                 return jsonify({'result': hours_sum})
 
+# Retrieves the budget for the specified department.
+@employees.get('/employees/budget/<id>')
+@token_required
+def get_budget(id):
+
+        with Session() as session:
+            with session.begin():
+                try:
+                    result = protected_filter(session, Department).filter_by(department_id=id).one()
+                except exc.NoResultFound as E:
+                    print(E)
+                    return jsonify({'message': 'No departments found with that ID.'}), 404
+                return jsonify(result.get_budget())

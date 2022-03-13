@@ -285,6 +285,57 @@ class EmployeeService {
 
     }
 
+    /**
+     * Gets the hours information for a specified department.
+     * @param {number} id represents the id of the department
+     */
+     async getDepartmentHours(id) {
+
+        let options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+        
+        let route = id ? `/employees/hours?department=${id}` : '/employees/hours'
+
+        let result;
+
+        try {
+            result = axios.get(route, options)
+        } catch (error) {
+            if (error.response) result = error.response
+        }
+
+        return result.data;
+
+    }
+
+    /**
+     * Gets budget information for the specified department.
+     * @param id {number} represents the id of the department
+     * @return {Promise<void>}
+     */
+    async getBudget(id) {
+        if (id) {
+            let options = {
+                headers: {
+                    'x-access-tokens': Authentication.getToken()
+                }
+            }
+
+            let result
+
+            try {
+                result = axios.get(`/employees/budget/${id}`, options)
+            } catch (error) {
+                if (error.response) result = error.response
+            }
+
+            return result.data
+        }
+    }
+
 
 }
 

@@ -51,7 +51,16 @@ class Department(Base):
     department_id = Column(Integer, primary_key=True, autoincrement=True)
     department_name = Column(String(255))
     manager_id = Column(Integer)
+    budget_id = Column(Integer, ForeignKey('budget.budget_id'))
+    budget = relationship('Budget')
     children = relationship('Employee')
+
+    # Retrieves the budget for the department, if one exists.
+    def get_budget(self):
+        try:
+            {'budget': self.budget.as_dict()}
+        except:
+            return {'budget': 'None'}
 
     # Represents a Department in dictionary form.
     def as_dict(self):
@@ -61,6 +70,26 @@ class Department(Base):
             "manager_id": self.manager_id
         }
 
+# A budget is a period of absolute maximum payroll amount for a
+# specific department. A budget can contain a maximum dollar
+# amount as well as a max dollar amount.
+class Budget(Base):
+    __tablename__ = "budget"
+    budget_id = Column(Integer, primary_key=True, autoincrement=True)
+    budget_hours = Column(Integer)
+    budget_dollars = Column(Float)
+    effective_date = Column(DateTime)
+    date_deleted = Column(DateTime)
+
+    # Represents a dictionary representation.
+    def as_dict(self):
+        return {
+            "budget_id": self.budget_id,
+            "budget_hours": self.budget_hours,
+            "budget_dollars": self.budget_dollars,
+            "effective_date": self.effective_date,
+            "date_deleted": self.date_deleted
+        }
 
 # A clockin is a transaction performed by an employee. Various
 # clock-ins are associated with an employee by

@@ -117,7 +117,7 @@ export default function PrimarySearchAppBar(props) {
     >
       <MenuItem onClick={() => pushNav('/dashboard/manage')}>Manage employees</MenuItem>
       <MenuItem onClick={() => pushNav('/dashboard/departments')}>Manage departments</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Account settings</MenuItem>
+      <MenuItem onClick={() => pushNav('/dashboard/settings')}>Account settings</MenuItem>
       <MenuItem onClick={signOut}>Sign out</MenuItem>
     </Menu>
   );
