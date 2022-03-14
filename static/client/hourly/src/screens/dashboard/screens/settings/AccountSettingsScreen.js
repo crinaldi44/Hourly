@@ -1,14 +1,58 @@
-import { Button, Card, CardActionArea, CardActions, CardHeader, TextField, Typography, Grid, Box } from '@mui/material'
+import { Button, Card, CardActionArea, CardActions, CardHeader, TextField, Typography, Grid, Box, Switch } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import Authentication from '../../../../hooks/auth/authentication'
 import EmployeeService from '../../../../services/EmployeeService'
 import Header from '../../components/Header'
 import useConfirmationDialog from '../../../../hooks/ui/Confirmation'
+import UserPreferences from '../../../../services/settings/UserPreferences'
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import { styled } from '@mui/material'
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+
+
 
 /**
  * Represents the account settings screen.
  **/ 
 const AccountSettingsScreen = () => {
+
+    const Accordion = styled((props) => (
+        <MuiAccordion disableGutters elevation={0} square {...props} />
+      ))(({ theme }) => ({
+        border: `1px solid ${theme.palette.divider}`,
+        '&:not(:last-child)': {
+          borderBottom: 0,
+        },
+        '&:before': {
+          display: 'none',
+        },
+      }));
+      
+      const AccordionSummary = styled((props) => (
+        <MuiAccordionSummary
+          expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+          {...props}
+        />
+      ))(({ theme }) => ({
+        backgroundColor:
+          theme.palette.mode === 'dark'
+            ? 'rgba(255, 255, 255, .05)'
+            : 'rgba(0, 0, 0, .03)',
+        flexDirection: 'row-reverse',
+        '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+          transform: 'rotate(90deg)',
+        },
+        '& .MuiAccordionSummary-content': {
+          marginLeft: theme.spacing(1),
+        },
+      }));
+      
+      const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+        padding: theme.spacing(2),
+        borderTop: '1px solid rgba(0, 0, 0, .125)',
+      }));
 
     /**
      * Represents the active user.
@@ -16,17 +60,35 @@ const AccountSettingsScreen = () => {
     const [user, setUser] = useState({})
 
     /**
+     * Represents whether the appbar switch is selected.
+     */
+    const [darkAppbar, setDarkAppbar] = useState(UserPreferences.get('appbarLight') || false)
+
+    /**
      * Gets the active user.
      */
-    const getActiveUser = () => {
-        console.log(Authentication.getActiveEmployee());
+    const getActiveUser = async () => {
+        let user = await EmployeeService.getEmployee(Authentication.getActiveEmployee().employee_id);
+        setUser(user);
     }
 
+    /**
+     * Saves the employee to the database.
+     */
+    const save = async () => {
+        let response = await EmployeeService.updateEmployee(user.employee_id, user);
+    }
+
+    // Represents action taken when the component re-renders.
     useEffect(() => {
       getActiveUser();
     }, [])
 
-    const [setOpen, setTitle, setMessage, ConfirmationDialog] = useConfirmationDialog(() => {console.log('test')});
+    /**
+     * Creates and establishes a confirmation dialog.
+     */
+    const [setOpen, setTitle, setMessage, ConfirmationDialog] = useConfirmationDialog(() => {UserPreferences.reset();});
+    
     
     /**
      * Represents the styling for each component.
@@ -50,14 +112,8 @@ const AccountSettingsScreen = () => {
     }
 
     /**
-     * Handles action taken when save is clicked.
-     */
-    const handleSave = async () => {
-        // TODO: Implement API call.
-    }
-
-    /**
-     * Handles resetting.
+     * Handles action taken when settings are reset. Taps the local settings helper
+     * class to reset all active settings.
      */
     const handleReset = () => {
         setTitle('Are you sure?')
@@ -71,31 +127,47 @@ const AccountSettingsScreen = () => {
             Settings
         </Header>
         <Typography sx={styles.sectionHeader}><strong>Account</strong></Typography>
-        <Card sx={styles.mainSettings}>
-                <CardHeader>
-                    <Typography color="primary">My Profile</Typography>
-                </CardHeader>
-                <Grid container>
-                    <Grid item sx={styles.settingsDescription}>
-                        <Typography>
-                            <strong>Password</strong>
-                            <br/>
-                            Edit
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Typography>Edit your profile, including your password, avatar, and more.</Typography>
-                <TextField type="password" placeholder='Enter updated password'/>
+            <Card sx={styles.mainSettings}>
+                <Accordion>
+                    <AccordionSummary>
+                        <Typography sx={{mr: '1em', flexShrink: 0}}>Password</Typography>
+                        <Typography sx={{color: 'text.secondary'}}>Enter a new password for your account.</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TextField fullWidth variant='outlined' placeholder='Enter password...' type='password' />
+                    </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                    <AccordionSummary>
+                        <Typography sx={{mr: '1em', flexShrink: 0}}>Personal Info</Typography>
+                        <Typography sx={{color: 'text.secondary'}}>Manage your personal information.</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TextField fullWidth placeholder='Enter your name, first and last...'/>
+                    </AccordionDetails>
+                </Accordion>
                 <CardActions>
-                    <Button>Save</Button>
+                    <Button variant='contained'>Save</Button>
                 </CardActions>
-        </Card>
+                </Card>
         <Typography sx={styles.sectionHeader}><strong>Appearance</strong></Typography>
-        <Card sx={styles.mainSettings}>
-            <CardActions>
-                <Button>Save</Button>
-            </CardActions>
-        </Card>
+        <Box sx={styles.mainSettings}>
+            <Accordion expanded={true}>
+                <AccordionSummary>
+                    <Typography sx={{mr: '10em', flexShrink: 0}}>Use light appbar</Typography>
+                    <Typography sx={{color: 'text.secondary'}}>Change to the light side.</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Switch
+                        checked={darkAppbar}
+                        onChange={(event) => {
+                            setDarkAppbar(event.target.checked)
+                            UserPreferences.save('appbarLight', event.target.checked)
+                        }}
+                    />
+                </AccordionDetails>
+            </Accordion>
+        </Box>
         {ConfirmationDialog}
       </>
   )

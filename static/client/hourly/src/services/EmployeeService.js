@@ -41,6 +41,30 @@ class EmployeeService {
     }
 
     /**
+     * Gets employee details.
+     * @param {number} id represents the ID of the employee
+     */
+    async getEmployee(id) {
+        let options = {
+            headers: {
+                'x-access-tokens': Authentication.getToken()
+            }
+        }
+
+        let response;
+
+        try {
+            response = await axios.get(`/employees/${id}`, options)
+        } catch (err) {
+            if (err.response) { 
+                response = err.response
+            }
+        }
+        
+        return response
+    }
+
+    /**
      * Builds an employee an sends to the database. Specifies the auth token
      * in the header.
      * @param {JSON} employee represents an employee in JSON form to send
