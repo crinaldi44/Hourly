@@ -26,11 +26,11 @@ const Dashboard = (props) => {
             <NavigationBar sx={{position: 'sticky'}}/>
                 <div style={{flexGrow: 1, backgroundColor: 'var(--offwhite)'}}>
                     <Routes>
-                        <Route path='/*' element={defaultRoute}/>
-                        {/* <Route path='/' exact element={<DashboardHomeScreen/>}/> */}
-                        <Route path='/' exact element={<Navigate to={{
+                        {/* <Route path='/*' element={defaultRoute}/> */}
+                        <Route path='/' exact element={<DashboardHomeScreen/>}/>
+                        {/* <Route path='/' exact element={<Navigate to={{
                             pathname: '/dashboard/manage'
-                        }}/>}/>
+                        }}/>}/> */}
                         <Route path='/departments' exact element={<DepartmentsScreen/>}/>
                         <Route path='/manage' exact element={<ProtectedRoute element={<ManageEmployeesScreen/>}/>}/>
                         <Route path='/settings' exact element={<ProtectedRoute element={<AccountSettingsScreen/>}/>}/>

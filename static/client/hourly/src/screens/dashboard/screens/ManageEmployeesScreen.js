@@ -8,6 +8,7 @@ import useToast from '../../../hooks/ui/Toast'
 import EmployeeService from '../../../services/EmployeeService';
 import useConfirmationDialog from '../../../hooks/ui/Confirmation';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { AddCircle } from '@mui/icons-material';
 
 /**
  * The ManageEmployesScreen is meant to display a table of all active employees
@@ -185,7 +186,7 @@ const ManageEmployeesScreen = () => {
       <div className='manage-header'>
         <div className='manage-add'>
           <h1 style={{display: 'inline-block', textAlign: 'left', color: 'var(--primary-dark)'}}>Manage Employees</h1>
-          <Button onClick={(handleOpenAdd)} variant="contained">+ Add Employee</Button>
+          <Button onClick={(handleOpenAdd)} startIcon={<AddCircle/>} variant="contained">Add Employee</Button>
         </div>
 
       </div>

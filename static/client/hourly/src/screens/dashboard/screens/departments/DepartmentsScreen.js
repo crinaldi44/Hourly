@@ -1,3 +1,4 @@
+import { AddCircle } from '@mui/icons-material';
 import {
     Typography,
     Box,
@@ -31,7 +32,7 @@ const DepartmentsScreen = () => {
 
   return <>
     <Header
-        action={<Button variant='contained' onClick={handleAddDeptOpen}>Add Department</Button>}
+        action={<Button variant='contained' startIcon={<AddCircle/>} onClick={handleAddDeptOpen}>Add Department</Button>}
     >Manage Departments</Header>
     <TabView sx={{width: '95%', ml: 'auto', mr: 'auto'}}>
         <Box label='Departments'>

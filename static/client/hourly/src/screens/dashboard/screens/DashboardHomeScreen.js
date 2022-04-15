@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Header from "../components/Header";
 import {
-  Paper,
   Grid,
   Typography,
-  Box,
+  Card,
+  CardContent,
+  Container,
+  CardActions,
+  Button,
 } from '@mui/material'
 import TabView from '../components/TabView'
 import Authentication from '../../../hooks/auth/authentication'
 import EmployeeService from '../../../services/EmployeeService';
+import { ChargingStation, LeaderboardTwoTone, RequestPage } from '@mui/icons-material';
+import DiagramImage from '../../../assets/images/diagram.png'
 
 /**
  * Represents the Dashboard Home Screen.
@@ -78,43 +83,63 @@ const DashboardHomeScreen = () => {
 
 
   return (<>
-      <Grid container direction='column' pt={5} height={'100%'}>
-        <Grid item>
-          <Grid container width='97%' columnGap={2} margin="auto" direction='row'>
-            <Grid item xs>
-              <Paper sx={{borderRadius: 0.3, pl: 2, pt: 2, pr: 2}}>
-                <Typography fontWeight={600} textAlign='left'>Pay Period Overview</Typography>
-                <Grid container direction="row" justifyContent='space-between' p={2}>
-                  <Grid item>
-                    <Typography>Budget Amount</Typography>
-                    <Typography>$2,450/$3,500</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography>Hourly Amount</Typography>
-                    <Typography>{`${payrollHours.actual || '0'}/${payrollHours.goal}`}</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography>Shifts Remaining</Typography>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-            <Grid item xs={5}>
-              <Paper sx={{borderRadius: 0.3}}>
-                <Typography color="var(--primary-dark)" fontWeight={600} textAlign='left'>Employee Timesheets</Typography>
-              </Paper>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item>
-          <Paper sx={{width: '97%', m: 'auto'}}>
-              <TabView>
-                <Box label="Payroll"></Box>
-                <Box label="Timesheets"></Box>
-              </TabView>
-          </Paper>
-        </Grid>
+    <Container maxWidth={'xl'}>
+      <Grid container direction={'row'} spacing={2}>
+        <Grid item xs={6}>
+      <Card square sx={{textAlign: 'left', mt: 5, height: '90%'}}>
+                <CardContent>
+                  <LeaderboardTwoTone color='primary'/>
+                  <Typography variant='h5'>
+                    Overview
+                  </Typography>
+                  <Typography variant='body2' color='textSecondary'>Application Structure</Typography>
+                  <br/>
+                  <Typography maxWidth={800}>
+                    This application is a "full-stack" web application. The frontend is a React application wrapped with a component library called Material-UI (Google theme). The backend is Python-based and is run on a library called Flask. The Flask backend uses a library called SQLAlchemy to connect to a MySQL database.
+                  </Typography>
+                  <br/>
+                </CardContent>
+                <CardActions>
+                  <Button variant='outlined'>View Host</Button>
+                </CardActions>
+      </Card>
       </Grid>
+      <Grid item xs={6}>
+      <Card square sx={{textAlign: 'left', mt: 5, height: '90%'}}>
+                <CardContent>
+                  <RequestPage color='primary'/>
+                  <Typography variant='h5'>
+                    Walkthrough
+                  </Typography>
+                  <Typography variant='body2' color='textSecondary'>How does it work?</Typography>
+                  <br/>
+                  <Typography maxWidth={800}>
+                    Like any web app, your browser will request the entire "front end" (React app) from the server, which will send it over to us. Then, whenever you interact with the application, we make a request to the server to either perform some business logic or interact with the database. The server will perform the request and send back a response, which is used to display the data.
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button variant='outlined'>See In Action</Button>
+                </CardActions>
+      </Card>
+      </Grid>
+      <Grid item xs={12}>
+      <Card square sx={{textAlign: 'left'}}>
+                <CardContent>
+                  <ChargingStation color='primary'/>
+                  <Typography variant='h5'>
+                    Diagram
+                  </Typography>
+                  <Typography variant='body2' color='textSecondary'>View Below</Typography>
+                  <br/>
+                  <Typography maxWidth={800}>
+                    Below is a diagram of the request-response cycle of the application:
+                  </Typography>
+                  <img src={DiagramImage} width={550} height={150}/>
+                </CardContent>
+      </Card>
+      </Grid>
+      </Grid>
+      </Container>
     </>);
 
 };
