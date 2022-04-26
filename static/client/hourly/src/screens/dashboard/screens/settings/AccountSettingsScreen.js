@@ -1,4 +1,4 @@
-import { Button, Card, CardActionArea, CardActions, CardHeader, TextField, Typography, Grid, Box, Switch } from '@mui/material'
+import { Button, Card, CardActionArea, CardActions, CardHeader, TextField, Typography, Grid, Box, Switch, Container, CardContent } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import Authentication from '../../../../hooks/auth/authentication'
 import EmployeeService from '../../../../services/EmployeeService'
@@ -95,14 +95,15 @@ const AccountSettingsScreen = () => {
      */
     const styles = {
         mainSettings: {
-            maxWidth: '95%',
-            ml: 'auto',
-            mr: 'auto',
-            mt: '15px'
+            // maxWidth: '95%',
+            // ml: 'auto',
+            // mr: 'auto',
+            // mt: '15px'
+            textAlign: 'left',
         },
         sectionHeader: {
-            ml: 4,
             mt: '20px',
+            mb: '10px',
             textAlign: 'left',
             color: '#636363'
         },
@@ -122,30 +123,21 @@ const AccountSettingsScreen = () => {
     }
 
   return (
-      <>
+      <Container maxWidth={'xl'}>
         <Header action={<Button variant='contained' onClick={handleReset}>Reset to Defaults</Button>}>
             Settings
         </Header>
         <Typography sx={styles.sectionHeader}><strong>Account</strong></Typography>
             <Card sx={styles.mainSettings}>
-                <Accordion>
-                    <AccordionSummary>
-                        <Typography sx={{mr: '1em', flexShrink: 0}}>Password</Typography>
-                        <Typography sx={{color: 'text.secondary'}}>Enter a new password for your account.</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <TextField fullWidth variant='outlined' placeholder='Enter password...' type='password' />
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                    <AccordionSummary>
-                        <Typography sx={{mr: '1em', flexShrink: 0}}>Personal Info</Typography>
-                        <Typography sx={{color: 'text.secondary'}}>Manage your personal information.</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <TextField fullWidth placeholder='Enter your name, first and last...'/>
-                    </AccordionDetails>
-                </Accordion>
+              <CardContent>
+                <Grid container>
+                  <Grid item>
+                    <Typography>Themes</Typography>
+                    <Typography color='textSecondary'>Open Google Chrome Web Store</Typography>
+                  </Grid>
+                  <Grid item></Grid>
+                </Grid>
+              </CardContent>
                 <CardActions>
                     <Button variant='contained'>Save</Button>
                 </CardActions>
@@ -169,7 +161,7 @@ const AccountSettingsScreen = () => {
             </Accordion>
         </Box>
         {ConfirmationDialog}
-      </>
+        </Container>
   )
 }
 
