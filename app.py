@@ -1,8 +1,11 @@
 from flask import Flask, render_template
 from models.employees.routes import employees
 from auth.authentication import authentication
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+CORS(app)
 
 app.register_blueprint(employees)
 app.register_blueprint(authentication)
@@ -25,4 +28,6 @@ def present_dashboard():
 
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get('PORT', 5000))
+    bind_address = '0.0.0.0:' + str(port)
+    app.run(host=bind_address)

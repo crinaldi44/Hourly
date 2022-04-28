@@ -1,6 +1,7 @@
 import axios from "axios"
 import Authentication from '../hooks/auth/authentication'
 import ApiResponseError from './ApiResponseError'
+import constants from "./constants";
 
 /**
  * The employee service manages communication with the API endpoints in a restful fashion.
@@ -32,7 +33,7 @@ class EmployeeService {
         let result;
 
         try {
-            result = await axios.get(`/departments/${department}/clockin`, options)
+            result = await axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/departments/${department}/clockin`, options)
         } catch (error) {
             if (error.response) result = error.response
         }
@@ -54,7 +55,7 @@ class EmployeeService {
         let response;
 
         try {
-            response = await axios.get(`/employees/${id}`, options)
+            response = await axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/${id}`, options)
         } catch (err) {
             if (err.response) { 
                 response = err.response
@@ -80,7 +81,7 @@ class EmployeeService {
         let response;
 
         try {
-            response = await axios.post('/employees', employee, options)
+            response = await axios.post(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + '/employees', employee, options)
         } catch (err) {
             if (err.response) { 
                 response = err.response
@@ -105,7 +106,7 @@ class EmployeeService {
         let response;
 
         try {
-            response = await axios.delete(`/employees/${id}`, options)
+            response = await axios.delete(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/${id}`, options)
         } catch (err) {
             if (err.response) {
                 response = err.response
@@ -130,7 +131,7 @@ class EmployeeService {
         let response;
 
         try {
-            response = await axios.patch(`/employees/${id}`, employee, options)
+            response = await axios.patch(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/${id}`, employee, options)
         } catch (err) {
             if (err.response) {
                 response = err.response
@@ -153,7 +154,7 @@ class EmployeeService {
             }
         }
 
-        const response = await axios.get('/employees', options)
+        const response = await axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + '/employees', options)
 
         if (!(this.successStatus.includes(response.status))) { 
             throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
@@ -177,7 +178,7 @@ class EmployeeService {
         let response
         
         try {
-            response = await axios.get(`/employees?department=${id}`, options)
+            response = await axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees?department=${id}`, options)
         } catch (error) {
             if (error.response) {
                 response = error.response
@@ -199,7 +200,7 @@ class EmployeeService {
             }
         }
 
-        const response = await axios.get('/employees/departments', options)
+        const response = await axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + '/employees/departments', options)
 
         if (!(this.successStatus.includes(response.status))) {
             throw new ApiResponseError(response.status, response.data, `The server responded with error code ${response.status}`)
@@ -227,7 +228,7 @@ class EmployeeService {
         let response;
         
         try {
-            response = await axios.post('/employees/departments', department, options)
+            response = await axios.post(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + '/employees/departments', department, options)
         } catch (error) {
             if (error.response) response = error.response   
         }
@@ -249,7 +250,7 @@ class EmployeeService {
         let response
         
         try {
-            response = await axios.patch(`/employees/departments/${department.department_id}`, department, options)
+            response = await axios.patch(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/departments/${department.department_id}`, department, options)
         } catch (err) {
             if (err.response) {
                 response = err.response
@@ -272,7 +273,7 @@ class EmployeeService {
 
         let response;
         try {
-            response = await axios.delete(`/employees/departments/${id}`, options)   
+            response = await axios.delete(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/departments/${id}`, options)
         } catch (error) {
             if (error.response) {
                 response = error.response
@@ -300,7 +301,7 @@ class EmployeeService {
         let result;
 
         try {
-            result = axios.get(route, options)
+            result = axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + route, options)
         } catch (error) {
             if (error.response) result = error.response
         }
@@ -326,7 +327,7 @@ class EmployeeService {
         let result;
 
         try {
-            result = axios.get(route, options)
+            result = axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + route, options)
         } catch (error) {
             if (error.response) result = error.response
         }
@@ -351,7 +352,7 @@ class EmployeeService {
             let result
 
             try {
-                result = axios.get(`/employees/budget/${id}`, options)
+                result = axios.get(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/budget/${id}`, options)
             } catch (error) {
                 if (error.response) result = error.response
             }

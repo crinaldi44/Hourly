@@ -1,4 +1,5 @@
 import axios from 'axios'
+import constants from "../../services/constants";
 
 /**
  * Represents the authentication state of the client side. Stores
@@ -46,7 +47,7 @@ class Authentication {
         let result;
 
         try {
-            result = await axios.post('/login', options)
+            result = await axios.post(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + '/login', options)
             localStorage.setItem('employee', result.data['token'])
         } catch (error) {
             if (error.response) { 

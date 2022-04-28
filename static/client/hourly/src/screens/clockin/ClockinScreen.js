@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 import ToastAlert from '../../components/ToastAlert'
 import Logo from '../../assets/images/logo-light.png'
 import axios from "axios";
+import constants from "../../services/constants";
 
 /**
  * Represents the first screen displayed when the user navigates to the application.
@@ -68,7 +69,7 @@ class ClockinScreen extends React.Component {
         if (this.state.employeeId === '') return
 
         try {
-            result = await axios.post(`/employees/${this.state.employeeId}/clockin`)
+            result = await axios.post(constants.PRODUCTION_MODE ? constants.PROD_BASE : constants.DEV_BASE + `/employees/${this.state.employeeId}/clockin`)
         } catch (err) {
             if (err.response) result = err.response
             else {
