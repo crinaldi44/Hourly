@@ -11,8 +11,7 @@ app.register_blueprint(authentication)
 app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
 app.config['PRODUCTION'] = False
 app.config['DEV_DATABASE_URI'] = 'mysql+pymysql://root:test123@localhost:3306/employees'
-app.config['DEV_DATABASE_URI2'] = 'mysql+pymysql://crinaldi:7539mmr@localhost:3306/hourly'
-app.config['PROD_DATABASE_URI'] = 'mysql+pymysql://root:test123@localhost:3306/employees' # Update for production
+app.config['PROD_DATABASE_URI'] = 'mysql+pymysql://admin:testing123456@database-1.cicovww9r07h.us-east-1.rds.amazonaws.com:3306/employees' # Update for production
 
 
 @app.route('/')

@@ -1,7 +1,6 @@
 from pickletools import float8
 import sys
 from email import message
-from tkinter import E
 from tokenize import Double, Floatnumber, Number
 from unittest import result
 from pymysql import IntegrityError
