@@ -3,3 +3,4 @@ Flask_Cors==3.0.10
 PyJWT==2.3.0
 PyMySQL==1.0.2
 SQLAlchemy==1.4.31
+gunicorn
