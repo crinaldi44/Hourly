@@ -6,11 +6,14 @@ from datetime import timedelta, datetime
 import jwt
 from flask import current_app
 from functools import wraps
+from flask_cors import CORS
 
 from models.employees.employees import Department, Employee
 from models.database import Session
 
 authentication = Blueprint('authentication', __name__, template_folder='templates')
+
+CORS(authentication)
 
 
 # Validates user credentials, returns True or

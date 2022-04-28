@@ -3,6 +3,7 @@ import sys
 from email import message
 from tokenize import Double, Floatnumber, Number
 from unittest import result
+from flask_cors import CORS
 from pymysql import IntegrityError
 
 import sqlalchemy.exc
@@ -14,6 +15,8 @@ from models.database import Session
 from models.employees.employees import Department, Employee, Clockin
 
 employees = Blueprint('employees', __name__, template_folder='templates')
+
+CORS(employees)
 
 # TODO: Encrypt password with passlib.
 # TODO: All CRUD-type routes must be secured with JWT, with the exception of clockin.
