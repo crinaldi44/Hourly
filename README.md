@@ -51,6 +51,34 @@ will be able to view and edit data - including payroll and employees - for ANY d
 is protected at the server API level with a security token to prevent employees from accessing
 any restricted data.
 
+# Cross-Cutting
+This directory contains general-purpose functionality for use across each domain.
+
+## Exception Handling
+This project utilizes Flask's error handling capabilities to streamline the process of handling various errors
+within the application. Any exception that occurs within the application is returned to the user in
+the response as a streamlined dict for ease of error-handling within the frontend.
+
+Within the exception directory, there is an HourlyException class that you may raise. The constructor
+takes the error code as an argument. You will find the mapping of error codes to error code metadata 
+within the exception directory.
+
 # TODO
-Add routes for payroll reporting*
-Add calculations for employee hours
+* Add routes for payroll reporting*
+* Add calculations for employee hours
+* Add machine learning model to predict cost and expenses of an employee based on number of events serviced within the past month and the price per event
+* Add event types route
+* Add events route
+* Add checks for request size get_data() > 1000 as well as request flooding
+* Event Schema:
+  * name
+  * date
+  * employee_id
+  * created_by
+* Companies Schema
+  * Each user associated with a company ID
+  * Only ones affected are company manager and Employee - only see info about company
+  * Only company managers can see event package edit, departments, etc.
+  * Departments should have a company ID associated
+  * Admin and developer see anything - special forms eventually to add to ANY company or view
+  * Company manager has access to change clockin method per company
