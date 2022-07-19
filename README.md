@@ -82,3 +82,6 @@ within the exception directory.
   * Departments should have a company ID associated
   * Admin and developer see anything - special forms eventually to add to ANY company or view
   * Company manager has access to change clockin method per company
+* Data Visualization
+  * Utilize DevExpress Reactive Charts for Data Visualization
+  * For scheduling, utilize DevExpress Reactive Scheduler
