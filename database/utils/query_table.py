@@ -29,7 +29,7 @@ def query_table(model: Base, page=None, offset=None, limit=None, sort=None, incl
             if kwargs is not None:
                 resultant_rows = resultant_rows.filter_by(**kwargs)
             if include_totals is not None:
-                count = resultant_rows.count()
+                count = resultant_rows._total_count()
             if sort is not None:
                 sorting_criteria = {
                     "^": "asc",

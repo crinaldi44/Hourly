@@ -1,4 +1,4 @@
-from crosscutting.response.response import serve_response
+from crosscutting.response.list_response import serve_response, ListResponse
 from database.utils import query_table
 from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
@@ -16,26 +16,28 @@ CORS(roles)
 @roles.get('/roles')
 @token_required
 def get_all_roles():
-    return serve_response(message="Success", status=200, data=query_table.query_table(Roles, **request.args))
+    results, count = Roles.query_table(**request.args)
+    return ListResponse(records=results, total_count=count)
+
 
 @roles.get('/roles/<id>')
 @token_required
 def get_role_by_id(id):
-    result = query_table.query_table(Roles, id=id)
+    result, count = Roles.query_table(id=id)
 
-    if len(result) == 0:
+    if count == 0:
         raise HourlyException('err.hourly.RoleNotFound')
     else:
-        return serve_response(message="Success", status=200, data=result)
+        return ListResponse(records=result)
 
 
 @roles.post('/roles')
 @token_required
 def add_role():
     data = request.get_json()
-    if not query_table.validate_model(Roles, data):
+    if not Roles.validate_model(data):
         raise HourlyException('err.hourly.BadRoleFormatting')
-    query_table.add_row(Roles, data);
+    Roles.add_row(data);
     return serve_response(message="Success", status=201)
 
 
@@ -46,10 +48,10 @@ def delete_role(role_id):
         int(role_id)
     except:
         raise HourlyException('err.hourly.RoleNotFound')
-    role_match = query_table.query_table(Roles, id=role_id)
+    role_match, count = Roles.query_table(id=role_id)
 
-    if len(role_match) == 0:
+    if count == 0:
         raise HourlyException('err.hourly.RoleNotFound')
     else:
-        query_table.delete_row(Roles, uid=role_id)
+        Roles.delete_row(id=role_id)
         return serve_response(message="Successfully deleted role.", status=204)

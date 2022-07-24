@@ -1,15 +1,12 @@
 # Hourly
- An in-class project for timesheet and payroll management.
+ Originally intended as in-class project for timesheet and payroll management, the Hourly cloud service
+is an API that is intended to provide calculations and machine-learning based predictions to the user on
+top of Create-Read-Update-Delete functionality. 
 
 # Getting Started
 
 ## Pre-requisites
-This project is managed by the Node Package Manager (referred to as NPM). To get this project up
-and running, you'll need to ensure that the latest version of NPM as well as the latest version
-of python3 and pip3 are up and running.
-
-For the client side, a package.json file has been provided. Simply cd into the client directory
-and use npm install to install all client-side dependencies. 
+To get this project up and running, you'll need to ensure the latest version of python3 and pip3 are up and running.
 
 For the server side, a requirements.txt file has been included. By default, it is recommended to
 install a python3 virtualenv folder in the home directory to avoid conflicts with other projects.
@@ -20,6 +17,19 @@ OR
 venv/Scripts/activate (Windows Powershell/GitBash)
 
 And pip3 install each of the required dependencies.
+
+## Structure of the Cloud
+The cloud is based on Python's Flask library. The application leverages a domain-driven design for separation of
+concerns. Each domain follows a routes/tests/utils pattern with the model for that particular route being
+at the base level directory. The routes.py file within the routes folder serves to route and manipulate the data,
+with several helper functions being contained within the model files. Additionally, unit tests are provided in the
+tests folder and should be updated each time a new route has been added. You may run a script to validate all tests
+at once. Unit tests should be batch-run by this method before each deployment.
+
+## Security
+You may protect routes that require a token with the @token_required wrapper, and the service will ensure that a token 
+is passed and validated. The token will expire after the default expiration time OR when the service has been restarted,
+as tokens are measured against their issued at time and compared with the system start time.
 
 ## Running the application
 The application hosts all build/start scripts from the client side. Simply run the following commands:
@@ -82,6 +92,7 @@ within the exception directory.
   * Departments should have a company ID associated
   * Admin and developer see anything - special forms eventually to add to ANY company or view
   * Company manager has access to change clockin method per company
+  * Validate each model as well as user's company, role and department in JWT
 * Data Visualization
   * Utilize DevExpress Reactive Charts for Data Visualization
   * For scheduling, utilize DevExpress Reactive Scheduler

@@ -144,4 +144,33 @@ err_codes = {
             "title": "PackageExists",
             "suggestion": "Please modify and re-attempt your request."
         },
+
+        "err.hourly.CompanyNotFound": {
+            "status": 404,
+            "message": "No company was found by that ID.",
+            "title": "CompanyNotFound",
+            "suggestion": "Please check the ID of the company and re-attempt your query."
+        },
+
+        "err.hourly.BadCompanyFormatting": {
+            "status": 422,
+            "message": "Invalid company formatting specified.",
+            "title": "BadCompanyFormatting",
+            "suggestion": "Please verify all fields have been included and re-attempt your request."
+        },
+
+        "err.hourly.CompanyExists": {
+            "status": 409,
+            "message": "A company already exists by that name!",
+            "title": "CompanyExists",
+            "suggestion": "Please modify and re-attempt your request."
+        },
+
+        "err.hourly.InvalidCompanyDelete": {
+            "status": 400,
+            "message": "Invalid company deletion.",
+            "title": "InvalidCompanyDelete",
+            "suggestion": "Please check the company and re-attempt your deletion request."
+        },
+
 }

@@ -65,7 +65,7 @@ def generate_auth_token(user: Employee):
 
     return jwt.encode({'employee_id': user.id,
                        'department_id': user.department_id,
-                       'department_name': user.as_dict()['department']['department_name'],
+                       'company_id': user.company_id,
                        'name': user.name,
                        'role': user.role_id,
                        'iat': current_time_utc,
@@ -82,7 +82,7 @@ def protected_filter(session, model):
         payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
     else:
         return jsonify({'message': 'Token is missing or invalid.'})
-    if payload['department_id'] == 1 and payload['department_name'] == 'Management':
+    if payload['department_id'] == 1:
         return session.query(model)
     else:
         return session.query(model).filter_by(department_id=payload['department_id'])

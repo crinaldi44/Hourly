@@ -2,7 +2,7 @@ from flask_cors import CORS
 from pymysql import IntegrityError
 
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.response import serve_response
+from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required, protected_filter, validate_credentials
 from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
@@ -30,20 +30,14 @@ CORS(employees)
 @employees.get('/employees')
 @token_required
 def get_employees():
-    results, count = query_table.query_table(Employee, **request.args)
-    response = results
-    if count is not None:
-        response = {
-            "total_records": count,
-            "records": results,
-        }
-    return serve_response('Success', data=response, status=200)
+    results, count = Employee.query_table(**request.args)
+    return ListResponse(records=results, total_count=count).serve()
 
 # Retrieves an employee by their identifier.
 @employees.get('/employees/<id>')
 @token_required
 def get_employee(id):
-    result = query_table.query_table(Employee, id=id)
+    result, count = Employee.query_table(id=id)
     if len(result) == 0:
         raise HourlyException('err.hourly.UserNotFound')
     else:
@@ -62,13 +56,13 @@ def add_employee():
         raise HourlyException('err.hourly.BadUserFormatting',
                               message='The content type must be provided as JSON or the request was too large.')
 
-    validate_department = query_table.query_table(Department, id=data['department_id'])
+    validate_department = Department.query_table(id=data["department_id"])
 
     if len(validate_department) == 0:
         raise HourlyException('err.hourly.DepartmentNotFound')
 
     pay_rate = float(data['pay_rate'])  # Validate the pay rate is a valid float.
-    query_table.add_row(Employee, data)
+    Employee.add_row(data)
     return serve_response(message="Successfully added employee to the database!", status=201)
 
 
@@ -80,7 +74,7 @@ def signup_employee():
 
     new_employee = {"email": email, "password": password, "department_id": department_id, "role_id": 1,
                     "pay_rate": pay_rate}
-    query_table.add_row(Employee, new_employee)
+    Employee.add_row(new_employee)
     return serve_response(message='Success! Employee has been entered into the registry.', status=201)
 
 

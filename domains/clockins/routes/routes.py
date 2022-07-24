@@ -2,8 +2,8 @@ from database.utils import query_table
 
 from domains.employees.employees import Clockin
 
-from crosscutting.response.response import serve_response
-from database.utils.query_table import query_table, delete_row
+from crosscutting.response.list_response import serve_response
+from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
 from flask_cors import CORS
@@ -19,18 +19,19 @@ CORS(clockins)
 @clockins.get('/clockins')
 @token_required
 def get_all_clockins():
-    return serve_response(message="Success", status=200, data=query_table(Clockin, **request.args))
+    results, count = Clockin.query_table(**request.args, include_totals=True)
+    return ListResponse(records=Clockin.query_table(**request.args), total_count=count).serve()
 
 
 @clockins.get('/clockins/<id>')
 @token_required
 def get_clockin_by_id(id):
-    result = query_table(Clockin, id=id)
+    result = Clockin.query_table(id=id)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.ClockinNotFound')
     else:
-        return serve_response(message="Success", status=200, data=result)
+        return ListResponse(records=result).serve()
 
 
 @clockins.delete('/clockins/<clockin_id>')
@@ -41,11 +42,11 @@ def delete_clockin(clockin_id):
     except:
         raise HourlyException('err.hourly.ClockinNotFound')
 
-    clockin_match = query_table(Clockin, id=clockin_id)
+    clockin_match = Clockin.query_table(id=clockin_id)
     if len(clockin_match) == 0:
         raise HourlyException('err.hourly.ClockinNotFound')
     else:
-        delete_row(Clockin, uid=clockin_id)
+        Clockin.delete_row(id=clockin_id)
         return serve_response(message="Successfully deleted clockin.", status=204)
 
 

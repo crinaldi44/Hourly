@@ -1,5 +1,4 @@
-from crosscutting.response.response import serve_response
-from database.utils import query_table
+from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
 from flask_cors import CORS
@@ -16,37 +15,31 @@ CORS(packages)
 @packages.get('/packages')
 @token_required
 def get_all_packages():
-    results, count = query_table.query_table(Package, **request.args)
-    response = results
-    if count is not None:
-        response = {
-            "total_records": count,
-            "records": results,
-        }
-    return serve_response(message="Success", status=200, data=response)
+    results, count = Package.query_table(**request.args)
+    return ListResponse(records=results, total_count=count).serve()
 
 
 @packages.get('/packages/<id>')
 @token_required
 def get_package_by_id(id):
-    result = query_table.query_table(Package, id=id)
+    result, count = Package.query_table(id=id)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.PackageNotFound')
     else:
-        return serve_response(message="Success", status=200, data=result)
+        return ListResponse(data=result).serve()
 
 
 @packages.post('/packages')
 @token_required
 def add_package():
     data = request.get_json()
-    if not query_table.validate_model(Package, data):
+    if not Package.validate_model(data):
         raise HourlyException('err.hourly.BadPackageFormatting')
-    package_exists = query_table.query_table(Package, name=data['name'])
-    if len(package_exists) > 0:
+    package_exists, count = Package.query_table(name=data['name'])
+    if count > 0:
         raise HourlyException('err.hourly.PackageExists')
-    query_table.add_row(Package, data);
+    Package.add_row(data);
     return serve_response(message="Success", status=201)
 
 
@@ -57,10 +50,10 @@ def delete_package(package_id):
         int(package_id)
     except:
         raise HourlyException('err.hourly.PackageNotFound')
-    package_match = query_table.query_table(Package, id=package_id)
+    package_match = Package.query_table(id=package_id)
 
     if len(package_match) == 0:
         raise HourlyException('err.hourly.PackageNotFound')
     else:
-        query_table.delete_row(Package, uid=package_id)
+        Package.delete_row(id=package_id)
         return serve_response(message="Successfully deleted package.", status=204)

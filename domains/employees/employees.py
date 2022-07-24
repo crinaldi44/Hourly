@@ -1,12 +1,119 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text
 from sqlalchemy.orm import relationship
 from database.database import engine, Base, Session
 from domains.employees.utils.utils import get_or_create
 
 
+class HourlyTable(object):
+    """Represents a class whose primary function is to serve data to the user.
+       The class is intended to be an extension of the Base to provide static
+       functionality to the table objects.
+    """
+
+    """Represents the default number of rows per page for a user
+       response.
+    """
+    DEFAULT_LIMIT = 20
+
+    @classmethod
+    def query_table(cls, page=None, offset=None, limit=None, sort=None, include_totals=None, **kwargs) -> list:
+        """Queries this table with specified parameters as designated in the request.
+
+        :param page: Represents the page, calculated by the offset and, if any, a limit
+        :param offset: Represents the offset from the first row in the table to query.
+        :param limit: Represents the maximum number of records returned.
+        :param sort: Represents a field to sort by, denoted as a ^ for asc or - for desc
+        :param include_totals: Represents whether to include totals in the response
+        :param kwargs: Represents the filters to be specified to query by.
+        :return: Either a list of records or a tuple containing the records and totals, if specified.
+        :rtype List or Tuple
+        """
+        with Session() as session:
+            with session.begin():
+                resultant_rows = session.query(cls)
+                count = None
+                if kwargs is not None:
+                    resultant_rows = resultant_rows.filter_by(**kwargs)
+                if include_totals is not None:
+                    count = resultant_rows.count()
+                if sort is not None:
+                    sorting_criteria = {
+                        "^": "asc",
+                        "-": "desc",
+                    }
+                    resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
+                if page is not None:
+                    page = int(page)
+                    rows_per_page = int(limit) if limit else DEFAULT_LIMIT
+                    resultant_rows = resultant_rows.offset(rows_per_page * page)
+                    resultant_rows = resultant_rows.limit(rows_per_page)
+                if page is None and (offset is not None or limit is not None):
+                    resultant_rows = resultant_rows.offset(int(offset) or 0)
+                    resultant_rows = resultant_rows.limit(int(limit) or 0)
+                iterator = map(lambda res: res.as_dict(), resultant_rows.all())
+                return list(iterator), count
+
+    @classmethod
+    def add_row(cls, row: dict):
+        """Adds a row to the designated HourlyTable.
+
+            :param self:
+            :param row: Represents the generic row to add to the database.
+            :return: None
+            """
+        with Session() as session:
+            with session.begin():
+                impending_row = cls(**row)
+                session.add(impending_row)
+
+    @classmethod
+    def patch_row(cls, patch_document_list: list):
+        """Accepts a patch document and processes an update to a
+           specific resource.
+
+        :param patch_document_list: Represents a list of RFC patch documents.
+        :type List[Any]
+        :return: None
+        """
+        raise Exception('Operation unsupported.')
+
+    @classmethod
+    def delete_row(cls, uid: int):
+        """Deletes the specified row by ID.
+
+        :param uid: The id to delete by.
+        :return: None
+        """
+        with Session() as session:
+            with session.begin():
+                result = session.query(cls).filter_by(id=uid)
+                result.delete()
+
+    @classmethod
+    def validate_model(cls, row: dict) -> bool:
+        """ Validates a dict model against the property set of its
+            intended model.
+
+        :param row: The dict to validate.
+        :return: True, if all keys in the row are a subset of this model's keys.
+        :rtype bool
+        """
+        result = True
+
+        # Short circuit if there are no keys to be processed.
+        if not row.keys():
+            return False
+
+        # Validate the impending row to be added is a subset of the model.
+        if not row.keys() <= cls.__dict__.keys():
+            result = False
+
+        return result
+
+
 # Represents an employee.
 # TODO: Implement passlib SHA-256 encryption in constructor.
-class Employee(Base):
+class Employee(HourlyTable, Base):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True)
@@ -17,7 +124,7 @@ class Employee(Base):
     title = Column(String(255))
     department_id = Column(Integer(), ForeignKey('departments.id'))
     role_id = Column(Integer(), ForeignKey('roles.id'))
-    covid_status = Column(String(255))
+    company_id = Column(Integer(), ForeignKey('companies.id'), default=1)
 
     children = relationship("Clockin")
     parent = relationship("Department", back_populates="children")
@@ -33,7 +140,7 @@ class Employee(Base):
             'pay_rate': self.pay_rate,
             'title': self.title,
             "role_id": self.role_id,
-            'covid_status': self.covid_status,
+            "company_id": self.company_id,
             'department': self.parent.as_dict(),
         }
 
@@ -47,13 +154,13 @@ class Employee(Base):
 
 # A Department is a section of employees that serves a particular purpose.
 # Departments contain an ID, a name, and a respective description
-class Department(Base):
+class Department(HourlyTable, Base):
     __tablename__ = "departments"
     id = Column(Integer, primary_key=True, autoincrement=True)
     department_name = Column(String(255))
     manager_id = Column(Integer)
-    budget_id = Column(Integer, ForeignKey('budget.budget_id'))
-    budget = relationship('Budget')
+    company_id = Column(Integer(), ForeignKey('companies.id'), default=1)
+
     children = relationship('Employee')
 
     # Retrieves the budget for the department, if one exists.
@@ -72,25 +179,42 @@ class Department(Base):
         }
 
 
-# A budget is a period of absolute maximum payroll amount for a
-# specific department. A budget can contain a maximum dollar
-# amount as well as a max dollar amount.
-class Budget(Base):
-    __tablename__ = "budget"
-    budget_id = Column(Integer, primary_key=True, autoincrement=True)
-    budget_hours = Column(Integer)
-    budget_dollars = Column(Float)
-    effective_date = Column(DateTime)
-    date_deleted = Column(DateTime)
+class Company(HourlyTable, Base):
+    """ Represents a grouping of employees and services. Each company
+        contains a bit of metadata about the company. A linking is
+        maintained between the following fields and a company:
+            -Departments
+            -Employees
+            -Packages
+            -Clock-ins (linked by a department)
+        by way of a foreign key.
+    """
 
-    # Represents a dictionary representation.
+    __tablename__ = "companies"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255))
+    about = Column(String(255))
+    address_street = Column(String(255))
+    city = Column(String(255))
+    state = Column(String(255))
+    zip_code = Column(String(255))
+    phone = Column(String(255))
+
     def as_dict(self):
+        """Represents this entity in dictionary form.
+
+        :return: A dictionary with all fields of this model.
+        :rtype dict
+        """
+
         return {
-            "budget_id": self.budget_id,
-            "budget_hours": self.budget_hours,
-            "budget_dollars": self.budget_dollars,
-            "effective_date": self.effective_date,
-            "date_deleted": self.date_deleted
+            "name": self.name,
+            "about": self.about,
+            "address_street": self.address_street,
+            "city": self.city,
+            "state": self.state,
+            "zip_code": self.zip_code,
+            "phone": self.phone
         }
 
 
@@ -101,7 +225,7 @@ class Budget(Base):
 """
 
 
-class Roles(Base):
+class Roles(HourlyTable, Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
@@ -120,7 +244,7 @@ class Roles(Base):
 
 # A clockin is a transaction performed by an employee. Various
 # clock-ins are associated with an employee by
-class Clockin(Base):
+class Clockin(HourlyTable, Base):
     __tablename__ = "clockins"
 
     # A one-to-many relationship is defined in which the
@@ -148,7 +272,7 @@ class Clockin(Base):
 
 # A clockin is a transaction performed by an employee. Various
 # clock-ins are associated with an employee by
-class Package(Base):
+class Package(HourlyTable, Base):
     __tablename__ = "packages"
 
     # A one-to-many relationship is defined in which the
@@ -175,6 +299,7 @@ class Package(Base):
 # the schema provided by Declarative relational mapping in SQLAlchemy.
 Base.metadata.create_all(engine)
 
-# By default, at least one 'primary'/'default' department must exist
-# by the name of Default. Create if it does not exist.
-get_or_create(Session, Department, department_name="Default Department")
+# By default, at least one company and one department must exist. Create if
+# not already done so.
+get_or_create(Session, Company, id=1, name="Hourly")
+get_or_create(Session, Department, department_name="Default Department", company_id=1)
