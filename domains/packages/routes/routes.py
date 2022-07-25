@@ -36,8 +36,8 @@ def add_package():
     data = request.get_json()
     if not Package.validate_model(data):
         raise HourlyException('err.hourly.BadPackageFormatting')
-    package_exists, count = Package.query_table(name=data['name'])
-    if count > 0:
+    package_exists, _ = Package.query_table(name=data['name'])
+    if len(package_exists) > 0:
         raise HourlyException('err.hourly.PackageExists')
     Package.add_row(data);
     return serve_response(message="Success", status=201)

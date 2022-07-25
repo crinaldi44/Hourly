@@ -41,9 +41,9 @@ def validate_credentials(session, req):
             try:
 
                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
-                if result.as_dict()['department']['manager_id'] == result.as_dict()['id']:
-                    token = generate_auth_token(result)
-                    return jsonify({'token': token}), 200
+                # if result.as_dict()['department']['manager_id'] == result.as_dict()['id']:
+                token = generate_auth_token(result)
+                return jsonify({'token': token}), 200
 
             except NoResultFound as e:
                 raise HourlyException('err.hourly.DepartmentNotFound')

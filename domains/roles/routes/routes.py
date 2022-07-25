@@ -17,7 +17,7 @@ CORS(roles)
 @token_required
 def get_all_roles():
     results, count = Roles.query_table(**request.args)
-    return ListResponse(records=results, total_count=count)
+    return ListResponse(records=results, total_count=count).serve()
 
 
 @roles.get('/roles/<id>')
@@ -28,7 +28,7 @@ def get_role_by_id(id):
     if count == 0:
         raise HourlyException('err.hourly.RoleNotFound')
     else:
-        return ListResponse(records=result)
+        return ListResponse(records=result).serve()
 
 
 @roles.post('/roles')

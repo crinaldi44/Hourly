@@ -66,7 +66,7 @@ def add_employee():
     return serve_response(message="Successfully added employee to the database!", status=201)
 
 
-@employees.post('/employees/signup')
+@employees.post('/user/signup')
 @token_required
 def signup_employee():
     data = request.get_json()
