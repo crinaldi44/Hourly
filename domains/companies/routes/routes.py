@@ -36,8 +36,8 @@ def add_company():
     data = request.get_json()
     if not Company.validate_model(data):
         raise HourlyException('err.hourly.BadCompanyFormatting')
-    package_exists, count = Company.query_table(name=data['name'])
-    if count > 0:
+    company_exists, count = Company.query_table(name=data['name'])
+    if len(company_exists) > 0:
         raise HourlyException('err.hourly.CompanyExists')
     Company.add_row(data);
     return serve_response(message="Success", status=201)
