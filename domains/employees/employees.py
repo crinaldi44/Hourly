@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, Boolean
 from sqlalchemy.orm import relationship
 from database.database import engine, Base, Session
 from domains.employees.utils.utils import get_or_create
@@ -125,9 +125,12 @@ class Employee(HourlyTable, Base):
     department_id = Column(Integer(), ForeignKey('departments.id'))
     role_id = Column(Integer(), ForeignKey('roles.id'))
     company_id = Column(Integer(), ForeignKey('companies.id'), default=1)
+    account_disabled = Column(Boolean(), default=False)
 
     children = relationship("Clockin")
     parent = relationship("Department", back_populates="children")
+    company = relationship("Company")
+    role = relationship("Roles")
 
     # Represents the Employee as a dictionary, for serialization in JSON
     # response.
@@ -143,6 +146,17 @@ class Employee(HourlyTable, Base):
             "company_id": self.company_id,
             'department': self.parent.as_dict(),
         }
+
+    def profile_dict(self):
+        """Represents this entity with additional profile information.
+
+        :return: The profile, with additional company and role information.
+        :rtype dict
+        """
+        profile = self.as_dict()
+        profile["company_id"] = self.company.as_dict()
+        profile["role_id"] = self.role.as_dict()
+        return profile
 
     # Represents a machine-readable representation of the state of the
     # Employee.
@@ -208,6 +222,7 @@ class Company(HourlyTable, Base):
         """
 
         return {
+            'id': self.id,
             "name": self.name,
             "about": self.about,
             "address_street": self.address_street,
@@ -283,6 +298,7 @@ class Package(HourlyTable, Base):
     description = Column(String(255))
     img_url = Column(String(255))
     price = Column(Float, default=0.0)
+    company_id = Column(Integer(), ForeignKey('companies.id'))
 
     # Returns a dictionary representation of the Clockin.
     def as_dict(self):
@@ -293,6 +309,26 @@ class Package(HourlyTable, Base):
             'img_url': self.img_url,
             'price': self.price
         }
+
+
+class Event(HourlyTable, Base):
+    """Represents a unique serviceable event within the system. Each
+       event is an instantiation of a package, which can be serviced
+       by a department within a company.
+
+    """
+
+    __tablename__ = "events"
+
+    id = Column(Integer(), primary_key=True, autoincrement=True)
+    description = Column(String(255))
+    agreed_price = Column(Float, default=0.0)
+    start_datetime = Column(DateTime())
+    end_datetime = Column(DateTime())
+    package_id = Column(Integer(), ForeignKey('packages.id'))
+    service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
+    department_id = Column(Integer(), ForeignKey('departments.id'))
+
 
 
 # If a table does not yet exist, create one on the database with
