@@ -1,27 +1,26 @@
 from crosscutting.response.list_response import serve_response, ListResponse
-from database.utils import query_table
 from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
 from flask_cors import CORS
 from flask import Blueprint, request
-from domains.employees.employees import Roles
+from database.models import Roles
 
 # Represents the blueprint.
-roles = Blueprint('roles', __name__, template_folder='templates')
+roles = Blueprint('roles', __name__, template_folder='templates', url_prefix='/api/v0')
 
 # Enables Cross-Origin-Resource-Sharing across this domain.
 CORS(roles)
 
 
 @roles.get('/roles')
-@token_required
+@token_required()
 def get_all_roles():
     results, count = Roles.query_table(**request.args)
     return ListResponse(records=results, total_count=count).serve()
 
 
 @roles.get('/roles/<id>')
-@token_required
+@token_required()
 def get_role_by_id(id):
     result, count = Roles.query_table(id=id)
 
@@ -32,7 +31,7 @@ def get_role_by_id(id):
 
 
 @roles.post('/roles')
-@token_required
+@token_required()
 def add_role():
     data = request.get_json()
     if not Roles.validate_model(data):
@@ -42,7 +41,7 @@ def add_role():
 
 
 @roles.delete('/roles/<role_id>')
-@token_required
+@token_required()
 def delete_role(role_id):
     try:
         int(role_id)

@@ -1,18 +1,18 @@
 from flask_cors import CORS
 from pymysql import IntegrityError
+import bcrypt
 
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required, protected_filter, validate_credentials
 from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
-from database.utils import query_table
 
 from database.database import Session
-from domains.employees.employees import Department, Employee, Clockin
+from database.models import Department, Employee, Clockin
 from domains.employees.utils.utils import validate_user_model
 
-employees = Blueprint('employees', __name__, template_folder='templates')
+employees = Blueprint('employees', __name__, template_folder='templates', url_prefix='/api/v0')
 
 CORS(employees)
 
@@ -23,40 +23,63 @@ CORS(employees)
 # the department manager.
 
 
-# Gets all employees from the database. If GET is requested,
-# queries the database and returns the instances of each 
-# Employee model. Then, iterate over all instances, store
-# the
 @employees.get('/employees')
-@token_required
-def get_employees():
-    results, count = Employee.query_table(**request.args)
+@token_required(init_payload_params=True)
+def get_employees(_company_id, _role_id):
+    """Retrieves the listing of all employees.
+
+    :param _company_id: Represents the user's company ID.
+    :param _role_id: Represents the user's role ID.
+    :return: A list of all employees.
+    """
+    search = request.args.to_dict()
+    if _role_id <= 2:
+        search["company_id"] = _company_id
+    results, count = Employee.query_table(**search)
     return ListResponse(records=results, total_count=count).serve()
+
 
 # Retrieves an employee by their identifier.
 @employees.get('/employees/<id>')
-@token_required
-def get_employee(id):
-    result, count = Employee.query_table(id=id)
+@token_required(init_payload_params=True)
+def get_employee(id, _company_id, _role_id):
+    """Retrieves an employee by id.
+
+    :param id: Represents the ID of the employee.
+    :param _company_id: The company ID.
+    :param _role_id: The role ID.
+    :return: The employee that matches the criteria.
+    """
+
+    query = {
+        "id": id
+    }
+
+    if _role_id <= 2:
+        query["company_id"] = _company_id
+
+    result, count = Employee.query_table(**query)
     if len(result) == 0:
         raise HourlyException('err.hourly.UserNotFound')
     else:
-        return jsonify({'employees': result})
+        return ListResponse(records=result).serve()
 
 
 @employees.post('/employees')
-@token_required
+@token_required()
 def add_employee():
     # Store the data in a JSON object.
     data = request.get_json()
 
     # If the data could not be parsed as JSON or if it is too large,
     # notify the user.
-    if data is None or len(request.get_data()) > 1000:
+    if data is None:
         raise HourlyException('err.hourly.BadUserFormatting',
                               message='The content type must be provided as JSON or the request was too large.')
 
-    validate_department = Department.query_table(id=data["department_id"])
+    data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+    validate_department, _ = Department.query_table(id=data["department_id"])
 
     if len(validate_department) == 0:
         raise HourlyException('err.hourly.DepartmentNotFound')
@@ -67,42 +90,54 @@ def add_employee():
 
 
 @employees.post('/user/signup')
-@token_required
-def signup_employee():
+@token_required(init_payload_params=True)
+def signup_employee(_company_id, _role_id):
+    """Registers a new employee to the user's company.
+
+    :param _company_id: Represents the user's company.
+    :param _role_id: Represents the user's role id.
+    :return: None
+    """
     data = request.get_json()
     email, password, pay_rate, department_id = validate_user_model(data)
 
-    new_employee = {"email": email, "password": password, "department_id": department_id, "role_id": 1,
-                    "pay_rate": pay_rate}
+    encrypt_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    user_exists, _ = Employee.query_table(email=email)
+
+    if len(user_exists) > 0:
+        raise HourlyException('err.hourly.UserExists')
+
+    new_employee = {"email": email, "password": encrypt_password, "department_id": department_id, "role_id": 1,
+                    "pay_rate": pay_rate, "company_id": _company_id}
     Employee.add_row(new_employee)
     return serve_response(message='Success! Employee has been entered into the registry.', status=201)
 
 
 # Deletes an employee from the database.
 @employees.delete('/employees/<id>')
-@token_required
-def delete_employee(id):
+@token_required(init_payload_params=True)
+def delete_employee(_company_id, _role_id, id):
     # If params are not specified, notify the user they messed up.
     if not id:
         return jsonify({'message': 'Poorly formatted request!'}), 400
 
-    # Context management with 'with' allows session to be dispatched and
-    # released from memory once transaction has completed.
-    with Session() as session:
-        with session.begin():
+    employee_exists, _ = Employee.query_table(id=id)
 
-            result = protected_filter(session, Employee).filter_by(id=id)
+    if len(employee_exists) == 0:
+        raise HourlyException('err.hourly.UserNotFound')
 
-            if not result or result == []:
-                return jsonify({'message': 'The requested resource was not found on the server!'}), 404
-            else:
-                session.query(Employee).filter_by(id=id).delete()
-                return jsonify({'message': 'The resource has been deleted.'}), 204
+    try:
+        Employee.delete_row(uid=id)
+    except:
+        raise HourlyException('err.hourly.InvalidUserDelete')
+
+    return serve_response(message="User successfully deleted.", status=200)
 
 
 # TODO: Implement patch request for employees on the database via patch document.
 @employees.patch('/employees/<id>')
-@token_required
+@token_required()
 def update_employee(id):
     with Session() as session:
         with session.begin():
@@ -168,7 +203,7 @@ def log_time(id):
 # Obtains a summary of all payroll for a given pay period. A department
 # can be specified to filter out this data.
 @employees.get('/employees/payroll')
-@token_required
+@token_required()
 def get_payroll():
     # Represents the department ID query string, if one is provided.
     department = request.args.get('department')
@@ -200,7 +235,7 @@ def get_payroll():
                 clock_hours = float("{:.2f}".format(time_distance.total_seconds() / 60 / 60))
 
                 # Add to the accumulator variable.
-                payroll_sum += (clock_hours * value.parent.pay_rate)
+                payroll_sum += (clock_hours * value.department.pay_rate)
 
         # Return the generated payroll sum.
         return jsonify({'result': payroll_sum})
@@ -208,7 +243,7 @@ def get_payroll():
 
 # Retrieves and returns hours
 @employees.get('/employees/hours')
-@token_required
+@token_required()
 def get_hours():
     requested_department = request.args.get('department')
 
@@ -239,7 +274,7 @@ def get_hours():
 
 # Retrieves the budget for the specified department.
 @employees.get('/employees/budget/<id>')
-@token_required
+@token_required()
 def get_budget(id):
     with Session() as session:
         with session.begin():
@@ -248,3 +283,22 @@ def get_budget(id):
             except exc.NoResultFound as E:
                 raise HourlyException('err.hourly.DepartmentNotFound')
             return jsonify(result.get_budget())
+
+
+@employees.get('/user/profile/<user_id>')
+@token_required()
+def get_users_profile(user_id):
+    """Retrieves a user's profile from within the database
+    by joining the fields for their company and role IDs.
+
+    This endpoint is primarily intended for use by organization
+    owners and admins.
+
+    :param user_id: Represents the ID of the profile.
+    :return: The user's profile
+    """
+    result = Employee.get_users_profile(user_id)
+    if result is None:
+        raise HourlyException('err.hourly.UserNotFound')
+    else:
+        return ListResponse(result).serve()

@@ -47,6 +47,20 @@ err_codes = {
             "suggestion": "Please check the ID of the user and re-attempt your query."
         },
 
+        'err.hourly.UserExists': {
+            "status": 409,
+            "message": "This email address is taken.",
+            "title": "UserExists",
+            "suggestion": "Please provide an alternate email address and re-attempt."
+        },
+
+        "err.hourly.InvalidUserDelete": {
+            "status": 400,
+            "message": "Invalid user deletion.",
+            "title": "InvalidUserDelete",
+            "suggestion": "Please check the user and re-attempt your deletion request."
+        },
+
         "err.hourly.InvalidUserPayRate": {
             "status": 404,
             "message": "The format of the user pay rate is invalid!",

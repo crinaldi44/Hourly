@@ -8,7 +8,7 @@ from .errors import err_codes
 
         Description:
             The Error class is a general-purpose class that is intended to uniformly
-            handle exceptions at the API level. When an error is thrown
+            handle exceptions at the API level.
 """
 
 

@@ -3,24 +3,24 @@ from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
 from flask_cors import CORS
 from flask import Blueprint, request
-from domains.employees.employees import Company, Employee, Department
+from database.models import Company, Department
 
 # Represents the blueprint.
-companies = Blueprint('companies', __name__, template_folder='templates')
+companies = Blueprint('companies', __name__, template_folder='templates', url_prefix='/api/v0')
 
 # Enables Cross-Origin-Resource-Sharing across this domain.
 CORS(companies)
 
 
 @companies.get('/companies')
-@token_required
+@token_required()
 def get_all_companies():
     results, count = Company.query_table(**request.args)
     return ListResponse(records=results, total_count=count).serve()
 
 
 @companies.get('/companies/<id>')
-@token_required
+@token_required()
 def get_company_by_id(id):
     result, count = Company.query_table(id=id)
 
@@ -31,7 +31,7 @@ def get_company_by_id(id):
 
 
 @companies.post('/companies')
-@token_required
+@token_required()
 def add_company():
     data = request.get_json()
     if not Company.validate_model(data):
@@ -44,7 +44,7 @@ def add_company():
 
 
 @companies.delete('/companies/<company_id>')
-@token_required
+@token_required()
 def delete_company(company_id):
     try:
         int(company_id)

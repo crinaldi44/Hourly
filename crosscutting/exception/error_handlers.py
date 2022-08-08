@@ -1,7 +1,7 @@
 import sqlalchemy.exc
 from flask import jsonify
 import logging
-from werkzeug.exceptions import BadRequest, UnprocessableEntity, InternalServerError, HTTPException
+from werkzeug.exceptions import BadRequest, UnprocessableEntity, InternalServerError, HTTPException, NotFound
 from typing import Any as EndpointResult
 from crosscutting.exception.hourly_exception import HourlyException
 
@@ -37,11 +37,20 @@ def handle_invalid_request(err: sqlalchemy.exc.InvalidRequestError):
 
 def handle_hourly_exception(e: HourlyException) -> EndpointResult:
     return jsonify({
-        "error_code": "err.hourly." + e.err_code,
+        "error_code": e.err_code,
         "status": e.status[0],
         "detail": e.message if e.message else "",
         "suggestion": e.suggestion or ""
     }), e.status[0]
+
+
+def handle_notfound_exception(error: NotFound) -> EndpointResult:
+    return jsonify({
+        "error_code": "err.hourly.NotFound",
+        "status": 404,
+        "detail": 'The requested resource was not found on the server.',
+        "suggestion": "Please re-adjust your request and re-attempt."
+    }), 404
 
 
 def handle_attribute_exception(error: AttributeError) -> EndpointResult:

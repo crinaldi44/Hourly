@@ -1,8 +1,5 @@
-from database.utils import query_table
+from database.models import Clockin
 
-from domains.employees.employees import Clockin
-
-from crosscutting.response.list_response import serve_response
 from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
@@ -10,21 +7,23 @@ from flask_cors import CORS
 from flask import Blueprint, request
 
 # Represents the blueprint.
-clockins = Blueprint('clockins', __name__, template_folder='templates')
+clockins = Blueprint('clockins', __name__, template_folder='templates', url_prefix='/api/v0')
 
 # Enables Cross-Origin-Resource-Sharing across this domain.
 CORS(clockins)
 
 
 @clockins.get('/clockins')
-@token_required
+@token_required()
 def get_all_clockins():
-    results, count = Clockin.query_table(**request.args, include_totals=True)
+    results, count = Clockin.query_table(**request.args)
+    if len(results) == 0:
+        raise HourlyException('err.hourly.ClockinNotFound')
     return ListResponse(records=Clockin.query_table(**request.args), total_count=count).serve()
 
 
 @clockins.get('/clockins/<id>')
-@token_required
+@token_required()
 def get_clockin_by_id(id):
     result = Clockin.query_table(id=id)
 
@@ -35,7 +34,7 @@ def get_clockin_by_id(id):
 
 
 @clockins.delete('/clockins/<clockin_id>')
-@token_required
+@token_required()
 def delete_clockin(clockin_id):
     try:
         int(clockin_id)

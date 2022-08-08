@@ -1,7 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, Boolean
+import json
+
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, JSON, Boolean
 from sqlalchemy.orm import relationship
 from database.database import engine, Base, Session
 from domains.employees.utils.utils import get_or_create
+
+"""Represents the default number of rows per page for a user
+   response.
+"""
+DEFAULT_LIMIT = 20
+
+MAX_LIMIT = 100
 
 
 class HourlyTable(object):
@@ -9,11 +18,6 @@ class HourlyTable(object):
        The class is intended to be an extension of the Base to provide static
        functionality to the table objects.
     """
-
-    """Represents the default number of rows per page for a user
-       response.
-    """
-    DEFAULT_LIMIT = 20
 
     @classmethod
     def query_table(cls, page=None, offset=None, limit=None, sort=None, include_totals=None, **kwargs) -> list:
@@ -42,14 +46,20 @@ class HourlyTable(object):
                         "-": "desc",
                     }
                     resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
+                if limit is not None:
+                    limit = int(limit)
+                    if limit > MAX_LIMIT:
+                        limit = MAX_LIMIT
                 if page is not None:
                     page = int(page)
-                    rows_per_page = int(limit) if limit else DEFAULT_LIMIT
+                    rows_per_page = limit if limit is not None else DEFAULT_LIMIT
                     resultant_rows = resultant_rows.offset(rows_per_page * page)
                     resultant_rows = resultant_rows.limit(rows_per_page)
                 if page is None and (offset is not None or limit is not None):
-                    resultant_rows = resultant_rows.offset(int(offset) or 0)
-                    resultant_rows = resultant_rows.limit(int(limit) or 0)
+                    if offset is not None:
+                        resultant_rows = resultant_rows.offset(int(offset) or 0)
+                    if limit is not None:
+                        resultant_rows = resultant_rows.limit(limit or 0)
                 iterator = map(lambda res: res.as_dict(), resultant_rows.all())
                 return list(iterator), count
 
@@ -73,6 +83,18 @@ class HourlyTable(object):
 
         :param patch_document_list: Represents a list of RFC patch documents.
         :type List[Any]
+        :return: None
+        """
+        raise Exception('Operation unsupported.')
+
+    @classmethod
+    def __process_patch_document(cls, patch_document_list, index=0):
+        """Processes a patch document operation on a specified
+        document.
+
+        :param patch_document_list: Represents the list of RFC-6902 patch
+        docs.
+        :param index: Represents the current index.
         :return: None
         """
         raise Exception('Operation unsupported.')
@@ -117,18 +139,20 @@ class Employee(HourlyTable, Base):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True)
-    email = Column(String(255))
-    password = Column(String(255))
-    name = Column(String(255))
-    pay_rate = Column(Float)
-    title = Column(String(255))
-    department_id = Column(Integer(), ForeignKey('departments.id'))
-    role_id = Column(Integer(), ForeignKey('roles.id'))
+    email = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
+    first_name = Column(String(255), default='', nullable=False)
+    last_name = Column(String(255), default='', nullable=False)
+    pay_rate = Column(Float, default=0.0)
+    title = Column(String(255), default="Employee")
+    img_url = Column(String(255))
+    department_id = Column(Integer(), ForeignKey('departments.id'), nullable=False)
+    role_id = Column(Integer(), ForeignKey('roles.id'), default=1, nullable=False)
     company_id = Column(Integer(), ForeignKey('companies.id'), default=1)
     account_disabled = Column(Boolean(), default=False)
 
     children = relationship("Clockin")
-    parent = relationship("Department", back_populates="children")
+    department = relationship("Department", back_populates="children")
     company = relationship("Company")
     role = relationship("Roles")
 
@@ -137,14 +161,16 @@ class Employee(HourlyTable, Base):
     def as_dict(self):
         return {
             'id': self.id,
-            'password': self.password,
             'email': self.email,
-            'name': self.name,
+            'password': self.password,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
             'pay_rate': self.pay_rate,
             'title': self.title,
+            'img_url': self.img_url,
             "role_id": self.role_id,
             "company_id": self.company_id,
-            'department': self.parent.as_dict(),
+            'department': self.department.as_dict(),
         }
 
     def profile_dict(self):
@@ -154,8 +180,10 @@ class Employee(HourlyTable, Base):
         :rtype dict
         """
         profile = self.as_dict()
-        profile["company_id"] = self.company.as_dict()
-        profile["role_id"] = self.role.as_dict()
+        profile.pop('company_id')
+        profile.pop('role_id')
+        profile["company"] = self.company.as_dict()
+        profile["role"] = self.role.as_dict()
         return profile
 
     # Represents a machine-readable representation of the state of the
@@ -164,6 +192,22 @@ class Employee(HourlyTable, Base):
         return "<User(email='%s', password='%s', name='%s', role_id='%s', covid_status='%s' department='%s'" % (
             self.email, self.password, self.name, self.role_id, self.covid_status, self.department_id
         )
+
+    @classmethod
+    def get_users_profile(cls, user_id):
+        """Retrieves the user's profile by obtaining details regarding
+        their respective department, company and role.
+
+        :param user_id: The ID of the user to fetch the profile of.
+        :return: A profile dict of the user's profile.
+        """
+        with Session() as session:
+            with session.begin():
+                result = session.query(cls).filter_by(id=user_id).one()
+                if result is None:
+                    return []
+                else:
+                    return [result.profile_dict()]
 
 
 # A Department is a section of employees that serves a particular purpose.
@@ -189,7 +233,8 @@ class Department(HourlyTable, Base):
         return {
             "id": self.id,
             "department_name": self.department_name,
-            "manager_id": self.manager_id
+            "manager_id": self.manager_id,
+            "company_id": self.company_id
         }
 
 
@@ -244,11 +289,13 @@ class Roles(HourlyTable, Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
+    permissions = Column(String(255))
 
     def as_dict(self):
         return {
             "id": self.id,
-            "name": self.name
+            "name": self.name,
+            "permissions": self.permissions
         }
 
     def __repr__(self):
@@ -294,20 +341,22 @@ class Package(HourlyTable, Base):
     # employee id in this table is a foreign key provided
     # in the employees table.
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(255))
+    name = Column(String(255), nullable=False)
     description = Column(String(255))
     img_url = Column(String(255))
     price = Column(Float, default=0.0)
-    company_id = Column(Integer(), ForeignKey('companies.id'))
+    company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
+    questions = Column(JSON(), nullable=False)
 
-    # Returns a dictionary representation of the Clockin.
+    # Returns a dictionary representation of the Package.
     def as_dict(self):
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
             'img_url': self.img_url,
-            'price': self.price
+            'price': self.price,
+            'questions': self.questions
         }
 
 
@@ -328,7 +377,6 @@ class Event(HourlyTable, Base):
     package_id = Column(Integer(), ForeignKey('packages.id'))
     service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
     department_id = Column(Integer(), ForeignKey('departments.id'))
-
 
 
 # If a table does not yet exist, create one on the database with

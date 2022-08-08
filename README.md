@@ -49,17 +49,29 @@ default, a row in the Departments table named 'Management' will be created and M
 the first department, as it is the primary department. An employee account named 'admin' under this
 department will be inserted, which will give you access to add any required employees.
 
+### Entities
+Below is a list of each entity that exists within the Hourly cloud as well as a brief description of its
+function:
 
-## Data Security
+* Clockins: A representation of a block of time that an employee has worked.
+* Companies: Groups of users that hold data that is unique to that group.
+* Departments: Subsections of companies that divide users into a function
+* Employees: Users that exist within the database.
+* Packages: Templates for event types
+* Events: Instantiations of packages that contain unique metadata
+
+## Security
 This project is built with security in mind from the API level up. Routes at the API level are protected
 using a JWT token with the secret API key found in the app.py file. To bolster this security feature
 and due to the vulnerability nature of JWT tokens, it is recommended to rotate this security key periodically.
 
-Any user with a 'management' account who is NOT in the Management department will simply only be able to view
-and edit data for THEIR respective department. Conversely, users with an account in 'management'
-will be able to view and edit data - including payroll and employees - for ANY department. Data
-is protected at the server API level with a security token to prevent employees from accessing
-any restricted data.
+The scope of accessible data is limited on a role-and-company based premise. Users of any role up to and including
+organization owner will only be able to access data from within their company. Conversely, users with the administrator
+role will be able to access ANY data from any company. Query limits are capped at 100 to protect data.
+
+To mitigate network traffic and prevent potential Denial-of-Service or other malicious attacks, rate limiting techniques are introduced
+to throttle frequency of user requests within a short timeframe. Should the user exceed the rate limit multiple times, their IP will
+be added to a blacklist.
 
 # Cross-Cutting
 This directory contains general-purpose functionality for use across each domain.
@@ -77,7 +89,6 @@ within the exception directory.
 * Add routes for payroll reporting*
 * Add calculations for employee hours
 * Add machine learning model to predict cost and expenses of an employee based on number of events serviced within the past month and the price per event
-* Add event types route
 * Add events route
 * Add checks for request size get_data() > 1000 as well as request flooding
 * Event Schema:
@@ -85,8 +96,9 @@ within the exception directory.
   * date
   * employee_id
   * created_by
+* Security
+  * JWT blacklist once user logs out? or session invalidation
 * Companies Schema
-  * Each user associated with a company ID
   * Only ones affected are company manager and Employee - only see info about company
   * Only company managers can see event package edit, departments, etc.
   * Departments should have a company ID associated
