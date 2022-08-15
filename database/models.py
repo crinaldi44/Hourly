@@ -1,7 +1,11 @@
 import json
+import re
 
+import bcrypt
 from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, JSON, Boolean
 from sqlalchemy.orm import relationship
+
+from crosscutting.exception.hourly_exception import HourlyException
 from database.database import engine, Base, Session
 from domains.employees.utils.utils import get_or_create
 
@@ -186,6 +190,87 @@ class Employee(HourlyTable, Base):
         profile["role"] = self.role.as_dict()
         return profile
 
+    @classmethod
+    def validate_employee_exists(cls, employee_id, in_company=None):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param in_department: Represents the department to cross reference.
+        :param in_company: Represents the company to cross reference.
+        :param employee_id: Represents the id of the employee.
+        :return: A Bool representing whether the row exists.
+        """
+        if in_company is not None:
+            result, count = cls.query_table(id=employee_id, company_id=in_company)
+        else:
+            result, count = cls.query_table(id=employee_id)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.UserNotFound')
+
+        return result
+
+    @classmethod
+    def validate_employee(cls, data):
+        """Validates the user credentials against a particular set of requirements. If
+        the requirements match, returns True, else raises a particular HourlyException
+        that corresponds with the issue. The criteria is as follows:
+
+        1. The user's email is validated against a regular expression that will verify
+            that the email is of the proper format.
+
+        2. The user's password is validated against a regular expression that will verify
+            that the password is of proper length and includes special characters.
+
+        :return: A dict containing the user model as a JSON
+        """
+        data_keys = data.keys()
+        email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+
+        if 'email' not in data_keys or not isinstance(data['email'], str):
+            raise HourlyException('err.hourly.BadUsernameOrPassword')
+
+        if ('first_name' in data_keys and not isinstance(data['first_name'], str)) \
+                or ('last_name' in data_keys and not isinstance(data['last_name'], str)):
+            raise HourlyException('err.hourly.BadUserFormatting',
+                                  message="Field 'name' is invalid, must be of type str.")
+
+        # Validate the email and password against regex.
+        if 'email' not in data_keys \
+                or 'password' not in data_keys \
+                or not re.fullmatch(email_regex, data['email']) \
+                or not len(data['password']) >= 8:
+            raise HourlyException('err.hourly.BadUsernameOrPassword')
+
+        # If pay_rate provided, validate is a proper floating point value.
+        if 'pay_rate' in data:
+            try:
+                data['pay_rate'] = float(data['pay_rate'])
+            except Exception:
+                raise HourlyException('err.hourly.InvalidUserPayRate')
+
+        if 'department_id' not in data_keys or not isinstance(data['department_id'], int):
+            raise HourlyException('err.hourly.DepartmentNotFound')
+
+        if 'role_id' in data_keys:
+            Roles.validate_role_exists(data['role_id'])
+
+        Company.validate_company_exists(company_id=data['company_id'])
+        Department.validate_department_exists(department_id=data['department_id'],
+                                              in_company=data["company_id"])
+
+        encrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+        # Destructure and return the values.
+        return {
+            "email": data['email'],
+            "password": encrypt_password,
+            "pay_rate": data["pay_rate"] if 'pay_rate' in data_keys else 0.0,
+            "department_id": data['department_id'],
+            "company_id": data["company_id"],
+            "role_id": data["role_id"] if 'role_id' in data_keys else 1
+        }
+
     # Represents a machine-readable representation of the state of the
     # Employee.
     def __repr__(self):
@@ -237,6 +322,25 @@ class Department(HourlyTable, Base):
             "company_id": self.company_id
         }
 
+    @classmethod
+    def validate_department_exists(cls, department_id, in_company=None):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param department_id: Represents the id of the department.
+        :param in_company: Represents a company to check the department within.
+        :return: A Bool representing whether the row exists.
+        """
+        filters = {id: department_id}
+        if in_company is not None:
+            filters['company_id'] = in_company
+        result, count = cls.query_table(**filters)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.DepartmentNotFound')
+
+        return result
+
 
 class Company(HourlyTable, Base):
     """ Represents a grouping of employees and services. Each company
@@ -277,6 +381,21 @@ class Company(HourlyTable, Base):
             "phone": self.phone
         }
 
+    @classmethod
+    def validate_company_exists(cls, company_id):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param company_id: Represents the company id.
+        :return: A Bool representing whether the row exists.
+        """
+        result, count = cls.query_table(id=company_id)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.CompanyNotFound')
+
+        return result
+
 
 """
     Represents a unique privilege that identifies the capabilities of a user
@@ -297,6 +416,20 @@ class Roles(HourlyTable, Base):
             "name": self.name,
             "permissions": self.permissions
         }
+
+    def validate_role_exists(cls, role_id):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param employee_id: Represents the id of the employee.
+        :return: A Bool representing whether the row exists.
+        """
+        result, count = cls.query_table(id=role_id)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.RoleNotFound')
+
+        return result
 
     def __repr__(self):
         return "<Role(name='%s'" % (
@@ -331,6 +464,21 @@ class Clockin(HourlyTable, Base):
             'department': self.department.as_dict()
         }
 
+    @classmethod
+    def validate_clockin_exists(cls, clockin_id):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param clockin_id: The clockin ID.
+        :return: A Bool representing whether the row exists.
+        """
+        result, count = cls.query_table(employee_id=clockin_id)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.ClockinNotFound')
+
+        return result
+
 
 # A clockin is a transaction performed by an employee. Various
 # clock-ins are associated with an employee by
@@ -359,6 +507,40 @@ class Package(HourlyTable, Base):
             'questions': self.questions
         }
 
+    @classmethod
+    def validate_package_questions(cls, question_list):
+        """Validates a list of package question. Any element
+        within the package question list that does not meet the criteria
+        is removed.
+
+        :param question_list: Represents the list of questions being validated.
+        :return: None
+        """
+        if not isinstance(question_list, list):
+            return
+        for i in range(0, len(question_list)):
+            if not all(x in ['title', 'value', 'values', 'dataType'] for x in question_list[i]):
+                question_list.remove(question_list[i])
+        return question_list
+
+    @classmethod
+    def validate_package_exists(cls, package_id, in_company=None):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param employee_id: Represents the id of the employee.
+        :return: A Bool representing whether the row exists.
+        """
+        filters = {id: package_id}
+        if in_company is not None:
+            filters["company_id"] = in_company
+        result, count = cls.query_table(**filters)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.PackageNotFound')
+
+        return result
+
 
 class Event(HourlyTable, Base):
     """Represents a unique serviceable event within the system. Each
@@ -370,13 +552,47 @@ class Event(HourlyTable, Base):
     __tablename__ = "events"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    description = Column(String(255))
+    name = Column(String(255), nullable=False, default="")
+    description = Column(String(255), default="")
     agreed_price = Column(Float, default=0.0)
-    start_datetime = Column(DateTime())
+    start_datetime = Column(DateTime(), nullable=False)
     end_datetime = Column(DateTime())
-    package_id = Column(Integer(), ForeignKey('packages.id'))
+    package_id = Column(Integer(), ForeignKey('packages.id'), nullable=False)
     service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
-    department_id = Column(Integer(), ForeignKey('departments.id'))
+    department_id = Column(Integer(), ForeignKey('departments.id'), nullable=False)
+
+    def as_dict(self):
+        """Returns a dictionary representation of the Event.
+
+        :return: A dictionary representation of the Event.
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "agreed_price": self.agreed_price,
+            "start_datetime": self.start_datetime,
+            "end_datetime": self.end_datetime,
+            "package_id": self.package_id,
+            "service_employee": self.service_employee,
+            "department_id": self.department_id
+        }
+
+    @classmethod
+    def validate_event_exists(cls: 'Event', event_id: int):
+        """Validates that the event exists. If this condition
+        is False, raises an error that corresponds to this model.
+
+        :param event_id: The event id.
+        :type event_id: int
+        :return: A Bool representing whether the row exists.
+        """
+        result, count = cls.query_table(id=event_id)
+
+        if len(result) == 0:
+            raise HourlyException('err.hourly.EventNotFound')
+
+        return result
 
 
 # If a table does not yet exist, create one on the database with

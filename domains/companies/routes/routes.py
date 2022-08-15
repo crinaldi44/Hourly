@@ -13,9 +13,13 @@ CORS(companies)
 
 
 @companies.get('/companies')
-@token_required()
-def get_all_companies():
-    results, count = Company.query_table(**request.args)
+@token_required(init_payload_params=True)
+def get_all_companies(_company_id, _role_id):
+
+    if _role_id <= 2:
+        results, count = Company.query_table(**request.args, id=_company_id)
+    else:
+        results, count = Company.query_table(**request.args)
     return ListResponse(records=results, total_count=count).serve()
 
 

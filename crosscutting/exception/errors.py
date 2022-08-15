@@ -62,7 +62,7 @@ err_codes = {
         },
 
         "err.hourly.InvalidUserPayRate": {
-            "status": 404,
+            "status": 400,
             "message": "The format of the user pay rate is invalid!",
             "title": "InvalidUserPayRate",
             "suggestion": "Please ensure that the user pay rate is a valid number."

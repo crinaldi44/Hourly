@@ -93,9 +93,12 @@ within the exception directory.
 * Add checks for request size get_data() > 1000 as well as request flooding
 * Event Schema:
   * name
-  * date
-  * employee_id
-  * created_by
+  * start_date
+  * end_date
+  * employee_id (assigned/created by)
+  * package_id
+  * company_id
+  * department_id
 * Security
   * JWT blacklist once user logs out? or session invalidation
 * Companies Schema

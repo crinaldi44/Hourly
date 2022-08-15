@@ -11,6 +11,18 @@ roles = Blueprint('roles', __name__, template_folder='templates', url_prefix='/a
 # Enables Cross-Origin-Resource-Sharing across this domain.
 CORS(roles)
 
+"""WARNING:
+
+This resource maintains control of the Roles domain within the
+cloud servers. Generally, Roles are intended to be a static resource,
+and as sensitive data regarding access policies for all domains is 
+contained within each row, no active users will be able to 
+directly assume remote control over the contents of this domain.
+
+Before making modifications to this domain, please consult with the
+README, as there is generally a better way of going about most situations.
+"""
+
 
 @roles.get('/roles')
 @token_required()

@@ -137,7 +137,7 @@ def token_required(init_payload_params=False):
                         raise HourlyException('err.hourly.UnauthorizedRequest',
                                               message='Authorization token is expired or invalid. Please re-authenticate.')
             if init_payload_params is True:
-                return func(_role_id=data['role']["id"], _company_id=data['company_id'], *args, **kwargs)
+                return func(_company_id=data['company_id'], _role_id=data['role']["id"], *args, **kwargs)
             return func(*args, **kwargs)
 
         return wrapper

@@ -9,8 +9,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
 
 from database.database import Session
-from database.models import Department, Employee, Clockin
-from domains.employees.utils.utils import validate_user_model
+from database.models import Department, Employee, Clockin, Company
 
 employees = Blueprint('employees', __name__, template_folder='templates', url_prefix='/api/v0')
 
@@ -77,12 +76,15 @@ def add_employee():
         raise HourlyException('err.hourly.BadUserFormatting',
                               message='The content type must be provided as JSON or the request was too large.')
 
+    user_exists, _ = Employee.query_table(email=data['email'])
+
+    if len(user_exists) > 0:
+        raise HourlyException('err.hourly.UserExists')
+
     data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
-    validate_department, _ = Department.query_table(id=data["department_id"])
-
-    if len(validate_department) == 0:
-        raise HourlyException('err.hourly.DepartmentNotFound')
+    Company.validate_company_exists(company_id=data["company_id"])
+    Department.validate_department_exists(department_id=data["department_id"], in_company=data["company_id"])
 
     pay_rate = float(data['pay_rate'])  # Validate the pay rate is a valid float.
     Employee.add_row(data)
@@ -99,17 +101,24 @@ def signup_employee(_company_id, _role_id):
     :return: None
     """
     data = request.get_json()
-    email, password, pay_rate, department_id = validate_user_model(data)
 
-    encrypt_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    if data is None:
+        raise HourlyException('err.hourly.BadUserFormatting',
+                              message='The content type must be provided as JSON or the request was too large.')
 
-    user_exists, _ = Employee.query_table(email=email)
+    data['company_id'] = _company_id
+
+    if _role_id <= 2 and 'role_id' in data:
+        if data['role_id'] > 2:
+            data['role_id'] = 1
+
+    user_exists, _ = Employee.query_table(email=data['email'])
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
 
-    new_employee = {"email": email, "password": encrypt_password, "department_id": department_id, "role_id": 1,
-                    "pay_rate": pay_rate, "company_id": _company_id}
+    new_employee = Employee.validate_employee(data)
+
     Employee.add_row(new_employee)
     return serve_response(message='Success! Employee has been entered into the registry.', status=201)
 
@@ -122,10 +131,7 @@ def delete_employee(_company_id, _role_id, id):
     if not id:
         return jsonify({'message': 'Poorly formatted request!'}), 400
 
-    employee_exists, _ = Employee.query_table(id=id)
-
-    if len(employee_exists) == 0:
-        raise HourlyException('err.hourly.UserNotFound')
+    Employee.validate_employee_exists(employee_id=id)
 
     try:
         Employee.delete_row(uid=id)
