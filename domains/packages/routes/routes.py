@@ -62,13 +62,12 @@ def add_package(_company_id, _role_id):
     :return: None
     """
     data = request.get_json()
-    if not Package.validate_model(data):
-        raise HourlyException('err.hourly.BadPackageFormatting')
     package_exists, _ = Package.query_table(name=data['name'], company_id=_company_id)
     if len(package_exists) > 0:
         raise HourlyException('err.hourly.PackageExists')
     data["company_id"] = _company_id
-    Package.add_row(data);
+    new_package = Package.validate_package(data=data)
+    Package.add_row(new_package);
     return serve_response(message="Success", status=201)
 
 

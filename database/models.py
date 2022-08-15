@@ -1,5 +1,6 @@
 import json
 import re
+from typing import List, Any
 
 import bcrypt
 from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, JSON, Boolean
@@ -15,6 +16,67 @@ from domains.employees.utils.utils import get_or_create
 DEFAULT_LIMIT = 20
 
 MAX_LIMIT = 100
+
+
+class PackageQuestion:
+    """A PackageQuestion is a denormalized data type consisting of a title,
+    a set of values, a data type, and a respective value. Generally, this is
+    used to provide information regarding an event that is pertinent to how
+    a company conducts the business or what additional features are necessary.
+
+    """
+
+    # Represents the required types each field is required to hold.
+    types = {
+        "title": str,
+        "value": str,
+        "values": list,
+        "data_type": str
+    }
+
+    def __init__(self, title=None, value=None, values=[], data_type=None):
+        """Initializes a new PackageQuestion.
+
+        :param title:
+        :param value:
+        :param values:
+        :param data_type:
+        """
+        self.title = title
+        self.value = value
+        self.values = values
+        self.data_type = data_type
+
+    @classmethod
+    def validate_package_question(cls, dikt):
+        """Validates a package question against a set of requirements. Validates each
+        field exists within the dict, then type checks the fields against the dict of
+        data types.
+
+        :param dikt: Represents the dikt to validate from.
+        :return:
+        """
+        if not isinstance(dikt, dict) or not all(x in dikt for x in ('title', 'value', 'values', 'data_type')):
+            raise HourlyException('err.hourly.BadPackageFormatting', message="Bad formatting for package questions!")
+        keys = list(dikt.keys())
+        for key in keys:
+            if type(dikt[key]) != cls.types[key]:
+                raise HourlyException('err.hourly.BadPackageFormatting',
+                                      message='Invalid type formatting on questions.' + key)
+        return dikt
+
+    @classmethod
+    def from_dict(cls, dikt):
+        """Constructs a package question from a dictionary.
+
+        :param dikt:
+        :return:
+        """
+        pass
+
+
+class PatchDocument:
+    pass
 
 
 class HourlyTable(object):
@@ -524,6 +586,37 @@ class Package(HourlyTable, Base):
         return question_list
 
     @classmethod
+    def validate_package(cls, data) -> dict:
+        """Validates a package model.
+
+        :param data: Represents the data to validate.
+        :return: A dict representing the package.
+        """
+
+        if 'name' not in data or type(data["name"]) != str \
+                or ('description' in data and type(data["description"]) != str)\
+                or ('img_url' in data and type(data["img_url"]) != str)\
+                or ('price' in data and type(data["price"]) != float):
+            raise HourlyException('err.hourly.BadPackageFormatting')
+
+        if 'questions' in data and type(data["questions"]) != list:
+            raise HourlyException('err.hourly.BadPackageFormatting')
+        elif 'questions' in data:
+            package_questions = []
+            for x in range(0, len(data["questions"])):
+                package_questions.append(PackageQuestion.validate_package_question(data["questions"][x]))
+
+        Company.validate_company_exists(company_id=data["company_id"])
+
+        return {
+            "name": data["name"],
+            "description": data["description"] or "",
+            "img_url": data["img_url"] or '',
+            "price": data["price"],
+            "questions": package_questions or []
+        }
+
+    @classmethod
     def validate_package_exists(cls, package_id, in_company=None):
         """Validates that the employee exists. If this condition
         is False, raises an error that corresponds to this model.
@@ -532,7 +625,6 @@ class Package(HourlyTable, Base):
         :param package_id: Represents the id of the package.
         :return: A Bool representing whether the row exists.
         """
-        filters = {id: package_id}
         if in_company is not None:
             result, count = cls.query_table(id=package_id, company_id=in_company)
         else:
@@ -562,6 +654,7 @@ class Event(HourlyTable, Base):
     package_id = Column(Integer(), ForeignKey('packages.id'), nullable=False)
     service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
     department_id = Column(Integer(), ForeignKey('departments.id'), nullable=False)
+    questions = Column(JSON(), nullable=False)
 
     def as_dict(self):
         """Returns a dictionary representation of the Event.

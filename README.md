@@ -1,7 +1,11 @@
 # Hourly
- Originally intended as in-class project for timesheet and payroll management, the Hourly cloud service
-is an API that is intended to provide calculations and machine-learning based predictions to the user on
-top of Create-Read-Update-Delete functionality. 
+Originally intended as in-class project for timesheet and payroll management, the Hourly cloud service
+is an API that is intended to serve calculations and machine-learning based predictions to the user that
+aim to provide data that benefits cost-optimization, scheduling, and increased workload productivity of small
+businesses.
+
+The application achieves this by streamlining information that is commonly spread across 3-4 applications and 
+combining it into one general portal.
 
 # Getting Started
 
@@ -26,28 +30,29 @@ with several helper functions being contained within the model files. Additional
 tests folder and should be updated each time a new route has been added. You may run a script to validate all tests
 at once. Unit tests should be batch-run by this method before each deployment.
 
+There are 2 cloud servers which are hosted on IaaS platform Heroku which provides SSL certificates and a personalized
+domain. They are located at:
+
+  * hourly-cloud-dev
+  * hourly-cloud-prod
+
 ## Security
 You may protect routes that require a token with the @token_required wrapper, and the service will ensure that a token 
 is passed and validated. The token will expire after the default expiration time OR when the service has been restarted,
 as tokens are measured against their issued at time and compared with the system start time.
 
-## Running the application
-The application hosts all build/start scripts from the client side. Simply run the following commands:
-
-** npm start **
-** npm start-api **
-
-From the client directory.
+A rate limit of 100 requests per minute is imposed on the application as a whole to prevent flooding the backend with
+requests. On endpoints that require heavier logic, joins or complex querying, it is suggested to use the default secure
+rate limit of 50 requests per minute.
 
 ## The Data Layer
 By default, this package uses SQLAlchemy's Object-Relational-Mapping library. In the server folder,
 you will find the connection string in a module named database.py. Simply change the connection string
 to your preferred dev/prod connection string.
 
-The data schema will be created for you upon first run and any required tables will be inserted. By
-default, a row in the Departments table named 'Management' will be created and MUST be initialized as
-the first department, as it is the primary department. An employee account named 'admin' under this
-department will be inserted, which will give you access to add any required employees.
+The data tables will be created for you upon first run and any required tables will be inserted. Each
+model contains a Validation (or "schema") layer which serves to deserialize the data and validate it. If
+a validation error occurs, a response is sent back to the user with the error that occurred.
 
 ### Entities
 Below is a list of each entity that exists within the Hourly cloud as well as a brief description of its
@@ -99,6 +104,7 @@ within the exception directory.
   * package_id
   * company_id
   * department_id
+* Validations with flask-marshmallow - add "validation/schema" layer
 * Security
   * JWT blacklist once user logs out? or session invalidation
 * Companies Schema
