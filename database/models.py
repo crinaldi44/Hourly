@@ -331,10 +331,10 @@ class Department(HourlyTable, Base):
         :param in_company: Represents a company to check the department within.
         :return: A Bool representing whether the row exists.
         """
-        filters = {id: department_id}
         if in_company is not None:
-            filters['company_id'] = in_company
-        result, count = cls.query_table(**filters)
+            result, count = cls.query_table(id=department_id, company_id=in_company)
+        else:
+            result, count = cls.query_table(id=department_id)
 
         if len(result) == 0:
             raise HourlyException('err.hourly.DepartmentNotFound')
@@ -528,13 +528,15 @@ class Package(HourlyTable, Base):
         """Validates that the employee exists. If this condition
         is False, raises an error that corresponds to this model.
 
-        :param employee_id: Represents the id of the employee.
+        :param in_company: Represents the company to cross reference.
+        :param package_id: Represents the id of the package.
         :return: A Bool representing whether the row exists.
         """
         filters = {id: package_id}
         if in_company is not None:
-            filters["company_id"] = in_company
-        result, count = cls.query_table(**filters)
+            result, count = cls.query_table(id=package_id, company_id=in_company)
+        else:
+            result, count = cls.query_table(id=package_id)
 
         if len(result) == 0:
             raise HourlyException('err.hourly.PackageNotFound')
