@@ -1,6 +1,8 @@
 import sqlalchemy.exc
 from flask import jsonify
 import logging
+
+from marshmallow import ValidationError
 from werkzeug.exceptions import BadRequest, UnprocessableEntity, InternalServerError, HTTPException, NotFound
 from typing import Any as EndpointResult
 from crosscutting.exception.hourly_exception import HourlyException
@@ -24,6 +26,15 @@ def handle_validation_error(err: UnprocessableEntity) -> EndpointResult:
             'error_code': 'some_422',
         }
     return jsonify(data), err.code
+
+
+def handle_marshmallow_validation_error(err: ValidationError):
+    return jsonify({
+        "error_code": "err.hourly.BadRequestFormatting",
+        "status": 422,
+        "detail": err.messages,
+        "suggestion": "Please double-check your spelling and re-attempt your request."
+    }), 422
 
 
 def handle_invalid_request(err: sqlalchemy.exc.InvalidRequestError):

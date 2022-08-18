@@ -24,9 +24,9 @@ And pip3 install each of the required dependencies.
 
 ## Structure of the Cloud
 The cloud is based on Python's Flask library. The application leverages a domain-driven design for separation of
-concerns. Each domain follows a routes/tests/utils pattern with the model for that particular route being
-at the base level directory. The routes.py file within the routes folder serves to route and manipulate the data,
-with several helper functions being contained within the model files. Additionally, unit tests are provided in the
+concerns. Each domain follows a routes/tests/utils/services pattern with the model for that particular route being
+at the base level directory. The routes.py file within the routes folder serves to route the data to the service layer,
+which provides automated deserialization and validation of the data. Additionally, unit tests are provided in the
 tests folder and should be updated each time a new route has been added. You may run a script to validate all tests
 at once. Unit tests should be batch-run by this method before each deployment.
 

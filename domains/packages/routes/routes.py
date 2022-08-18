@@ -3,9 +3,10 @@ from crosscutting.auth.authentication import token_required
 from crosscutting.exception.hourly_exception import HourlyException
 from flask_cors import CORS
 from flask import Blueprint, request
-from database.models import Package
 
 # Represents the blueprint.
+from domains.packages.services.package_service import Packages
+
 packages = Blueprint('packages', __name__, template_folder='templates', url_prefix='/api/v0')
 
 # Enables Cross-Origin-Resource-Sharing across this domain.
@@ -24,7 +25,7 @@ def get_all_packages(_company_id, _role_id):
     search = request.args.to_dict()
     if _role_id <= 2:
         search["company_id"] = _company_id
-    results, count = Package.query_table(**search)
+    results, count = Packages.find(**search, serialize=True)
     return ListResponse(records=results, total_count=count).serve()
 
 
@@ -44,7 +45,7 @@ def get_package_by_id(id, _company_id, _role_id):
     }
     if _role_id <= 2:
         query["company_id"] = _company_id
-    result, count = Package.query_table(**query)
+    result, count = Packages.find(**query)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.PackageNotFound')
@@ -62,12 +63,12 @@ def add_package(_company_id, _role_id):
     :return: None
     """
     data = request.get_json()
-    package_exists, _ = Package.query_table(name=data['name'], company_id=_company_id)
+    data["company_id"] = _company_id
+    validate_package = Packages.from_json(data=data)
+    package_exists, _ = Packages.find(name=data['name'], company_id=_company_id)
     if len(package_exists) > 0:
         raise HourlyException('err.hourly.PackageExists')
-    data["company_id"] = _company_id
-    new_package = Package.validate_package(data=data)
-    Package.add_row(new_package);
+    Packages.add_row(validate_package)
     return serve_response(message="Success", status=201)
 
 
@@ -76,19 +77,13 @@ def add_package(_company_id, _role_id):
 def delete_package(_company_id, _role_id, package_id):
     """Deletes a package from within a user's company.
 
+    TODO: Validate events with package type.
+
     :param _company_id: Represents the user's company id.
     :param _role_id: Represents the user's role id.
     :param package_id: Represents the ID of the package to delete.
     :return: None
     """
-    try:
-        int(package_id)
-    except:
-        raise HourlyException('err.hourly.PackageNotFound')
-    package_match, _ = Package.query_table(id=package_id, company_id=_company_id)
-
-    if len(package_match) == 0:
-        raise HourlyException('err.hourly.PackageNotFound')
-    else:
-        Package.delete_row(uid=package_id)
-        return serve_response(message="Successfully deleted package.", status=204)
+    Packages.validate_package_exists(id=package_id)
+    Packages.delete_row(uid=package_id)
+    return serve_response(message="Successfully deleted package.", status=204)

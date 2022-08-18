@@ -1,5 +1,7 @@
 import sqlalchemy.exc
 from flask import Flask, render_template
+from marshmallow import ValidationError
+
 from domains.employees.routes.routes import employees
 from domains.roles.routes.routes import roles
 from domains.departments.routes.routes import departments
@@ -8,7 +10,7 @@ from domains.packages.routes.routes import packages
 from domains.companies.routes.routes import companies
 from flask_cors import CORS
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError, NotFound
-from crosscutting.exception.error_handlers import handle_hourly_exception, handle_validation_error, handle_unexpected_exception, handle_attribute_exception, handle_invalid_request, handle_notfound_exception
+from crosscutting.exception.error_handlers import handle_hourly_exception, handle_validation_error, handle_unexpected_exception, handle_attribute_exception, handle_marshmallow_validation_error, handle_invalid_request, handle_notfound_exception
 import crosscutting.exception.hourly_exception
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -28,6 +30,7 @@ app.register_error_handler(crosscutting.exception.hourly_exception.HourlyExcepti
 app.register_error_handler(InternalServerError, handle_unexpected_exception)
 app.register_error_handler(sqlalchemy.exc.InvalidRequestError, handle_invalid_request)
 app.register_error_handler(NotFound, handle_notfound_exception)
+app.register_error_handler(ValidationError, handle_marshmallow_validation_error)
 
 limiter = Limiter(
     app,

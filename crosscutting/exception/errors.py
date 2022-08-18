@@ -40,10 +40,10 @@ err_codes = {
             "suggestion": "Please check the ID of the clockin and re-attempt your query."
         },
 
-        "err.hourly.UserNotFound": {
+        "err.hourly.EmployeeNotFound": {
             "status": 404,
             "message": "No user was found with that ID.",
-            "title": "UserNotFound",
+            "title": "EmployeeNotFound",
             "suggestion": "Please check the ID of the user and re-attempt your query."
         },
 

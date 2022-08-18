@@ -9,7 +9,8 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
 
 from database.database import Session
-from database.models import Department, Employee, Clockin, Company
+from database.models import Department, Employee, Clockin
+from domains.employees.services.employee_service import Employees
 
 employees = Blueprint('employees', __name__, template_folder='templates', url_prefix='/api/v0')
 
@@ -34,7 +35,7 @@ def get_employees(_company_id, _role_id):
     search = request.args.to_dict()
     if _role_id <= 2:
         search["company_id"] = _company_id
-    results, count = Employee.query_table(**search)
+    results, count = Employees.find(**search, serialize=True)
     return ListResponse(records=results, total_count=count).serve()
 
 
@@ -50,44 +51,34 @@ def get_employee(id, _company_id, _role_id):
     :return: The employee that matches the criteria.
     """
 
-    query = {
-        "id": id
-    }
-
     if _role_id <= 2:
-        query["company_id"] = _company_id
-
-    result, count = Employee.query_table(**query)
-    if len(result) == 0:
-        raise HourlyException('err.hourly.UserNotFound')
+        result = Employees.validate_exists(id=id, in_company=_company_id)
     else:
-        return ListResponse(records=result).serve()
+        result = Employees.validate_exists(id=id)
+
+    result = Employees.as_dict(result[0])
+
+    return ListResponse(records=result).serve()
 
 
 @employees.post('/employees')
 @token_required()
 def add_employee():
-    # Store the data in a JSON object.
+    """Posts a new employee to the database.
+
+    :return: None
+    """
+
     data = request.get_json()
+    data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
-    # If the data could not be parsed as JSON or if it is too large,
-    # notify the user.
-    if data is None:
-        raise HourlyException('err.hourly.BadUserFormatting',
-                              message='The content type must be provided as JSON or the request was too large.')
-
-    user_exists, _ = Employee.query_table(email=data['email'])
+    validate_employee = Employees.from_json(data=data)
+    user_exists, _ = Employees.find(email=validate_employee.email)
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
 
-    data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-
-    Company.validate_company_exists(company_id=data["company_id"])
-    Department.validate_department_exists(department_id=data["department_id"], in_company=data["company_id"])
-
-    pay_rate = float(data['pay_rate'])  # Validate the pay rate is a valid float.
-    Employee.add_row(data)
+    Employees.add_row(validate_employee)
     return serve_response(message="Successfully added employee to the database!", status=201)
 
 
@@ -101,25 +92,19 @@ def signup_employee(_company_id, _role_id):
     :return: None
     """
     data = request.get_json()
-
-    if data is None:
-        raise HourlyException('err.hourly.BadUserFormatting',
-                              message='The content type must be provided as JSON or the request was too large.')
-
     data['company_id'] = _company_id
 
     if _role_id <= 2 and 'role_id' in data:
         if data['role_id'] > 2:
             data['role_id'] = 1
 
-    user_exists, _ = Employee.query_table(email=data['email'])
+    validate_employee = Employees.from_json(data=data)
+    user_exists, _ = Employees.find(email=validate_employee.email)
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
 
-    new_employee = Employee.validate_employee(data)
-
-    Employee.add_row(new_employee)
+    Employees.add_row(validate_employee)
     return serve_response(message='Success! Employee has been entered into the registry.', status=201)
 
 
@@ -128,14 +113,12 @@ def signup_employee(_company_id, _role_id):
 @token_required(init_payload_params=True)
 def delete_employee(_company_id, _role_id, id):
     # If params are not specified, notify the user they messed up.
-    if not id:
-        return jsonify({'message': 'Poorly formatted request!'}), 400
 
-    Employee.validate_employee_exists(employee_id=id)
+    Employees.validate_exists(id=id, in_company=_company_id)
 
     try:
-        Employee.delete_row(uid=id)
-    except:
+        Employees.delete_row(uid=id)
+    except Exception as E:
         raise HourlyException('err.hourly.InvalidUserDelete')
 
     return serve_response(message="User successfully deleted.", status=200)
@@ -145,17 +128,6 @@ def delete_employee(_company_id, _role_id, id):
 @employees.patch('/employees/<id>')
 @token_required()
 def update_employee(id):
-    with Session() as session:
-        with session.begin():
-
-            # Attempt to verify that employee exists and update
-            try:
-                protected_filter(session, Employee).filter_by(id=id).update(request.json)
-            except IntegrityError as E:
-                return jsonify({'message': 'No employee found with that ID.'}), 404
-
-            return jsonify({'message': 'Success!'})
-
     return 'Not yet supported', 501
 
 

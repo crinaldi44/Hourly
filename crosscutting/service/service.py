@@ -1,0 +1,158 @@
+from typing import Tuple, List, Any
+
+from marshmallow import Schema
+from sqlalchemy import text
+
+from crosscutting.exception.hourly_exception import HourlyException
+from database.database import Session
+
+DEFAULT_LIMIT = 20
+MAX_LIMIT = 100
+
+
+class Service:
+    """The Service (schema) layer of a domain is generally designed to handle interaction
+    with the Data Access Layer (the model). Classes of this type provide functionality
+    to manipulate and interact with data.
+
+    Generally, wherever possible, to cut down on the number of sessions open with the
+    Database, you'll want to prioritize or create methods that make use of a single session
+    versus sequentially invoking methods that would lead to multiple sessions being created.
+
+    """
+
+    def __init__(self, model, schema: Schema, table_name="None"):
+        """Initializes a new Service.
+
+        :param model: Represents the Data Access Object this Service will interact with.
+        :type model: Base
+        :param schema: Represents the Schema this Service will interact with.
+        :type schema: Schema
+        """
+        self.table_name = table_name
+        self.model = model
+        self.schema = schema()
+
+    def find(self, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False, **kwargs) -> \
+            tuple[
+                list[Any], Any | None]:
+        """Queries this table with specified parameters as designated in the request.
+
+        :param serialize: Represents whether to serialize results.
+        :param filters: Represents the filters to use.
+        :param page: Represents the page, calculated by the offset and, if any, a limit
+        :param offset: Represents the offset from the first row in the table to query.
+        :param limit: Represents the maximum number of records returned.
+        :param sort: Represents a field to sort by, denoted as a ^ for asc or - for desc
+        :param include_totals: Represents whether to include totals in the response
+        :param kwargs: Represents the filters to be specified to query by.
+        :return: Either a list of records or a tuple containing the records and totals, if specified.
+        :rtype List or Tuple
+        """
+        with Session() as session:
+            with session.begin():
+                resultant_rows = session.query(self.model)
+                count = None
+                if kwargs is not None:
+                    resultant_rows = resultant_rows.filter_by(**kwargs)
+                if include_totals is not None:
+                    count = resultant_rows.count()
+                if sort is not None:
+                    sorting_criteria = {
+                        "^": "asc",
+                        "-": "desc",
+                    }
+                    resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
+                if limit is not None:
+                    limit = int(limit)
+                    if limit > MAX_LIMIT:
+                        limit = MAX_LIMIT
+                if page is not None:
+                    page = int(page)
+                    rows_per_page = limit if limit is not None else DEFAULT_LIMIT
+                    resultant_rows = resultant_rows.offset(rows_per_page * page)
+                    resultant_rows = resultant_rows.limit(rows_per_page)
+                if page is None and (offset is not None or limit is not None):
+                    if offset is not None:
+                        resultant_rows = resultant_rows.offset(int(offset) or 0)
+                    if limit is not None:
+                        resultant_rows = resultant_rows.limit(limit or 0)
+                if serialize is True:
+                    iterator = map(lambda res: self.schema.dump(res), resultant_rows.all())
+                    return list(iterator), count
+                else:
+                    return resultant_rows.all(), count
+
+    def validate_exists(self, id: int, in_company: int = None, in_department: int = None) -> list:
+        """Finds an entry within the database with the specified id. If
+        fields for in_company or in_department or specified, the model must
+        have a field called "company_id" or "department_id" respectively,
+        otherwise this will not return a value.
+
+        :param in_department: Represents the department to search within.
+        :type in_department: int
+        :param in_company: Represents the company to search within.
+        :type in_company: int
+        :param id: Represents the ID of the resource.
+        :type id: int
+        :return: A list containing the resource.
+        """
+        return self.model.validate_exists(id=id, in_company=in_company, in_department=in_department,
+                                          table_name=self.table_name)
+
+    def as_dict(self, model):
+        """Serializes this model into dict format.
+
+        :return: A dict representation of the model.
+        """
+        return self.schema.dump(model)
+
+    def from_json(self, data):
+        """Validates the specified model. If an invalid value has been encountered,
+        raises an exception which will call back to the user with the fields that
+        are invalid. Deserializes the model into a database model.
+
+        :param data:
+        :param dikt:
+        :return: A dikt instance of the model
+        """
+        return self.schema.load(data=data, session=Session())
+
+    @classmethod
+    def add_row(cls, row):
+        """Adds a row to the table. Note that this does not deserialize or validate the model
+        you are attempting to add. For the version that achieves both of these, you may use
+        the Service.add_json() method. Otherwise, if you need to manipulate or utilize the
+        impending data, simply call validate_model which will deserialize the model from JSON,
+        then you may simply add the validated model using this method.
+
+        :param row: Represents the row to add.
+        :return: None
+        """
+        with Session() as session:
+            with session.begin():
+                session.add(row)
+
+    def add_json(self, dikt: dict):
+        """Adds a JSON serialized row to the specified table. Validates
+        the JSON. This generally should be utilized when no further manipulation
+        of user data is required and the document may be directly imported.
+
+        :param dikt:
+        :return:
+        """
+        with Session() as session:
+            with session.begin():
+                impending_row = self.schema.load(data=dikt, session=self.session)
+                session.add(impending_row)
+
+    def delete_row(self, uid: int):
+        """Deletes the specified row by ID.
+
+        :param uid: The id to delete by.
+        :return: None
+        """
+        with Session() as session:
+            with session.begin():
+                result = session.query(self.model).filter_by(id=uid)
+                result.delete()

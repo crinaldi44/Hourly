@@ -18,67 +18,6 @@ DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
 
 
-class PackageQuestion:
-    """A PackageQuestion is a denormalized data type consisting of a title,
-    a set of values, a data type, and a respective value. Generally, this is
-    used to provide information regarding an event that is pertinent to how
-    a company conducts the business or what additional features are necessary.
-
-    """
-
-    # Represents the required types each field is required to hold.
-    types = {
-        "title": str,
-        "value": str,
-        "values": list,
-        "data_type": str
-    }
-
-    def __init__(self, title=None, value=None, values=[], data_type=None):
-        """Initializes a new PackageQuestion.
-
-        :param title:
-        :param value:
-        :param values:
-        :param data_type:
-        """
-        self.title = title
-        self.value = value
-        self.values = values
-        self.data_type = data_type
-
-    @classmethod
-    def validate_package_question(cls, dikt):
-        """Validates a package question against a set of requirements. Validates each
-        field exists within the dict, then type checks the fields against the dict of
-        data types.
-
-        :param dikt: Represents the dikt to validate from.
-        :return:
-        """
-        if not isinstance(dikt, dict) or not all(x in dikt for x in ('title', 'value', 'values', 'data_type')):
-            raise HourlyException('err.hourly.BadPackageFormatting', message="Bad formatting for package questions!")
-        keys = list(dikt.keys())
-        for key in keys:
-            if type(dikt[key]) != cls.types[key]:
-                raise HourlyException('err.hourly.BadPackageFormatting',
-                                      message='Invalid type formatting on questions.' + key)
-        return dikt
-
-    @classmethod
-    def from_dict(cls, dikt):
-        """Constructs a package question from a dictionary.
-
-        :param dikt:
-        :return:
-        """
-        pass
-
-
-class PatchDocument:
-    pass
-
-
 class HourlyTable(object):
     """Represents a class whose primary function is to serve data to the user.
        The class is intended to be an extension of the Base to provide static
@@ -86,121 +25,34 @@ class HourlyTable(object):
     """
 
     @classmethod
-    def query_table(cls, page=None, offset=None, limit=None, sort=None, include_totals=None, **kwargs) -> list:
-        """Queries this table with specified parameters as designated in the request.
+    def validate_exists(cls, id, in_company=None, in_department=None, table_name="Company"):
+        """Validates that the employee exists. If this condition
+        is False, raises an error that corresponds to this model.
 
-        :param page: Represents the page, calculated by the offset and, if any, a limit
-        :param offset: Represents the offset from the first row in the table to query.
-        :param limit: Represents the maximum number of records returned.
-        :param sort: Represents a field to sort by, denoted as a ^ for asc or - for desc
-        :param include_totals: Represents whether to include totals in the response
-        :param kwargs: Represents the filters to be specified to query by.
-        :return: Either a list of records or a tuple containing the records and totals, if specified.
-        :rtype List or Tuple
+        :param table_name:
+        :param in_department:
+        :param id: Represents the id of the resource.
+        :param in_company: Represents a company to check the resource within.
+        :return: A Bool representing whether the row exists.
         """
+        query = {
+            "id": id
+        }
+        if in_company is not None:
+            query["company_id"] = in_company
+        if in_department is not None:
+            query["department_id"] = in_department
+
         with Session() as session:
             with session.begin():
-                resultant_rows = session.query(cls)
-                count = None
-                if kwargs is not None:
-                    resultant_rows = resultant_rows.filter_by(**kwargs)
-                if include_totals is not None:
-                    count = resultant_rows.count()
-                if sort is not None:
-                    sorting_criteria = {
-                        "^": "asc",
-                        "-": "desc",
-                    }
-                    resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
-                if limit is not None:
-                    limit = int(limit)
-                    if limit > MAX_LIMIT:
-                        limit = MAX_LIMIT
-                if page is not None:
-                    page = int(page)
-                    rows_per_page = limit if limit is not None else DEFAULT_LIMIT
-                    resultant_rows = resultant_rows.offset(rows_per_page * page)
-                    resultant_rows = resultant_rows.limit(rows_per_page)
-                if page is None and (offset is not None or limit is not None):
-                    if offset is not None:
-                        resultant_rows = resultant_rows.offset(int(offset) or 0)
-                    if limit is not None:
-                        resultant_rows = resultant_rows.limit(limit or 0)
-                iterator = map(lambda res: res.as_dict(), resultant_rows.all())
-                return list(iterator), count
+                result = session.query(cls).filter_by(**query).all()
 
-    @classmethod
-    def add_row(cls, row: dict):
-        """Adds a row to the designated HourlyTable.
+                if len(result) == 0:
+                    raise HourlyException('err.hourly.' + table_name + 'NotFound')
 
-            :param self:
-            :param row: Represents the generic row to add to the database.
-            :return: None
-            """
-        with Session() as session:
-            with session.begin():
-                impending_row = cls(**row)
-                session.add(impending_row)
-
-    @classmethod
-    def patch_row(cls, patch_document_list: list):
-        """Accepts a patch document and processes an update to a
-           specific resource.
-
-        :param patch_document_list: Represents a list of RFC patch documents.
-        :type List[Any]
-        :return: None
-        """
-        raise Exception('Operation unsupported.')
-
-    @classmethod
-    def __process_patch_document(cls, patch_document_list, index=0):
-        """Processes a patch document operation on a specified
-        document.
-
-        :param patch_document_list: Represents the list of RFC-6902 patch
-        docs.
-        :param index: Represents the current index.
-        :return: None
-        """
-        raise Exception('Operation unsupported.')
-
-    @classmethod
-    def delete_row(cls, uid: int):
-        """Deletes the specified row by ID.
-
-        :param uid: The id to delete by.
-        :return: None
-        """
-        with Session() as session:
-            with session.begin():
-                result = session.query(cls).filter_by(id=uid)
-                result.delete()
-
-    @classmethod
-    def validate_model(cls, row: dict) -> bool:
-        """ Validates a dict model against the property set of its
-            intended model.
-
-        :param row: The dict to validate.
-        :return: True, if all keys in the row are a subset of this model's keys.
-        :rtype bool
-        """
-        result = True
-
-        # Short circuit if there are no keys to be processed.
-        if not row.keys():
-            return False
-
-        # Validate the impending row to be added is a subset of the model.
-        if not row.keys() <= cls.__dict__.keys():
-            result = False
-
-        return result
+                return result
 
 
-# Represents an employee.
-# TODO: Implement passlib SHA-256 encryption in constructor.
 class Employee(HourlyTable, Base):
     __tablename__ = "employees"
 
@@ -251,26 +103,6 @@ class Employee(HourlyTable, Base):
         profile["company"] = self.company.as_dict()
         profile["role"] = self.role.as_dict()
         return profile
-
-    @classmethod
-    def validate_employee_exists(cls, employee_id, in_company=None):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param in_department: Represents the department to cross reference.
-        :param in_company: Represents the company to cross reference.
-        :param employee_id: Represents the id of the employee.
-        :return: A Bool representing whether the row exists.
-        """
-        if in_company is not None:
-            result, count = cls.query_table(id=employee_id, company_id=in_company)
-        else:
-            result, count = cls.query_table(id=employee_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.UserNotFound')
-
-        return result
 
     @classmethod
     def validate_employee(cls, data):
@@ -336,8 +168,8 @@ class Employee(HourlyTable, Base):
     # Represents a machine-readable representation of the state of the
     # Employee.
     def __repr__(self):
-        return "<User(email='%s', password='%s', name='%s', role_id='%s', covid_status='%s' department='%s'" % (
-            self.email, self.password, self.name, self.role_id, self.covid_status, self.department_id
+        return "<User(email='%s', password='%s', first_name='%s', role_id='%s', department='%s'" % (
+            self.email, self.password, self.first_name, self.role_id, self.department_id
         )
 
     @classmethod
@@ -384,25 +216,6 @@ class Department(HourlyTable, Base):
             "company_id": self.company_id
         }
 
-    @classmethod
-    def validate_department_exists(cls, department_id, in_company=None):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param department_id: Represents the id of the department.
-        :param in_company: Represents a company to check the department within.
-        :return: A Bool representing whether the row exists.
-        """
-        if in_company is not None:
-            result, count = cls.query_table(id=department_id, company_id=in_company)
-        else:
-            result, count = cls.query_table(id=department_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.DepartmentNotFound')
-
-        return result
-
 
 class Company(HourlyTable, Base):
     """ Represents a grouping of employees and services. Each company
@@ -417,13 +230,13 @@ class Company(HourlyTable, Base):
 
     __tablename__ = "companies"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255))
-    about = Column(String(255))
-    address_street = Column(String(255))
-    city = Column(String(255))
-    state = Column(String(255))
-    zip_code = Column(String(255))
-    phone = Column(String(255))
+    name = Column(String(255), nullable=False)
+    about = Column(String(255), nullable=False)
+    address_street = Column(String(255), default="")
+    city = Column(String(255), default="")
+    state = Column(String(255), default="")
+    zip_code = Column(String(255), default="")
+    phone = Column(String(255), default="")
 
     def as_dict(self):
         """Represents this entity in dictionary form.
@@ -442,21 +255,6 @@ class Company(HourlyTable, Base):
             "zip_code": self.zip_code,
             "phone": self.phone
         }
-
-    @classmethod
-    def validate_company_exists(cls, company_id):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param company_id: Represents the company id.
-        :return: A Bool representing whether the row exists.
-        """
-        result, count = cls.query_table(id=company_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.CompanyNotFound')
-
-        return result
 
 
 """
@@ -478,20 +276,6 @@ class Roles(HourlyTable, Base):
             "name": self.name,
             "permissions": self.permissions
         }
-
-    def validate_role_exists(cls, role_id):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param employee_id: Represents the id of the employee.
-        :return: A Bool representing whether the row exists.
-        """
-        result, count = cls.query_table(id=role_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.RoleNotFound')
-
-        return result
 
     def __repr__(self):
         return "<Role(name='%s'" % (
@@ -526,21 +310,6 @@ class Clockin(HourlyTable, Base):
             'department': self.department.as_dict()
         }
 
-    @classmethod
-    def validate_clockin_exists(cls, clockin_id):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param clockin_id: The clockin ID.
-        :return: A Bool representing whether the row exists.
-        """
-        result, count = cls.query_table(employee_id=clockin_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.ClockinNotFound')
-
-        return result
-
 
 # A clockin is a transaction performed by an employee. Various
 # clock-ins are associated with an employee by
@@ -557,83 +326,6 @@ class Package(HourlyTable, Base):
     price = Column(Float, default=0.0)
     company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
     questions = Column(JSON(), nullable=False)
-
-    # Returns a dictionary representation of the Package.
-    def as_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'img_url': self.img_url,
-            'price': self.price,
-            'questions': self.questions
-        }
-
-    @classmethod
-    def validate_package_questions(cls, question_list):
-        """Validates a list of package question. Any element
-        within the package question list that does not meet the criteria
-        is removed.
-
-        :param question_list: Represents the list of questions being validated.
-        :return: None
-        """
-        if not isinstance(question_list, list):
-            return
-        for i in range(0, len(question_list)):
-            if not all(x in ['title', 'value', 'values', 'dataType'] for x in question_list[i]):
-                question_list.remove(question_list[i])
-        return question_list
-
-    @classmethod
-    def validate_package(cls, data) -> dict:
-        """Validates a package model.
-
-        :param data: Represents the data to validate.
-        :return: A dict representing the package.
-        """
-
-        if 'name' not in data or type(data["name"]) != str \
-                or ('description' in data and type(data["description"]) != str)\
-                or ('img_url' in data and type(data["img_url"]) != str)\
-                or ('price' in data and type(data["price"]) != float):
-            raise HourlyException('err.hourly.BadPackageFormatting')
-
-        if 'questions' in data and type(data["questions"]) != list:
-            raise HourlyException('err.hourly.BadPackageFormatting')
-        elif 'questions' in data:
-            package_questions = []
-            for x in range(0, len(data["questions"])):
-                package_questions.append(PackageQuestion.validate_package_question(data["questions"][x]))
-
-        Company.validate_company_exists(company_id=data["company_id"])
-
-        return {
-            "name": data["name"],
-            "description": data["description"] or "",
-            "img_url": data["img_url"] or '',
-            "price": data["price"],
-            "questions": package_questions or []
-        }
-
-    @classmethod
-    def validate_package_exists(cls, package_id, in_company=None):
-        """Validates that the employee exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param in_company: Represents the company to cross reference.
-        :param package_id: Represents the id of the package.
-        :return: A Bool representing whether the row exists.
-        """
-        if in_company is not None:
-            result, count = cls.query_table(id=package_id, company_id=in_company)
-        else:
-            result, count = cls.query_table(id=package_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.PackageNotFound')
-
-        return result
 
 
 class Event(HourlyTable, Base):
@@ -655,39 +347,6 @@ class Event(HourlyTable, Base):
     service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
     department_id = Column(Integer(), ForeignKey('departments.id'), nullable=False)
     questions = Column(JSON(), nullable=False)
-
-    def as_dict(self):
-        """Returns a dictionary representation of the Event.
-
-        :return: A dictionary representation of the Event.
-        """
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "agreed_price": self.agreed_price,
-            "start_datetime": self.start_datetime,
-            "end_datetime": self.end_datetime,
-            "package_id": self.package_id,
-            "service_employee": self.service_employee,
-            "department_id": self.department_id
-        }
-
-    @classmethod
-    def validate_event_exists(cls: 'Event', event_id: int):
-        """Validates that the event exists. If this condition
-        is False, raises an error that corresponds to this model.
-
-        :param event_id: The event id.
-        :type event_id: int
-        :return: A Bool representing whether the row exists.
-        """
-        result, count = cls.query_table(id=event_id)
-
-        if len(result) == 0:
-            raise HourlyException('err.hourly.EventNotFound')
-
-        return result
 
 
 # If a table does not yet exist, create one on the database with

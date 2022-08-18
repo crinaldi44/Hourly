@@ -13,6 +13,7 @@ from flask_cors import CORS
 from crosscutting.exception.hourly_exception import HourlyException
 from database.models import Employee
 from database.database import Session
+from domains.employees.services.employee_service import EmployeeService
 
 
 def validate_credentials(session, req):
@@ -115,7 +116,7 @@ def token_required(init_payload_params=False):
 
                         # Verify that the user exists.
                         try:
-                            current_user = Employee.query_table(id=data['employee_id'])
+                            current_user = EmployeeService().validate_exists(id=data['employee_id'])
 
                             has_access = False
                             role_data = data["role"]["permissions"].split(',')
