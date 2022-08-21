@@ -4,9 +4,6 @@ is an API that is intended to serve calculations and machine-learning based pred
 aim to provide data that benefits cost-optimization, scheduling, and increased workload productivity of small
 businesses.
 
-This is a Flask application wrapped in a library called Connexion, which will route requests based on an
-OpenAPI spec.
-
 The application achieves this by streamlining information that is commonly spread across 3-4 applications and 
 combining it into one general portal.
 
@@ -26,9 +23,9 @@ venv/Scripts/activate (Windows Powershell/GitBash)
 And pip3 install each of the required dependencies.
 
 ## Structure of the Cloud
-The cloud is based on Python's Flask library. The application leverages a domain-driven design for separation of
-concerns. Each domain follows a routes/tests/utils/services pattern with the model for that particular route being
-at the base level directory. The routes.py file within the routes folder serves to route the data to the service layer,
+This is a Flask application wrapped in a library called Connexion, which maps an OpenAPI 3.x spec to controllers
+in the domains module. Each domain follows a routes/tests/utils/services pattern with the model for that particular route being
+at the base level directory. The controllers will route the data to the service layers specified in each domain,
 which provides automated deserialization and validation of the data. Additionally, unit tests are provided in the
 tests folder and should be updated each time a new route has been added. You may run a script to validate all tests
 at once. Unit tests should be batch-run by this method before each deployment.
@@ -40,10 +37,6 @@ domain. They are located at:
   * hourly-cloud-prod
 
 ## Security
-You may protect routes that require a token with the @token_required wrapper, and the service will ensure that a token 
-is passed and validated. The token will expire after the default expiration time OR when the service has been restarted,
-as tokens are measured against their issued at time and compared with the system start time.
-
 A rate limit of 100 requests per minute is imposed on the application as a whole to prevent flooding the backend with
 requests. On endpoints that require heavier logic, joins or complex querying, it is suggested to use the default secure
 rate limit of 50 requests per minute.
@@ -70,8 +63,8 @@ function:
 
 ## Security
 This project is built with security in mind from the API level up. Routes at the API level are protected
-using a JWT token with the secret API key found in the app.py file. To bolster this security feature
-and due to the vulnerability nature of JWT tokens, it is recommended to rotate this security key periodically.
+using a JWT token with the secret key found in the app.py file. The secret key should be rotated roughly
+every 30-60 days.
 
 The scope of accessible data is limited on a role-and-company based premise. Users of any role up to and including
 organization owner will only be able to access data from within their company. Conversely, users with the administrator

@@ -12,7 +12,7 @@ def add_company(company):
     """
     request = connexion.request
     validate_company = Companies.from_json(data=request.get_json())
-    company_exists, _ = Companies.find(name=validate_company.name)
+    company_exists, _ = Companies.find(additional_filters={"name": validate_company.name})
     if len(company_exists) > 0:
         raise HourlyException('err.hourly.CompanyExists')
     Companies.add_row(validate_company)

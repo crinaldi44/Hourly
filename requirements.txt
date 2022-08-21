@@ -10,3 +10,4 @@ marshmallow
 marshmallow-sqlalchemy
 connexion
 connexion[swagger-ui]
+jsonpatch

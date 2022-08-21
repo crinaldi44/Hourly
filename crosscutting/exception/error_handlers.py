@@ -32,7 +32,7 @@ def handle_marshmallow_validation_error(err: ValidationError):
     return jsonify({
         "error_code": "err.hourly.BadRequestFormatting",
         "status": 422,
-        "detail": list(err.messages.values())[0],
+        "detail": list(err.messages.values())[0][0],
         "suggestion": "Please double-check your spelling and re-attempt your request."
     }), 422
 

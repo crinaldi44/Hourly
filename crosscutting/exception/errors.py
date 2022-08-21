@@ -19,6 +19,13 @@ err_codes = {
             "suggestion": "Please check your spelling and try again."
         },
 
+        "err.hourly.InvalidPatch": {
+            "status": 422,
+            "message": "Patch list is of invalid or inoperable formatting.",
+            "title": "InvalidPatch",
+            "suggestion": "Please verify the patch documents and re-attempt your request."
+        },
+
         "err.hourly.RequestTooLarge": {
             "status": 400,
             "message": "The content type must be provided as JSON or the request was too large.",

@@ -1,6 +1,7 @@
 import ast
 from typing import Tuple, List, Any
 
+from jsonpatch import JsonPatch, JsonPatchException
 from marshmallow import Schema
 from sqlalchemy import text
 
@@ -31,6 +32,7 @@ class Service:
         :type schema: Schema
         """
         self.table_name = table_name
+        self.name = table_name.capitalize()
         self.model = model
         self.schema = schema()
 
@@ -123,7 +125,7 @@ class Service:
             query["department_id"] = in_department
         result, count = self.find(additional_filters=query, include_totals=True)
         if count == 0:
-            raise HourlyException('err.hourly.' + self.table_name + 'NotFound')
+            raise HourlyException('err.hourly.' + self.name + 'NotFound')
         return result[0]
 
     def as_dict(self, model):
@@ -143,6 +145,35 @@ class Service:
         :return: A dikt instance of the model
         """
         return self.schema.load(data=data, session=Session())
+
+    def patch(self, uid: int, patch_list: list):
+        """Patches the specified resource using RFC-6902 compliant patch documents.
+        Resolves JSON pointers in the patch list to fields in the document. Processes
+        operations in order.
+
+        :param uid: Represents the ID of the resource to patch.
+        :param patch_list: Represents a listing of patch documents.
+        :return: The patched resource
+        """
+        if len(patch_list) == 0:
+            return
+        patch = JsonPatch(patch_list)
+
+        with Session() as session:
+            # Keep transactions in same context to avoid issues with model expiration.
+            with session.begin():
+                result = session.query(self.model).filter_by(id=uid)
+                records = result.all()
+                if len(records) == 0:
+                    raise HourlyException('err.hourly.' + self.name + 'NotFound')
+                try:
+                    # Dump existing model, apply the replacement doc with validations
+                    # and update to new row.
+                    diff_doc = patch.apply(self.schema.dump(records[0]))
+                    self.from_json(diff_doc) # Validate the model.
+                    result.update(diff_doc)
+                except JsonPatchException as E:
+                    raise HourlyException('err.hourly.InvalidPatch')
 
     @classmethod
     def add_row(cls, row):

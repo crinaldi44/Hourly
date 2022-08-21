@@ -9,7 +9,7 @@ class CompanyService(Service):
     """
 
     def __init__(self):
-        super().__init__(model=Company, schema=CompanyModel)
+        super().__init__(model=Company, schema=CompanyModel, table_name="company")
 
 
 Companies = CompanyService()
