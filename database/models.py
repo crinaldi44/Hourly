@@ -45,9 +45,9 @@ class HourlyTable(object):
 
         with Session() as session:
             with session.begin():
-                result = session.query(cls).filter_by(**query).all()
-
-                if len(result) == 0:
+                try:
+                    result = session.query(cls).filter_by(**query).one()
+                except Exception as E:
                     raise HourlyException('err.hourly.' + table_name + 'NotFound')
 
                 return result
@@ -171,22 +171,6 @@ class Employee(HourlyTable, Base):
         return "<User(email='%s', password='%s', first_name='%s', role_id='%s', department='%s'" % (
             self.email, self.password, self.first_name, self.role_id, self.department_id
         )
-
-    @classmethod
-    def get_users_profile(cls, user_id):
-        """Retrieves the user's profile by obtaining details regarding
-        their respective department, company and role.
-
-        :param user_id: The ID of the user to fetch the profile of.
-        :return: A profile dict of the user's profile.
-        """
-        with Session() as session:
-            with session.begin():
-                result = session.query(cls).filter_by(id=user_id).one()
-                if result is None:
-                    return []
-                else:
-                    return [result.profile_dict()]
 
 
 # A Department is a section of employees that serves a particular purpose.

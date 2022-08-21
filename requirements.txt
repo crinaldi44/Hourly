@@ -8,3 +8,5 @@ bcrypt
 Flask-Limiter
 marshmallow
 marshmallow-sqlalchemy
+connexion
+connexion[swagger-ui]

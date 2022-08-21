@@ -4,6 +4,9 @@ is an API that is intended to serve calculations and machine-learning based pred
 aim to provide data that benefits cost-optimization, scheduling, and increased workload productivity of small
 businesses.
 
+This is a Flask application wrapped in a library called Connexion, which will route requests based on an
+OpenAPI spec.
+
 The application achieves this by streamlining information that is commonly spread across 3-4 applications and 
 combining it into one general portal.
 

@@ -1,0 +1,1969 @@
+openapi: 3.0.2
+info:
+  contact:
+    email: test@test.com
+    name: Hourly
+    url: http://www.hourly.com
+  description: Provides interaction with Hourly web app.
+  title: Hourly API
+  version: "0.1"
+servers:
+- description: Represents the local server.
+  url: http://localhost:8080/api/v0
+- description: The staging API environment.
+  url: http://hourly-timesheet-dev.herokuapp.com/api/v0
+- description: The prod API environment.
+  url: http://hourly-timesheet-prod.herokuapp.com/api/v0
+tags:
+- description: Durations of time that an employee has worked.
+  name: Clockins
+- description: Groupings of users within the cloud.
+  name: Companies
+- description: Subdivisions of companies.
+  name: Departments
+- description: Event types created by companies.
+  name: Packages
+- description: Roles that users can have in the Hourly cloud.
+  name: Roles
+paths:
+  /companies:
+    get:
+      operationId: list_companies
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of companies.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Companies
+      tags:
+      - Companies
+      x-openapi-router-controller: domains.companies.controllers.get.controller
+    post:
+      operationId: add_company
+      requestBody:
+        x-body-name: company
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        description: Add Company
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: company added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Company
+      tags:
+      - Companies
+      x-openapi-router-controller: domains.companies.controllers.post.controller
+  /companies/{id}:
+    delete:
+      operationId: delete_company
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Company deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Company
+      tags:
+      - Companies
+      x-openapi-router-controller: domains.companies.controllers.delete.controller
+    get:
+      operationId: get_company
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Successfully retrieved Company
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Company
+      tags:
+      - Companies
+      x-openapi-router-controller: domains.companies.controllers.get.controller
+    patch:
+      operationId: patch_company
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Company patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Company
+      tags:
+      - Companies
+      x-openapi-router-controller: domains.companies.controllers.patch.controller
+  /departments:
+    get:
+      operationId: list_departments
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of departments.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Departments
+      tags:
+      - Departments
+      x-openapi-router-controller: domains.departments.controllers.get.controller
+    post:
+      operationId: add_department
+      requestBody:
+        x-body-name: department
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Department'
+        description: Add Department
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: department added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Department
+      tags:
+      - Departments
+      x-openapi-router-controller: domains.departments.controllers.post.controller
+  /departments/{id}:
+    delete:
+      operationId: delete_department
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Department deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Department
+      tags:
+      - Departments
+      x-openapi-router-controller: domains.departments.controllers.delete.controller
+    patch:
+      operationId: patch_department
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Department patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Department
+      tags:
+      - Departments
+      x-openapi-router-controller: domains.departments.controllers.patch.controller
+  /clockins:
+    get:
+      operationId: list_clockins
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of clockins.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Clockins
+      tags:
+      - Clockins
+      x-openapi-router-controller: domains.clockins.controllers.get.controller
+    post:
+      operationId: add_clockin
+      requestBody:
+        x-body-name: clockin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Clockin'
+        description: Add Clockin
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: clockin added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Clockin
+      tags:
+      - Clockins
+      x-openapi-router-controller: domains.clockins.controllers.post.controller
+  /clockins/{id}:
+    delete:
+      operationId: delete_clockin
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Clockin deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Clockin
+      tags:
+      - Clockins
+      x-openapi-router-controller: domains.clockins.controllers.delete.controller
+    patch:
+      operationId: patch_clockin
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Clockin patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Clockin
+      tags:
+      - Clockins
+      x-openapi-router-controller: domains.clockins.controllers.patch.controller
+  /packages:
+    get:
+      operationId: list_packages
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of packages.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Packages
+      tags:
+      - Packages
+      x-openapi-router-controller: domains.packages.controllers.get.controller
+    post:
+      operationId: add_package
+      requestBody:
+        x-body-name: package
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Package'
+        description: Add Package
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: package added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Package
+      tags:
+      - Packages
+      x-openapi-router-controller: domains.packages.controllers.post.controller
+  /packages/{id}:
+    delete:
+      operationId: delete_package
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Package deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Package
+      tags:
+      - Packages
+      x-openapi-router-controller: domains.packages.controllers.delete.controller
+    patch:
+      operationId: patch_package
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Package patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Package
+      tags:
+      - Packages
+      x-openapi-router-controller: domains.packages.controllers.patch.controller
+
+  /roles:
+    get:
+      operationId: list_roles
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of roles.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List the set of permissions a user may retain.
+      tags:
+      - Roles
+      x-openapi-router-controller: domains.roles.controllers.get.controller
+    post:
+      operationId: add_role
+      requestBody:
+        x-body-name: role
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+        description: Add Role
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: role added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Role
+      tags:
+      - Roles
+      x-openapi-router-controller: domains.roles.controllers.post.controller
+  /roles/{id}:
+    delete:
+      operationId: delete_role
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Role deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete a role
+      tags:
+      - Roles
+      x-openapi-router-controller: domains.roles.controllers.delete.controller
+    patch:
+      operationId: patch_role
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Role patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch a role
+      tags:
+      - Roles
+      x-openapi-router-controller: domains.roles.controllers.patch.controller
+  /employees:
+    get:
+      operationId: list_users
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of users.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Employees
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.get.controller
+  /employees/profile/{id}:
+    get:
+      operationId: get_users_profile
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Successfully retrieved Employee profile
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Get Employee Profile
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.get.controller
+  /employees/{id}:
+    delete:
+      operationId: delete_employee
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Employee deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Employee
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.delete.controller
+    get:
+      operationId: get_employee
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Successfully retrieved Employee
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Get Employee
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.get.controller
+    patch:
+      operationId: patch_employee
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Employee patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Employee
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.patch.controller
+  /employees/login:
+    post:
+      operationId: authenticate_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/UserLoginRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+          description: Login successful
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      summary: Login User
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.post.controller
+  /employees/signup:
+    post:
+      operationId: signup_user
+      requestBody:
+        x-body-name: employee
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignUpResponse'
+          description: User signup successful!
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Signup Employee
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.post.controller
+components:
+  schemas:
+    AddResponse:
+      description: Response to adding a new row.
+      example:
+        id: id
+      properties:
+        id:
+          title: id
+          type: integer
+      required:
+      - id
+      title: AddResponse
+      type: object
+    Clockin:
+      description: A duration of time worked by an employee.
+      example:
+        id: id
+        employee_id: employee_id
+        clockin_time: clockin_time
+        clockout_time: clockout_time
+        department_id: department_id
+      properties:
+        id:
+          description: Unique identifier
+          title: id
+          type: integer
+        employee_id:
+          description: Unique identifier for an employee.
+          title: employee_id
+          type: integer
+        clockin_time:
+          description: Clockin time
+          title: clockin_time
+          type: string
+        clockout_time:
+          description: Clockout time
+          title: clockout_time
+          type: string
+        department_id:
+          description: Unique identifier for a department.
+          title: department_id
+          type: string
+      required:
+        - employee_id
+        - clockin_time
+        - department_id
+    Company:
+      description: "A grouping of multiple departments, users, and events."
+      example:
+        zip_code: zip_code
+        phone: phone
+        city: city
+        name: name
+        about: about
+        address_street: address_street
+        id: id
+        state: state
+      properties:
+        id:
+          description: Unique identifier
+          title: id
+          type: string
+        name:
+          description: The name of the company.
+          title: name
+          type: string
+        about:
+          description: The company's about us.
+          title: about
+          type: string
+        phone:
+          description: organization phone
+          title: phone
+          type: string
+        address_street:
+          description: The street address of the company.
+          title: address_street
+          type: string
+        city:
+          description: The city in which the company is located.
+          title: city
+          type: string
+        state:
+          description: state
+          title: state
+          type: string
+        zip_code:
+          description: zipCode
+          title: zip_code
+          type: string
+      required:
+      - name
+      title: Company
+      type: object
+    Department:
+      description: Subdivisions of companies.
+      example: "{'department_name': 'Example', 'manager_id': 1, 'company_id': 2 }"
+      properties:
+        id:
+          description: The id of the department.
+          type: integer
+        department_name:
+          description: Block of text containing the name of the department.
+          type: string
+        manager_id:
+          description: An id representing the ID of the department manager.
+          type: string
+        company_id:
+          description: The id representing the company the department is in.
+          type: string
+      required:
+      - department_name
+      title: Department
+      type: object
+    Error:
+      description: A single error message.
+      example: "{\n    \"code\": \"error.general.badGateway\",\n    \"status\": 502,\n\
+        \    \"developerMessage\": \"Insitucloud is currently down.\",\n    \"userMessage\"\
+        : \"\",\n    \"resolution\": \"Check the status page or try again later.\"\
+        ,\n    \"moreInfo\": \"\",\n    \"field\": \"\",\n    \"errorId\": \"886313e1-3b8a-5372-9b90-0c9aee199e5d\"\
+        \n}"
+      properties:
+        code:
+          description: A machine-readable unique identifier of the error. The code
+            will never change and should be used to identify the specific error.
+          type: string
+        status:
+          description: The HTTP status code. Included here for quick reference.
+          format: int32
+          type: integer
+        developerMessage:
+          description: A message to the developer about the error message. This may
+            change at any time and should not be shown to the end user.
+          type: string
+        userMessage:
+          description: A message that can be displayed to the end user. This may change
+            at any time. You may want to check the error code and create a custom
+            error message.
+          type: string
+        resolution:
+          description: "A quick suggestion reguaring what to do next. If this does\
+            \ not work, check out the page at \"moreInfo.\""
+          type: string
+        moreInfo:
+          description: A link to a webpage with more information about the error.
+          type: string
+        field:
+          description: "If the error relates to a specific field, this will show you\
+            \ which field it is."
+          type: string
+        errorId:
+          description: "A unique identifier that relates the error to our internal\
+            \ logs. If you contact support, this should be included."
+          type: string
+      required:
+      - code
+      - status
+      title: Root Type for ErrorMessage
+      type: object
+    ErrorListResponse:
+      description: A list of error messages.
+      example: "{'detail': 'The server encountered an unexpected error. Please try again later.','status': 500,'suggestion': 'Please wait 5 minutes and re-attempt your request.'}"
+      properties:
+        errors:
+          description: List of all error messages.
+          items:
+            type: object
+            title: ErrorMessage
+          type: array
+      required:
+      - errors
+      title: Root Type for ErrorListResponse
+      type: object
+    ListResponse:
+      description: A response that contains data.
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+      properties:
+        data:
+          title: data
+          type: array
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      required:
+      - data
+      - message
+      - status
+      title: ListResponse
+      type: object
+    Package:
+      description: Represents a type of event that can be created.
+      example: "{'name': 'Example', 'description': 'Example description', 'img_url': 'url', 'price': '15.00', 'companyId': 1, 'questions': [{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+      properties:
+        id:
+          description: The identifier for the role.
+          type: integer
+        name:
+          description: name
+          type: string
+        description:
+          description: Block of text describing the role.
+          type: string
+        img_url:
+          description: The url to display the image tag.
+          type: string
+        price:
+          description: The price of the package, in USD.
+          type: string
+        company_id:
+          description: The ID of the company created by.
+          type: integer
+        questions:
+          description: The questions to include in the event form.
+          type: array
+          items:
+            $ref: '#/components/schemas/PackageQuestion'
+      required:
+      - name
+      - description
+      title: Package
+      type: object
+    PackageQuestion:
+      description: Represents a question type to be included in a package.
+      example: "{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}"
+      properties:
+        title:
+          description: Text that outlines the question.
+          type: string
+        value:
+          description: The value stored by the question.
+          type: string
+        values:
+          description: The potential values, if any, of the question.
+          type: array
+        data_type:
+          description: The type of the question.
+          type: string
+      required:
+      - title
+      - data_type
+      title: PackageQuestion
+      type: object
+    PatchDocument:
+      description: A JSONPatch document as defined by RFC 6902.
+      example: "{\n    \"op\": \"replace\",\n    \"path\": \"/name\",\n    \"value\"\
+        : \"Sample3\"\n}"
+      properties:
+        op:
+          description: The operation to be performed
+          enum:
+          - add
+          - remove
+          - replace
+          - move
+          - copy
+          - test
+          type: string
+        path:
+          description: A JSON-Pointer
+          type: string
+        value:
+          description: The value to be used within the operations.
+          type: string
+        fromPath:
+          description: A string containing a JSON Pointer value.
+          type: string
+      required:
+      - op
+      - path
+      title: PatchDocument
+      type: object
+    Role:
+      description: A single role.
+      example: "{\n    \"name\": \"Role1\",\n    \"description\": \"Role1 description\"\
+        \n}"
+      properties:
+        id:
+          description: The identifier for the role.
+          type: integer
+        name:
+          description: name
+          type: string
+        description:
+          description: Block of text describing the role.
+          type: string
+        permissions:
+          description: Permissions for role
+          type: string
+      required:
+      - name
+      - permissions
+      title: Role
+      type: object
+    User:
+      description: A single user.
+      example: "{\n    \"name\": \"User1\",\n    \"description\": \"User1 description\"\
+        \n}"
+      properties:
+        id:
+          description: A unique identifier for a user.
+          type: string
+        email:
+          description: email
+          type: string
+        first_name:
+          description: The user's first name.
+          type: string
+        last_name:
+          description: The user's last name.
+          type: string
+        pay_rate:
+          description: The user's pay rate.
+          type: integer
+        department_id:
+          description: The user's department id.
+          type: integer
+        role_id:
+          description: The user's role id.
+          type: integer
+      required:
+      - email
+      title: User
+      type: object
+    UserLoginRequest:
+      description: Request for user login.
+      example:
+        email: email
+        password: password
+      properties:
+        email:
+          description: The users email
+          title: email
+          type: string
+        password:
+            description: The users password
+            title: password
+            type: string
+      required:
+        - email
+        - password
+      title: UserLoginRequest
+      type: object
+    UserLoginResponse:
+      description: Response on user login.
+      example:
+        accessToken: accessToken
+      properties:
+        accessToken:
+          description: accessToken that can be passed as authorization for endpoints
+          title: accessToken
+          type: string
+      required:
+      - accessToken
+      title: UserLoginResponse
+      type: object
+    UserSignUpResponse:
+      description: Response to user signup
+      example:
+        id: id
+      properties:
+        id:
+          title: id
+          type: string
+      required:
+      - id
+      title: UserSignUpResponse
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+      x-bearerInfoFunc: crosscutting.auth.authentication.authenticate_user

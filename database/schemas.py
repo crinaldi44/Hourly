@@ -1,8 +1,9 @@
-from marshmallow import Schema, fields, INCLUDE, validate
+from marshmallow import Schema, fields, INCLUDE, validate, pre_load, post_dump
 from marshmallow.validate import Length
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, SQLAlchemySchema
 
 from database.models import Clockin, Company, Department, Employee, Event, Package, Roles
+from inflection import underscore, camelize
 
 
 def validate_department(department_id):
@@ -15,6 +16,21 @@ def validate_company(company_id):
 
 def validate_employee(employee_id):
     return Employee.validate_exists(id=employee_id)
+
+
+class FormatConverter:
+    """This mixin ensures uniform formatting for the user request data coming in
+    as well as going out, specifically that all data that is returned to the user
+    is converted to camelCased and all data coming in is snake cased.
+
+    """
+    @pre_load
+    def to_snakecase(self, data, **kwargs):
+        return {underscore(key): value for key, value in data.items()}
+
+    @post_dump
+    def to_camelcase(self, data, **kwargs):
+        return {camelize(key, uppercase_first_letter=False): value for key, value in data.items()}
 
 
 class PatchDocumentModel(Schema):
@@ -35,7 +51,8 @@ class PackageQuestionModel(Schema):
     """
     title = fields.String(required=True)
     data_type = fields.String(required=True)
-    # values = fields.List(cls_or_instance=)
+    value = fields.String(default="")
+    values = fields.List(fields.String())
 
 
 class QueryFilter(Schema):
@@ -112,6 +129,7 @@ class PackageModel(SQLAlchemyAutoSchema):
         include_fk = True
 
     price = fields.Float(min=0.0, allow_nan=False, allow_none=False, as_string=False)
+    questions = fields.List(fields.Nested(PackageQuestionModel))
 
 
 class RoleModel(SQLAlchemyAutoSchema):

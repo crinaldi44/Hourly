@@ -21,9 +21,9 @@ class DepartmentService(Service):
                 :return: A Bool representing whether the row exists.
                 """
         if in_company is not None:
-            result, count = self.find(id=department_id, company_id=in_company)
+            result, count = self.find(additional_filters={"id": department_id, "company_id": in_company})
         else:
-            result, count = self.find(id=department_id)
+            result, count = self.find(additional_filters={"id": department_id})
 
         if len(result) == 0:
             raise HourlyException('err.hourly.DepartmentNotFound')

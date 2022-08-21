@@ -1,3 +1,4 @@
+import ast
 from typing import Tuple, List, Any
 
 from marshmallow import Schema
@@ -33,13 +34,26 @@ class Service:
         self.model = model
         self.schema = schema()
 
-    def find(self, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False, **kwargs) -> \
+    @classmethod
+    def sanitize_q(cls, q_str):
+        """Sanitizes a q object to filter out restricted keys
+        such that a user cannot filter by prohibited fields.
+
+        :param q_str: Represents the raw q string.
+        :return: A modified q string without the restricted keys.
+        """
+        reduction = ast.literal_eval(q_str)
+        return {k: v for (k, v) in reduction.items() if not any(x in ['company_id', 'department_id', 'id'] for x in k)}
+
+    def find(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
+             additional_filters=None) -> \
             tuple[
                 list[Any], Any | None]:
         """Queries this table with specified parameters as designated in the request.
 
+        :param additional_filters: Represents the additional filters applied after the q by the API.
+        :param q: Represents the query object.
         :param serialize: Represents whether to serialize results.
-        :param filters: Represents the filters to use.
         :param page: Represents the page, calculated by the offset and, if any, a limit
         :param offset: Represents the offset from the first row in the table to query.
         :param limit: Represents the maximum number of records returned.
@@ -53,8 +67,10 @@ class Service:
             with session.begin():
                 resultant_rows = session.query(self.model)
                 count = None
-                if kwargs is not None:
-                    resultant_rows = resultant_rows.filter_by(**kwargs)
+                if q is not None:
+                    resultant_rows = resultant_rows.filter_by(**ast.literal_eval(q))
+                if additional_filters is not None:
+                    resultant_rows = resultant_rows.filter_by(**additional_filters)
                 if include_totals is not None:
                     count = resultant_rows.count()
                 if sort is not None:
@@ -83,7 +99,8 @@ class Service:
                 else:
                     return resultant_rows.all(), count
 
-    def validate_exists(self, id: int, in_company: int = None, in_department: int = None) -> list:
+    def validate_exists(self, id: int, in_company: int = None, in_department: int = None) -> tuple[
+        list[Any], Any | None]:
         """Finds an entry within the database with the specified id. If
         fields for in_company or in_department or specified, the model must
         have a field called "company_id" or "department_id" respectively,
@@ -97,8 +114,17 @@ class Service:
         :type id: int
         :return: A list containing the resource.
         """
-        return self.model.validate_exists(id=id, in_company=in_company, in_department=in_department,
-                                          table_name=self.table_name)
+        query = {
+            "id": id
+        }
+        if in_company is not None:
+            query["company_id"] = in_company
+        if in_department is not None:
+            query["department_id"] = in_department
+        result, count = self.find(additional_filters=query, include_totals=True)
+        if count == 0:
+            raise HourlyException('err.hourly.' + self.table_name + 'NotFound')
+        return result[0]
 
     def as_dict(self, model):
         """Serializes this model into dict format.

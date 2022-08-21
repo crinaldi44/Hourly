@@ -43,33 +43,3 @@ def add_company():
         raise HourlyException('err.hourly.CompanyExists')
     Companies.add_row(validate_company)
     return serve_response(message="Success", status=201)
-
-
-@companies.delete('/companies/<company_id>')
-@token_required()
-def delete_company(company_id):
-    try:
-        int(company_id)
-    except:
-        raise HourlyException('err.hourly.CompanyNotFound')
-
-    company_match, count = Companies.find(id=company_id, include_totals=True)
-
-    if count == 0:
-        raise HourlyException('err.hourly.CompanyNotFound')
-    else:
-        try:
-            Companies.delete_row(id=company_id)
-        except Exception as E:
-            # Company deletion has failed due to foreign key integrity checks.
-            # Append names of departments to be deleted prior to company deletion.
-            departments, department_count = Department.query_table(company_id=company_id, include_totals=True)
-            response_message = "Failed to delete company! Please delete the following " + str(
-                department_count) + " department(s): "
-            for department in departments:
-                response_message += department["department_name"] + ','
-
-            raise HourlyException('err.hourly.InvalidCompanyDelete',
-                                  message=response_message,
-                                  suggestion="Please ensure the company is cleared prior to deletion.")
-        return serve_response(message="Successfully deleted company.", status=204)
