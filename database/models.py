@@ -100,6 +100,7 @@ class Employee(HourlyTable, Base):
         profile = self.as_dict()
         profile.pop('company_id')
         profile.pop('role_id')
+        profile.pop('password')
         profile["company"] = self.company.as_dict()
         profile["role"] = self.role.as_dict()
         return profile

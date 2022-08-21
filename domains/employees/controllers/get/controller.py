@@ -21,7 +21,7 @@ def list_users():
     return ListResponse(records=results, total_count=count).serve()
 
 
-def get_employee(id):
+def get_employee(id_):
     """Retrieves an employee by id.
 
     :param id: Represents the ID of the employee.
@@ -29,22 +29,22 @@ def get_employee(id):
     """
     employee_id, company_id, department_id, role_id = initialize_controller(permissions='get:employees')
     if role_id <= 2:
-        result = Employees.find(additional_filters={"id": id, "company_id": company_id}, serialize=True)
+        result = Employees.find(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
     else:
-        result = Employees.find(additional_filters={"id": id}, serialize=True)
+        result = Employees.find(additional_filters={"id": id_}, serialize=True)
 
     return ListResponse(records=result).serve()
 
 
-def get_users_profile(id):
+def get_users_profile(id_):
     """Retrieves a user's profile from within the database
     by joining the fields for their company and role IDs.
 
     This endpoint is primarily intended for use by organization
-    owners and admins.
+    owners and admins as well as the user themselves.
 
     :param user_id: Represents the ID of the profile.
     :return: The user's profile
     """
-    result = Employees.get_users_profile(id)
+    result = [Employees.get_users_profile(user_id=id_)]
     return ListResponse(result).serve()

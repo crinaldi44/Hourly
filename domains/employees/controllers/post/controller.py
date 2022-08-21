@@ -20,10 +20,9 @@ def add_employee(employee):
     :return: None
     """
 
-    employee['password'] = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt())
-
     validate_employee = Employees.from_json(data=employee)
-    user_exists, _ = Employees.find(email=validate_employee.email)
+    validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt())
+    user_exists, _ = Employees.find(additional_filters={"email": validate_employee.email})
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
@@ -38,7 +37,7 @@ def signup_user(employee):
         :param employee: Represents the employee to add.
         :return: None
         """
-    employee_id, company, department, role = initialize_controller(permissions='post:employees')
+    employee_id, company, department, role = initialize_controller(permissions='post:user')
     employee['company_id'] = company
 
     if role <= 2 and 'role_id' in employee:
@@ -46,7 +45,8 @@ def signup_user(employee):
             employee['role_id'] = 1
 
     validate_employee = Employees.from_json(data=employee)
-    user_exists, _ = Employees.find(email=validate_employee.email)
+    validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt())
+    user_exists, _ = Employees.find(additional_filters={"email": validate_employee.email})
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')

@@ -1,5 +1,6 @@
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
+from database.database import Session
 from database.models import Employee
 from database.schemas import EmployeeModel
 
@@ -14,15 +15,19 @@ class EmployeeService(Service):
 
     def get_users_profile(self, user_id):
         """Retrieves the user's profile by obtaining details regarding
-        their respective department, company and role.
+        their respective department, company and role. This service performs
+        3 left joins and should be paired with a stricter rate limit and
+        utilized for one resource at a time.
 
         :param user_id: The ID of the user to fetch the profile of.
         :return: A profile dict of the user's profile.
         """
-        result, _ = self.find(id=user_id)
-        if len(result) == 0:
-            raise HourlyException('err.hourly.UserNotFound')
-        return [result[0].profile_dict()]
+        with Session() as session:
+            with session.begin():
+                result = session.query(self.model).filter_by(id=user_id).all()
+                if len(result) == 0:
+                    raise HourlyException('err.hourly.UserNotFound')
+                return result[0].profile_dict()
 
 
 Employees = EmployeeService()

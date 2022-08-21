@@ -1330,7 +1330,47 @@ paths:
       tags:
       - Employees
       x-openapi-router-controller: domains.employees.controllers.get.controller
-  /employees/profile/{id}:
+    post:
+      operationId: add_employee
+      requestBody:
+        x-body-name: employee
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignUpResponse'
+          description: User registration successful!
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Employee
+      tags:
+      - Employees
+      x-openapi-router-controller: domains.employees.controllers.post.controller
+  /users/profile/{id}:
     get:
       operationId: get_users_profile
       parameters:
@@ -1530,7 +1570,7 @@ paths:
       tags:
       - Employees
       x-openapi-router-controller: domains.employees.controllers.post.controller
-  /employees/signup:
+  /user/signup:
     post:
       operationId: signup_user
       requestBody:
