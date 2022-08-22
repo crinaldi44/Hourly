@@ -54,6 +54,34 @@ err_codes = {
             "suggestion": "Please check the ID of the user and re-attempt your query."
         },
 
+        "err.hourly.EventNotFound": {
+            "status": 404,
+            "message": "No event was found with that ID.",
+            "title": "EventNotFound",
+            "suggestion": "Please check the ID of the event and re-attempt your query."
+        },
+
+        "err.hourly.InvalidEventDelete": {
+            "status": 400,
+            "message": "No event was found with that ID.",
+            "title": "InvalidEventDelete",
+            "suggestion": "Please check the ID of the event and re-attempt your query."
+        },
+
+        "err.hourly.InvalidPackageDelete": {
+            "status": 400,
+            "message": "No package was found with that ID.",
+            "title": "InvalidPackageDelete",
+            "suggestion": "Please check the ID of the package and re-attempt your query."
+        },
+
+        "err.hourly.BadEventFormatting": {
+            "status": 404,
+            "message": "Invalid event formatting specified.",
+            "title": "BadEventFormatting",
+            "suggestion": "Please verify all fields have been included and re-attempt your request."
+        },
+
         'err.hourly.UserExists': {
             "status": 409,
             "message": "This email address is taken.",

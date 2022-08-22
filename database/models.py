@@ -327,11 +327,11 @@ class Event(HourlyTable, Base):
     description = Column(String(255), default="")
     agreed_price = Column(Float, default=0.0)
     start_datetime = Column(DateTime(), nullable=False)
-    end_datetime = Column(DateTime())
+    end_datetime = Column(DateTime(), nullable=False)
     package_id = Column(Integer(), ForeignKey('packages.id'), nullable=False)
-    service_employee = Column(Integer(), ForeignKey('employees.id'), default=None)
-    department_id = Column(Integer(), ForeignKey('departments.id'), nullable=False)
-    questions = Column(JSON(), nullable=False)
+    company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
+    employee_id = Column(Integer(), ForeignKey('employees.id'), default=None)
+    questions = Column(JSON(), nullable=False, default=[])
 
 
 # If a table does not yet exist, create one on the database with

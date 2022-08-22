@@ -21,6 +21,8 @@ tags:
   name: Companies
 - description: Subdivisions of companies.
   name: Departments
+- description: Instantiations of packages.
+  name: Events
 - description: Event types created by companies.
   name: Packages
 - description: Roles that users can have in the Hourly cloud.
@@ -762,6 +764,239 @@ paths:
       tags:
       - Clockins
       x-openapi-router-controller: domains.clockins.controllers.patch.controller
+  /events:
+    get:
+      operationId: list_events
+      parameters:
+      - description: default query parameter
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: include the total count in the response
+        explode: true
+        in: query
+        name: include_totals
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: The page to query from. This will take precedence over a limit and offset.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        explode: true
+        in: query
+        name: fields
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: numeric offset of the first element on a page
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: client suggested limit to restrict the number of entries on a
+          page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponse'
+          description: Successully retrieved list of events.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: List Events
+      tags:
+      - Events
+      x-openapi-router-controller: domains.events.controllers.get.controller
+    post:
+      operationId: add_event
+      requestBody:
+        x-body-name: event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+        description: Add Event
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: event added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Add Event
+      tags:
+      - Events
+      x-openapi-router-controller: domains.events.controllers.post.controller
+  /events/{id}:
+    delete:
+      operationId: delete_event
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Event deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Delete Event
+      tags:
+      - Events
+      x-openapi-router-controller: domains.events.controllers.delete.controller
+    patch:
+      operationId: patch_event
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        x-body-name: patch_document_list
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/PatchDocument'
+              type: array
+        required: true
+      responses:
+        "204":
+          description: Event patched
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Patch Event
+      tags:
+      - Events
+      x-openapi-router-controller: domains.events.controllers.patch.controller
   /packages:
     get:
       operationId: list_packages
@@ -1788,6 +2023,51 @@ components:
       required:
       - errors
       title: Root Type for ErrorListResponse
+      type: object
+    Event:
+      description: Represents a type of event that can be created.
+      example: "{'name': 'Example', 'description': 'Example description', 'agreed_price': 'price', 'start_datetime': '203919174', 'end_datetime': '239829328', 'package_id': 1, 'employee_id': 1, 'questions': [{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+      properties:
+        id:
+          description: The identifier for the event.
+          type: integer
+        name:
+          description: name
+          type: string
+        description:
+          description: Block of text describing the event.
+          type: string
+        agreed_price:
+          description: The agreed upon price.
+          type: integer
+        start_datetime:
+          description: The start datetime.
+          type: string
+        end_datetime:
+          description: The end datetime.
+          type: string
+        package_id:
+            description: The ID of the package associated with this event.
+            type: integer
+        company_id:
+            description: The ID of the company associated to the event.
+            type: integer
+        employee_id:
+            description: The ID of the employee servicing the event.
+            type: integer
+        questions:
+          description: The questions to include in the event form.
+          type: array
+          items:
+            $ref: '#/components/schemas/PackageQuestion'
+      required:
+      - name
+      - description
+      - agreed_price
+      - start_datetime
+      - package_id
+      - questions
+      title: Event
       type: object
     ListResponse:
       description: A response that contains data.

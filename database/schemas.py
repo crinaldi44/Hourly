@@ -10,6 +10,10 @@ def validate_department(department_id):
     return Department.validate_exists(id=department_id, table_name="Department")
 
 
+def validate_package(package_id):
+    return Package.validate_exists(id=package_id, table_name="Package")
+
+
 def validate_company(company_id):
     return Company.validate_exists(id=company_id, table_name="Company")
 
@@ -50,9 +54,10 @@ class PackageQuestionModel(Schema):
 
     """
     title = fields.String(required=True)
-    data_type = fields.String(required=True)
+    data_type = fields.String(required=True,
+                              validate=validate.OneOf(['multiselect', 'dropdown', 'textfield', 'paragraph']))
     value = fields.String(default="")
-    values = fields.List(fields.String())
+    values = fields.List(fields.Str())
 
 
 class QueryFilter(Schema):
@@ -118,8 +123,12 @@ class EventModel(SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
 
-    company_id = fields.Integer(required=True, validate=validate_company)
-    assigned_employee = fields.Integer(validate=validate_employee)
+    company_id = fields.Integer(required=True)
+    employee_id = fields.Integer(required=True)
+    package_id = fields.Integer(required=True)
+    start_datetime = fields.DateTime(required=True)
+    end_datetime = fields.DateTime(required=True)
+    questions = fields.List(fields.Nested(PackageQuestionModel))
 
 
 class PackageModel(SQLAlchemyAutoSchema):
