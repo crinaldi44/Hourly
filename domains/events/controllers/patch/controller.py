@@ -14,6 +14,6 @@ def patch_event(id_, patch_document_list):
     employee, company, department, role = initialize_controller(permissions='patch:events')
 
     Events.validate_exists(id=id_, in_company=company)
-    Events.patch(id=id_, patch_list=patch_document_list)
+    Events.patch(uid=id_, patch_list=patch_document_list)
 
     return serve_response(status=204, message='')

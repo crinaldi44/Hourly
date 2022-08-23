@@ -36,7 +36,7 @@ def get_package(id):
     }
     if role <= 2:
         query["company_id"] = company
-    result, count = Packages.find(additional_filters=query)
+    result, count = Packages.find(additional_filters=query, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.PackageNotFound')

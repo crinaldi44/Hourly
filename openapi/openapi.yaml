@@ -950,6 +950,44 @@ paths:
       tags:
       - Events
       x-openapi-router-controller: domains.events.controllers.delete.controller
+    get:
+      operationId: get_event
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Successfully retrieved Event
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      summary: Get Event
+      tags:
+      - Events
+      x-openapi-router-controller: domains.events.controllers.get.controller
     patch:
       operationId: patch_event
       parameters:

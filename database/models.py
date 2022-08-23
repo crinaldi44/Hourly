@@ -330,7 +330,7 @@ class Event(HourlyTable, Base):
     end_datetime = Column(DateTime(), nullable=False)
     package_id = Column(Integer(), ForeignKey('packages.id'), nullable=False)
     company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
-    employee_id = Column(Integer(), ForeignKey('employees.id'), default=None)
+    employee_id = Column(Integer(), ForeignKey('employees.id'))
     questions = Column(JSON(), nullable=False, default=[])
 
 

@@ -28,6 +28,7 @@ class FormatConverter:
     is converted to camelCased and all data coming in is snake cased.
 
     """
+
     @pre_load
     def to_snakecase(self, data, **kwargs):
         return {underscore(key): value for key, value in data.items()}
@@ -123,8 +124,10 @@ class EventModel(SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
 
-    company_id = fields.Integer(required=True)
-    employee_id = fields.Integer(required=True)
+    description = fields.Str()
+    agreed_price = fields.Float()
+    company_id = fields.Integer(required=False, dump_only=True)  # This should be read only, as it is set on add.
+    employee_id = fields.Integer()
     package_id = fields.Integer(required=True)
     start_datetime = fields.DateTime(required=True)
     end_datetime = fields.DateTime(required=True)

@@ -113,3 +113,4 @@ within the exception directory.
 * Data Visualization
   * Utilize DevExpress Reactive Charts for Data Visualization
   * For scheduling, utilize DevExpress Reactive Scheduler
+* rRule, exDate for recurrence rule and exception date for recurring events

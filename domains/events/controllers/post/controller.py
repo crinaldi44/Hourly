@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from crosscutting.auth.authentication import initialize_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
@@ -17,15 +19,15 @@ def add_event(event):
     employee, company, department, role = initialize_controller(permissions='post:events')
 
     validate_event = Events.from_json(event)
-
-    if validate_event.company_id != company:
-        raise HourlyException('err.hourly.CompanyNotFound')
+    validate_event.company_id = company
 
     if validate_event.start_datetime > validate_event.end_datetime:
         raise HourlyException('err.hourly.BadEventFormatting', message="Start date and time must be before end date!")
 
     Packages.validate_exists(id=validate_event.package_id, in_company=validate_event.company_id)
-    Employees.validate_exists(id=validate_event.employee_id, in_company=validate_event.company_id)
+
+    if validate_event.employee_id is not None:
+        Employees.validate_exists(id=validate_event.employee_id, in_company=validate_event.company_id)
 
     Events.add_row(validate_event)
 
