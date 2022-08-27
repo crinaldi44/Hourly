@@ -48,9 +48,7 @@ class Service:
         return {k: v for (k, v) in reduction.items() if not any(x in ['company_id', 'department_id', 'id'] for x in k)}
 
     def find(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
-             additional_filters=None) -> \
-            tuple[
-                list[Any], Any | None]:
+             additional_filters=None):
         """Queries this table with specified parameters as designated in the request.
 
         :param additional_filters: Represents the additional filters applied after the q by the API.
@@ -101,8 +99,7 @@ class Service:
                 else:
                     return resultant_rows.all(), count
 
-    def validate_exists(self, id: int, in_company: int = None, in_department: int = None) -> tuple[
-        list[Any], Any | None]:
+    def validate_exists(self, id: int, in_company: int = None, in_department: int = None):
         """Finds an entry within the database with the specified id. If
         fields for in_company or in_department or specified, the model must
         have a field called "company_id" or "department_id" respectively,
