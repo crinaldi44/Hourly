@@ -24,7 +24,7 @@ And pip3 install each of the required dependencies.
 
 ## Structure of the Cloud
 This is a Flask application wrapped in a library called Connexion, which maps an OpenAPI 3.x spec to controllers
-in the domains module. Each domain follows a routes/tests/utils/services pattern with the model for that particular route being
+in the domains module. Each domain follows a routes/tests/services pattern with the model for that particular route being
 at the base level directory. The controllers will route the data to the service layers specified in each domain,
 which provides automated deserialization and validation of the data. Additionally, unit tests are provided in the
 tests folder and should be updated each time a new route has been added. You may run a script to validate all tests

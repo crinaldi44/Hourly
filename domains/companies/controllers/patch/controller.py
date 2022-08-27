@@ -7,7 +7,7 @@ from domains.companies.services.company_service import Companies
 def patch_company(id_, patch_document_list):
     """Patches a company within the space.
 
-    :param id: The id of the resource to patch.
+    :param id_: The id of the resource to patch.
     :param patch_document_list: Represents the list of RFC-6902 patch documents.
     :return:
     """

@@ -1,12 +1,9 @@
 import connexion
 import sqlalchemy.exc
-from flask import Flask, render_template
 from marshmallow import ValidationError
 
 from domains.employees.routes.routes import employees
-from domains.departments.routes.routes import departments
 from domains.clockins.routes.routes import clockins
-from domains.companies.routes.routes import companies
 from flask_cors import CORS
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError, NotFound
 from crosscutting.exception.error_handlers import handle_hourly_exception, handle_validation_error, handle_unexpected_exception, handle_attribute_exception, handle_marshmallow_validation_error, handle_invalid_request, handle_notfound_exception
@@ -18,9 +15,7 @@ app = connexion.FlaskApp(__name__, specification_dir='openapi/')
 app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True)
 
 app.app.register_blueprint(employees)
-app.app.register_blueprint(departments)
 app.app.register_blueprint(clockins)
-app.app.register_blueprint(companies)
 
 app.app.register_error_handler(UnprocessableEntity, handle_validation_error)
 app.app.register_error_handler(AttributeError, handle_attribute_exception)

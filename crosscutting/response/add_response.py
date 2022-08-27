@@ -10,15 +10,15 @@ class AddResponse:
 
     """
 
-    def __init__(self, domain=None):
+    def __init__(self, uid=None):
         """Instantiates a new instance of the AddResponse.
 
         :param domain: Represents the domain
         :type str
         """
 
-        if domain is None:
-            raise ValueError("Invalid value for `domain`, must not be `None`")
+        if uid is None:
+            raise ValueError("Invalid value for `id`, must not be `None`")
 
     def serve(self):
         return serve_response(message)
