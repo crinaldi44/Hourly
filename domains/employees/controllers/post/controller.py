@@ -1,7 +1,7 @@
 import bcrypt
 import connexion
 
-from crosscutting.auth.authentication import validate_credentials, initialize_controller
+from crosscutting.auth.authentication import validate_credentials, init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from database.database import Session
@@ -37,7 +37,7 @@ def signup_user(employee):
         :param employee: Represents the employee to add.
         :return: None
         """
-    employee_id, company, department, role = initialize_controller(permissions='post:user')
+    employee_id, company, department, role = init_controller(permissions='post:user')
     employee['company_id'] = company
 
     if role <= 2 and 'role_id' in employee:

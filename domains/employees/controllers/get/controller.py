@@ -1,6 +1,6 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
 from database.models import Employee
@@ -12,7 +12,7 @@ def list_users():
 
         :return: A list of all employees.
         """
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions='get:employees')
+    employee_id, company_id, department_id, role_id = init_controller(permissions='get:employees')
     search = connexion.request.args
     if role_id <= 2:
         results, count = Employees.find(**search, serialize=True, additional_filters={"company_id": company_id})
@@ -27,7 +27,7 @@ def get_employee(id_):
     :param id: Represents the ID of the employee.
     :return: The employee that matches the criteria.
     """
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions='get:employees')
+    employee_id, company_id, department_id, role_id = init_controller(permissions='get:employees')
     if role_id <= 2:
         result, _ = Employees.find(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
     else:

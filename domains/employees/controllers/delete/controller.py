@@ -1,4 +1,4 @@
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from domains.employees.services.employee_service import Employees
@@ -6,7 +6,7 @@ from domains.employees.services.employee_service import Employees
 
 def delete_employee(id_):
     # If params are not specified, notify the user they messed up.
-    employee, company, department, role = initialize_controller(permissions='delete:employees')
+    employee, company, department, role = init_controller(permissions='delete:employees')
     Employees.validate_exists(id=id_, in_company=company)
 
     try:

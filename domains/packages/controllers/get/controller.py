@@ -1,6 +1,6 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
 from domains.packages.services.package_service import Packages
@@ -14,7 +14,7 @@ def list_packages():
         :return: A list of packages.
         """
     search = connexion.request.args.to_dict()
-    employee, company, department, role = initialize_controller(permissions='get:packages')
+    employee, company, department, role = init_controller(permissions='get:packages')
     if role <= 2:
         results, count = Packages.find(**search, additional_filters={"company_id": company}, serialize=True)
     else:
@@ -30,7 +30,7 @@ def get_package(id):
         :param _role_id: Represents the user's role id.
         :return: The package that matches the criteria.
         """
-    employee, company, department, role = initialize_controller(permissions='get:packages')
+    employee, company, department, role = init_controller(permissions='get:packages')
     query = {
         "id": id
     }

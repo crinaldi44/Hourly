@@ -1,13 +1,13 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
 from domains.departments.services.department_service import Departments
 
 
 def list_departments():
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions="get:departments")
+    employee_id, company_id, department_id, role_id = init_controller(permissions="get:departments")
     search = connexion.request.args.to_dict()
     if role_id <= 2:
         filters = {
@@ -27,7 +27,7 @@ def get_department(id):
     :param id: Represents the ID of the department.
     :return: The department.
     """
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions="get:departments")
+    employee_id, company_id, department_id, role_id = init_controller(permissions="get:departments")
 
     if role_id <= 2:
         filters = {

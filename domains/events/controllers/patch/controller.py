@@ -1,4 +1,4 @@
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.response.list_response import serve_response
 from domains.events.services.event_service import Events
 
@@ -11,7 +11,7 @@ def patch_event(id_, patch_document_list):
     :return:
     """
 
-    employee, company, department, role = initialize_controller(permissions='patch:events')
+    employee, company, department, role = init_controller(permissions='patch:events')
 
     Events.validate_exists(id=id_, in_company=company)
     Events.patch(uid=id_, patch_list=patch_document_list)

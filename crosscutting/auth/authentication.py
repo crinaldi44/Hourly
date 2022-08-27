@@ -55,7 +55,7 @@ def validate_credentials(session, req):
             raise HourlyException('err.hourly.InvalidCredentials')
 
 
-def initialize_controller(permissions: str) -> tuple:
+def init_controller(permissions: str) -> tuple:
     """Initializes a controller by route permissions that
     can be found by decoding the user's access token and returning
     the role permissions mapping. If the user has permissions, will

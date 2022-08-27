@@ -1,4 +1,4 @@
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from domains.departments.services.department_service import Departments
@@ -13,7 +13,7 @@ def delete_department(id_):
         :param department_id:
         :return:
         """
-    employee, company, department, role = initialize_controller(permissions='delete:departments')
+    employee, company, department, role = init_controller(permissions='delete:departments')
     Departments.validate_department_exists(department_id=id_, in_company=company)
 
     try:

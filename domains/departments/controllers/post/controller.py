@@ -1,13 +1,13 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from domains.departments.services.department_service import Departments
 
 
 def add_department(department):
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions="post:departments")
+    employee_id, company_id, department_id, role_id = init_controller(permissions="post:departments")
     department['company_id'] = company_id
     validate_department = Departments.from_json(data=department)
 

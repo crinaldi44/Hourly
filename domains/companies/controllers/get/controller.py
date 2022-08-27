@@ -1,6 +1,6 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
 from domains.companies.services.company_service import Companies
@@ -8,7 +8,7 @@ from domains.companies.services.company_service import Companies
 
 def list_companies():
     request = connexion.request
-    employee_id, company_id, department_id, role_id = initialize_controller(permissions="get:companies")
+    employee_id, company_id, department_id, role_id = init_controller(permissions="get:companies")
 
     if role_id <= 2:
         results, count = Companies.find(**request.args, serialize=True, additional_filters={"id": company_id})

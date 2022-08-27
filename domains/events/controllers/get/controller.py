@@ -1,6 +1,6 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
 from domains.events.services.event_service import Events
@@ -12,7 +12,7 @@ def list_events():
     :return: A list of event records.
     """
 
-    employee, company, department, role = initialize_controller(permissions='get:events')
+    employee, company, department, role = init_controller(permissions='get:events')
 
     search = connexion.request.args.to_dict()
     results, count = Events.find(**search, additional_filters={"company_id": company}, serialize=True)
@@ -26,7 +26,7 @@ def get_event(id_):
     :param id_:
     :return: A response containing the event.
     """
-    employee, company, department, role = initialize_controller(permissions='get:packages')
+    employee, company, department, role = init_controller(permissions='get:packages')
 
     result, count = Events.find(additional_filters={"id": id_, "company_id": company}, serialize=True)
 

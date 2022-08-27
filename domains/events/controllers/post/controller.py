@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from domains.employees.services.employee_service import Employees
@@ -16,7 +16,7 @@ def add_event(event):
     :return:
     """
 
-    employee, company, department, role = initialize_controller(permissions='post:events')
+    employee, company, department, role = init_controller(permissions='post:events')
 
     validate_event = Events.from_json(event)
     validate_event.company_id = company

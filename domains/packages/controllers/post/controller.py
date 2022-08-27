@@ -1,6 +1,6 @@
 import connexion
 
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from domains.packages.services.package_service import Packages
@@ -11,7 +11,7 @@ def add_package(package):
 
         :return: None
     """
-    employee, company, department, role = initialize_controller(permissions='post:packages')
+    employee, company, department, role = init_controller(permissions='post:packages')
     package["company_id"] = company
     validate_package = Packages.from_json(data=package)
     package_exists, _ = Packages.find(additional_filters={"name": package['name'], "company_id": company})

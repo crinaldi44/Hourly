@@ -1,4 +1,4 @@
-from crosscutting.auth.authentication import initialize_controller
+from crosscutting.auth.authentication import init_controller
 from crosscutting.response.list_response import serve_response
 from domains.packages.services.package_service import Packages
 
@@ -12,7 +12,7 @@ def patch_package(id_, patch_document_list):
     :return:
     """
 
-    employee, company, department, role = initialize_controller(permissions='patch:packages')
+    employee, company, department, role = init_controller(permissions='patch:packages')
     Packages.validate_exists(id=id_, in_company=company)
     Packages.patch(uid=id_, patch_list=patch_document_list)
 
