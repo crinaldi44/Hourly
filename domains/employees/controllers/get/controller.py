@@ -29,9 +29,9 @@ def get_employee(id_):
     """
     employee_id, company_id, department_id, role_id = initialize_controller(permissions='get:employees')
     if role_id <= 2:
-        result = Employees.find(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
+        result, _ = Employees.find(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
     else:
-        result = Employees.find(additional_filters={"id": id_}, serialize=True)
+        result, _ = Employees.find(additional_filters={"id": id_}, serialize=True)
 
     return ListResponse(records=result).serve()
 
