@@ -22,17 +22,15 @@ def list_packages():
     return ListResponse(records=results, total_count=count).serve()
 
 
-def get_package(id):
+def get_package(id_):
     """Retrieves a package by ID.
 
-        :param id: The ID of the package.
-        :param _company_id: Represents the user's company id.
-        :param _role_id: Represents the user's role id.
+        :param id_: The ID of the package.
         :return: The package that matches the criteria.
         """
     employee, company, department, role = init_controller(permissions='get:packages')
     query = {
-        "id": id
+        "id": id_
     }
     if role <= 2:
         query["company_id"] = company

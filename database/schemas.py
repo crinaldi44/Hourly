@@ -1,3 +1,5 @@
+import json
+
 from marshmallow import Schema, fields, INCLUDE, validate, pre_load, post_dump
 from marshmallow.validate import Length
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field, SQLAlchemySchema
@@ -142,6 +144,12 @@ class PackageModel(SQLAlchemyAutoSchema):
 
     price = fields.Float(min=0.0, allow_nan=False, allow_none=False, as_string=False)
     questions = fields.List(fields.Nested(PackageQuestionModel))
+
+    @pre_load
+    def parse_questions(self, data, **kwargs):
+        if isinstance(data["questions"], str):
+            data["questions"] = json.loads(data["questions"])
+        return data
 
 
 class RoleModel(SQLAlchemyAutoSchema):
