@@ -17,12 +17,12 @@ def list_companies():
     return ListResponse(records=results, total_count=count).serve()
 
 
-def get_company(id):
+def get_company(id_):
     """Retrieves a company by ID.
 
     :return:
     """
-    result, count = Companies.find(id=id, serialize=True)
+    result, count = Companies.find(additional_filters={"id": id_}, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.CompanyNotFound')
