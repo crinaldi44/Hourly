@@ -11,6 +11,12 @@ from database.database import Session
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
 
+PROTECTED_FIELDS = [
+    'id',
+    'company_id',
+    'role_id'
+]
+
 
 class Service:
     """The Service (schema) layer of a domain is generally designed to handle interaction
@@ -46,6 +52,22 @@ class Service:
         """
         reduction = ast.literal_eval(q_str)
         return {k: v for (k, v) in reduction.items() if not any(x in ['company_id', 'department_id', 'id'] for x in k)}
+
+    def sanitize_patch_document(self, patch_document_list, index=0):
+        """Sanitizes a patch document by traversing through until it
+        finds a potential path that is prohibited for edit.
+
+        :param patch_document_list:
+        :param index:
+        :return:
+        """
+        if index >= len(patch_document_list):
+            return
+        document = patch_document_list[index]
+        if any(x in document['path'] for x in PROTECTED_FIELDS):
+            raise HourlyException('err.hourly.InvalidPatch')
+        else:
+            self.sanitize_patch_document(patch_document_list, index + 1)
 
     def find(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
              additional_filters=None):
@@ -155,6 +177,7 @@ class Service:
         if len(patch_list) == 0:
             return
         patch = JsonPatch(patch_list)
+        self.sanitize_patch_document(patch_list)
 
         with Session() as session:
             # Keep transactions in same context to avoid issues with model expiration.
