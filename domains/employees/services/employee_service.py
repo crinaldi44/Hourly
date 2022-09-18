@@ -2,7 +2,7 @@ from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
 from database.database import Session
 from database.models import Employee
-from database.schemas import EmployeeModel
+from database.schemas import EmployeeModel, EmployeeValidationModel
 
 
 class EmployeeService(Service):
@@ -28,6 +28,15 @@ class EmployeeService(Service):
                 if len(result) == 0:
                     raise HourlyException('err.hourly.UserNotFound')
                 return result[0].profile_dict()
+
+    def validation_from_json(self, employee_validation):
+        """Parses an employee validation from JSON to ensure it is of proper
+        formatting.
+
+        :param employee_validation: The employee validation to parse.
+        :return:
+        """
+        return EmployeeValidationModel().load(data=employee_validation)
 
 
 Employees = EmployeeService()

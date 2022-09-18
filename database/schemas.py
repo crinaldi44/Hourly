@@ -157,3 +157,23 @@ class RoleModel(SQLAlchemyAutoSchema):
         model = Roles
         load_instance = True
         include_fk = True
+
+
+class EmployeeValidationModel(Schema):
+    """
+        Represents a model that can be used to validate employee
+        validations.
+    """
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    email = fields.Str(required=True)
+    department_name = fields.Str(required=True)
+    pay_rate = fields.Float(default=0.0)
+    company_name = fields.Str(required=True)
+    company_id = fields.Integer()
+    department_id = fields.Integer()
+    is_employee_valid = fields.Bool(dump_default=False)
+    is_email_valid = fields.Bool(dump_default=False)
+    is_department_valid = fields.Bool(dump_default=False)
+    is_company_valid = fields.Bool(dump_default=False)
+    is_pay_rate_valid = fields.Bool(dump_default=False)

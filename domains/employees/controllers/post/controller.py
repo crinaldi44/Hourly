@@ -6,6 +6,8 @@ from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from database.database import Session
 from domains.employees.services.employee_service import Employees
+from domains.companies.services.company_service import Companies
+from domains.departments.services.department_service import Departments
 
 
 def authenticate_user():
@@ -53,3 +55,37 @@ def signup_user(employee):
 
     Employees.add_row(validate_employee)
     return serve_response(message='Success! Employee has been entered into the registry.', status=201)
+
+
+def validate_employees(employee_validations):
+    """Validates a list of employee validation models.
+
+    :param employee_validations: Represents the employee validations list.
+    :return: The validated list.
+    """
+    init_controller(permissions='validate:user')
+    validations = employee_validations["employee_validations"]
+    for i in range(0, len(validations)):
+        Employees.validation_from_json(employee_validation=validations[i])
+        email_exists, _ = Employees.find(additional_filters={"email": validations[i]["email"]})
+        validations[i]["is_email_valid"] = len(email_exists) == 0
+        company_exists, _ = Companies.find(additional_filters={"name": validations[i]['company_name']}, serialize=True)
+        if len(company_exists) == 0:
+            validations[i]["is_company_valid"] = False
+            validations[i]["is_department_valid"] = False
+        else:
+            validations[i]["is_company_valid"] = True
+            validations[i]["company_id"] = company_exists[0]["id"]
+            print(company_exists[0]["id"])
+            department_exists, _ = Departments.find(additional_filters=
+                             {"department_name": validations[i]['department_name'],
+                              "company_id": company_exists[0]["id"]}, serialize=True)
+            validations[i]["is_department_valid"] = len(department_exists) > 0
+            if validations[i]["is_department_valid"]:
+                validations[i]["department_id"] = department_exists[0]["id"]
+        validations[i]["is_pay_rate_valid"] = True
+        validations[i]["is_employee_valid"] = validations[i]["is_pay_rate_valid"] \
+                                              and validations[i]["is_company_valid"] \
+                                              and validations[i]["is_department_valid"] \
+                                              and validations[i]["is_email_valid"]
+    return serve_response(message="Successfully validated employees.", status=200, data=validations)
