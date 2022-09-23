@@ -26,7 +26,7 @@ class EmployeeService(Service):
             with session.begin():
                 result = session.query(self.model).filter_by(id=user_id).all()
                 if len(result) == 0:
-                    raise HourlyException('err.hourly.UserNotFound')
+                    raise HourlyException('err.hourly.EmployeeNotFound')
                 return result[0].profile_dict()
 
     def validation_from_json(self, employee_validation):

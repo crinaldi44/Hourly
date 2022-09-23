@@ -76,7 +76,6 @@ def validate_employees(employee_validations):
         else:
             validations[i]["is_company_valid"] = True
             validations[i]["company_id"] = company_exists[0]["id"]
-            print(company_exists[0]["id"])
             department_exists, _ = Departments.find(additional_filters=
                              {"department_name": validations[i]['department_name'],
                               "company_id": company_exists[0]["id"]}, serialize=True)
