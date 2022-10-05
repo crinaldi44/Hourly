@@ -1,4 +1,5 @@
 import connexion
+from crosscutting.auth.authentication import init_controller
 
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
@@ -10,6 +11,7 @@ def add_company(company):
 
     :return:
     """
+    employee, company, department, role = init_controller(permissions='post:companies')
     request = connexion.request
     validate_company = Companies.from_json(data=request.get_json())
     company_exists, _ = Companies.find(additional_filters={"name": validate_company.name})

@@ -85,7 +85,7 @@ class Service:
         :return: Either a list of records or a tuple containing the records and totals, if specified.
         :rtype List or Tuple
         """
-        with Session() as session:
+        with Session(expire_on_commit=False) as session:
             with session.begin():
                 resultant_rows = session.query(self.model)
                 count = None

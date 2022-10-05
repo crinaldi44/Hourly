@@ -1,3 +1,4 @@
+from email.policy import default
 import json
 import re
 from typing import List, Any
@@ -307,7 +308,7 @@ class Package(HourlyTable, Base):
     id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     description = Column(String(255))
-    img_url = Column(String(255))
+    img_url = Column(String(255), default="")
     price = Column(Float, default=0.0)
     company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
     questions = Column(JSON(), nullable=False)

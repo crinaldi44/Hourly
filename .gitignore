@@ -1,2 +1,5 @@
+autogen/client/*
+autogen/node_modules
+
 *.pyc
 venv

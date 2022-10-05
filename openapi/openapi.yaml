@@ -1,229 +1,33 @@
+---
 openapi: 3.0.2
 info:
-  contact:
-    email: test@test.com
-    name: Hourly
-    url: http://www.hourly.com
-  description: Provides interaction with Hourly web app.
   title: Hourly API
   version: "0.1"
+  description: Provides interaction with Hourly web app.
+  contact:
+    name: Hourly
+    url: http://www.hourly.com
+    email: test@test.com
 servers:
-- description: Represents the local server.
-  url: http://localhost:8080/api/v0
-- description: The staging API environment.
-  url: http://hourly-timesheet-dev.herokuapp.com/api/v0
-- description: The prod API environment.
-  url: http://hourly-timesheet-prod.herokuapp.com/api/v0
-tags:
-- description: Durations of time that an employee has worked.
-  name: Clockins
-- description: Groupings of users within the cloud.
-  name: Companies
-- description: Subdivisions of companies.
-  name: Departments
-- description: Instantiations of packages.
-  name: Events
-- description: Event types created by companies.
-  name: Packages
-- description: Roles that users can have in the Hourly cloud.
-  name: Roles
+- url: http://localhost:8080/api/v0
+  description: Represents the local server.
+- url: http://hourly-timesheet-dev.herokuapp.com/api/v0
+  description: The staging API environment.
+- url: http://hourly-timesheet-prod.herokuapp.com/api/v0
+  description: The prod API environment.
 paths:
-  /companies:
-    get:
-      operationId: list_companies
-      parameters:
-      - description: default query parameter
-        explode: true
-        in: query
-        name: q
-        required: false
-        schema:
-          type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
-        in: query
-        name: include_totals
-        required: false
-        schema:
-          type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
-        in: query
-        name: page
-        required: false
-        schema:
-          type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
-        in: query
-        name: fields
-        required: false
-        schema:
-          type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
-          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
-          \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
-        schema:
-          type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
-        in: query
-        name: offset
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
-        in: query
-        name: limit
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
-        in: query
-        name: lang
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListResponse'
-          description: Successully retrieved list of companies.
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: List Companies
-      tags:
-      - Companies
-      x-openapi-router-controller: domains.companies.controllers.get.controller
-    post:
-      operationId: add_company
-      requestBody:
-        x-body-name: company
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Company'
-        description: Add Company
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AddResponse'
-          description: company added
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: Add Company
-      tags:
-      - Companies
-      x-openapi-router-controller: domains.companies.controllers.post.controller
   /companies/{id}:
-    delete:
-      operationId: delete_company
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: Company deleted
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: Delete Company
+    get:
       tags:
       - Companies
-      x-openapi-router-controller: domains.companies.controllers.delete.controller
-    get:
-      operationId: get_company
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "200":
           description: Successfully retrieved Company
@@ -248,28 +52,66 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: get_company
       summary: Delete Company
+      x-openapi-router-controller: domains.companies.controllers.get.controller
+    delete:
       tags:
       - Companies
-      x-openapi-router-controller: domains.companies.controllers.get.controller
-    patch:
-      operationId: patch_company
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
+      responses:
+        "204":
+          description: Company deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: delete_company
+      summary: Delete Company
+      x-openapi-router-controller: domains.companies.controllers.delete.controller
+    patch:
       requestBody:
-        x-body-name: patch_document_list
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+        x-body-name: patch_document_list
+      tags:
+      - Companies
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -295,89 +137,90 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_company
       summary: Patch Company
-      tags:
-      - Companies
       x-openapi-router-controller: domains.companies.controllers.patch.controller
   /departments:
     get:
-      operationId: list_departments
+      tags:
+      - Departments
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/DepartmentListResponse'
           description: Successully retrieved list of departments.
         "429":
           content:
@@ -400,20 +243,20 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_departments
       summary: List Departments
-      tags:
-      - Departments
       x-openapi-router-controller: domains.departments.controllers.get.controller
     post:
-      operationId: add_department
       requestBody:
-        x-body-name: department
+        description: Add Department
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Department'
-        description: Add Department
         required: true
+        x-body-name: department
+      tags:
+      - Departments
       responses:
         "200":
           content:
@@ -442,21 +285,59 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_department
       summary: Add Department
-      tags:
-      - Departments
       x-openapi-router-controller: domains.departments.controllers.post.controller
   /departments/{id}:
-    delete:
-      operationId: delete_department
+    get:
+      tags:
+      - Departments
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
+      responses:
+        "200":
+          description: Successfully retrieved Department
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: get_department
+      summary: Get Department
+      x-openapi-router-controller: domains.departments.controllers.get.controller
+    delete:
+      tags:
+      - Departments
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
+        required: true
       responses:
         "204":
           description: Department deleted
@@ -481,28 +362,28 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: delete_department
       summary: Delete Department
-      tags:
-      - Departments
       x-openapi-router-controller: domains.departments.controllers.delete.controller
     patch:
-      operationId: patch_department
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
       requestBody:
-        x-body-name: patch_document_list
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+        x-body-name: patch_document_list
+      tags:
+      - Departments
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -528,83 +409,84 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_department
       summary: Patch Department
-      tags:
-      - Departments
       x-openapi-router-controller: domains.departments.controllers.patch.controller
   /clockins:
     get:
-      operationId: list_clockins
+      tags:
+      - Clockins
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
@@ -633,20 +515,20 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_clockins
       summary: List Clockins
-      tags:
-      - Clockins
       x-openapi-router-controller: domains.clockins.controllers.get.controller
     post:
-      operationId: add_clockin
       requestBody:
-        x-body-name: clockin
+        description: Add Clockin
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Clockin'
-        description: Add Clockin
         required: true
+        x-body-name: clockin
+      tags:
+      - Clockins
       responses:
         "200":
           content:
@@ -675,21 +557,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_clockin
       summary: Add Clockin
-      tags:
-      - Clockins
       x-openapi-router-controller: domains.clockins.controllers.post.controller
   /clockins/{id}:
     delete:
-      operationId: delete_clockin
+      tags:
+      - Clockins
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "204":
           description: Clockin deleted
@@ -714,27 +596,27 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: delete_clockin
       summary: Delete Clockin
-      tags:
-      - Clockins
       x-openapi-router-controller: domains.clockins.controllers.delete.controller
     patch:
-      operationId: patch_clockin
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
       requestBody:
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+      tags:
+      - Clockins
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -760,89 +642,90 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_clockin
       summary: Patch Clockin
-      tags:
-      - Clockins
       x-openapi-router-controller: domains.clockins.controllers.patch.controller
   /events:
     get:
-      operationId: list_events
+      tags:
+      - Events
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/EventListResponse'
           description: Successully retrieved list of events.
         "429":
           content:
@@ -865,20 +748,20 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_events
       summary: List Events
-      tags:
-      - Events
       x-openapi-router-controller: domains.events.controllers.get.controller
     post:
-      operationId: add_event
       requestBody:
-        x-body-name: event
+        description: Add Event
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Event'
-        description: Add Event
         required: true
+        x-body-name: event
+      tags:
+      - Events
       responses:
         "200":
           content:
@@ -907,59 +790,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_event
       summary: Add Event
-      tags:
-      - Events
       x-openapi-router-controller: domains.events.controllers.post.controller
   /events/{id}:
-    delete:
-      operationId: delete_event
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: Event deleted
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: Delete Event
+    get:
       tags:
       - Events
-      x-openapi-router-controller: domains.events.controllers.delete.controller
-    get:
-      operationId: get_event
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "200":
           description: Successfully retrieved Event
@@ -984,28 +829,66 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: get_event
       summary: Get Event
+      x-openapi-router-controller: domains.events.controllers.get.controller
+    delete:
       tags:
       - Events
-      x-openapi-router-controller: domains.events.controllers.get.controller
-    patch:
-      operationId: patch_event
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
+      responses:
+        "204":
+          description: Event deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: delete_event
+      summary: Delete Event
+      x-openapi-router-controller: domains.events.controllers.delete.controller
+    patch:
       requestBody:
-        x-body-name: patch_document_list
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+        x-body-name: patch_document_list
+      tags:
+      - Events
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -1031,89 +914,90 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_event
       summary: Patch Event
-      tags:
-      - Events
       x-openapi-router-controller: domains.events.controllers.patch.controller
   /packages:
     get:
-      operationId: list_packages
+      tags:
+      - Packages
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/PackageListResponse'
           description: Successully retrieved list of packages.
         "429":
           content:
@@ -1136,20 +1020,20 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_packages
       summary: List Packages
-      tags:
-      - Packages
       x-openapi-router-controller: domains.packages.controllers.get.controller
     post:
-      operationId: add_package
       requestBody:
-        x-body-name: package
+        description: Add Package
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Package'
-        description: Add Package
         required: true
+        x-body-name: package
+      tags:
+      - Packages
       responses:
         "200":
           content:
@@ -1178,59 +1062,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_package
       summary: Add Package
-      tags:
-      - Packages
       x-openapi-router-controller: domains.packages.controllers.post.controller
   /packages/{id}:
-    delete:
-      operationId: delete_package
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: Package deleted
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: Delete Package
+    get:
       tags:
       - Packages
-      x-openapi-router-controller: domains.packages.controllers.delete.controller
-    get:
-      operationId: get_package
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "200":
           description: Successfully retrieved Package
@@ -1255,28 +1101,66 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: get_package
       summary: Get Package
+      x-openapi-router-controller: domains.packages.controllers.get.controller
+    delete:
       tags:
       - Packages
-      x-openapi-router-controller: domains.packages.controllers.get.controller
-    patch:
-      operationId: patch_package
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
+      responses:
+        "204":
+          description: Package deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: delete_package
+      summary: Delete Package
+      x-openapi-router-controller: domains.packages.controllers.delete.controller
+    patch:
       requestBody:
-        x-body-name: patch_document_list
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+        x-body-name: patch_document_list
+      tags:
+      - Packages
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -1302,90 +1186,90 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_package
       summary: Patch Package
-      tags:
-      - Packages
       x-openapi-router-controller: domains.packages.controllers.patch.controller
-
   /roles:
     get:
-      operationId: list_roles
+      tags:
+      - Roles
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/RoleListResponse'
           description: Successully retrieved list of roles.
         "429":
           content:
@@ -1408,20 +1292,20 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_roles
       summary: List the set of permissions a user may retain.
-      tags:
-      - Roles
       x-openapi-router-controller: domains.roles.controllers.get.controller
     post:
-      operationId: add_role
       requestBody:
-        x-body-name: role
+        description: Add Role
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Role'
-        description: Add Role
         required: true
+        x-body-name: role
+      tags:
+      - Roles
       responses:
         "200":
           content:
@@ -1450,21 +1334,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_role
       summary: Add Role
-      tags:
-      - Roles
       x-openapi-router-controller: domains.roles.controllers.post.controller
   /roles/{id}:
     delete:
-      operationId: delete_role
+      tags:
+      - Roles
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "204":
           description: Role deleted
@@ -1489,28 +1373,28 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: delete_role
       summary: Delete a role
-      tags:
-      - Roles
       x-openapi-router-controller: domains.roles.controllers.delete.controller
     patch:
-      operationId: patch_role
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
       requestBody:
-        x-body-name: patch_document_list
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+        x-body-name: patch_document_list
+      tags:
+      - Roles
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -1536,89 +1420,90 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_role
       summary: Patch a role
-      tags:
-      - Roles
       x-openapi-router-controller: domains.roles.controllers.patch.controller
   /employees:
     get:
-      operationId: list_users
+      tags:
+      - Employees
       parameters:
-      - description: default query parameter
+      - style: form
         explode: true
-        in: query
         name: q
-        required: false
+        description: default query parameter
         schema:
           type: string
-        style: form
-      - description: include the total count in the response
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: include_totals
-        required: false
+        description: include the total count in the response
         schema:
           type: string
-        style: form
-      - description: The page to query from. This will take precedence over a limit and offset.
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: page
-        required: false
+        description: The page to query from. This will take precedence over a limit
+          and offset.
         schema:
           type: string
-        style: form
-      - description: "Fields to exclude {\"measurements\": 0} or only include {\"\
-          measurements\": 1}"
-        explode: true
         in: query
-        name: fields
         required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
         schema:
           type: string
-        style: form
-      - description: "comma-separated list of fields to define the sort order. To\
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
           \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
           \ e.g. /sales-orders?sort=+id"
-        explode: true
-        in: query
-        name: sort
-        required: false
         schema:
           type: string
-        style: form
-      - description: numeric offset of the first element on a page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: offset
-        required: false
+        description: numeric offset of the first element on a page
         schema:
           type: integer
-        style: form
-      - description: client suggested limit to restrict the number of entries on a
-          page
-        explode: true
         in: query
+        required: false
+      - style: form
+        explode: true
         name: limit
-        required: false
+        description: client suggested limit to restrict the number of entries on a
+          page
         schema:
           type: integer
-        style: form
-      - description: "language code to prefer for document elements (en-US, fr ...)\
-          \ page"
-        explode: true
         in: query
-        name: lang
         required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
         schema:
           type: string
-        style: form
+        in: query
+        required: false
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/UserListResponse'
           description: Successully retrieved list of users.
         "429":
           content:
@@ -1641,18 +1526,18 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: list_users
       summary: List Employees
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.get.controller
     post:
-      operationId: add_employee
       requestBody:
-        x-body-name: employee
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+        x-body-name: employee
+      tags:
+      - Employees
       responses:
         "200":
           content:
@@ -1681,19 +1566,19 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: add_employee
       summary: Add Employee
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.post.controller
   /employees/validate:
     post:
-      operationId: validate_employees
       requestBody:
-        x-body-name: employee_validations
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UserValidationList'
+        x-body-name: employee_validations
+      tags:
+      - Employees
       responses:
         "200":
           content:
@@ -1722,21 +1607,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: validate_employees
       summary: Validate Employees
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.post.controller
   /users/profile/{id}:
     get:
-      operationId: get_users_profile
+      tags:
+      - Employees
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "200":
           description: Successfully retrieved Employee profile
@@ -1761,59 +1646,21 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: get_users_profile
       summary: Get Employee Profile
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.get.controller
   /employees/{id}:
-    delete:
-      operationId: delete_employee
-      parameters:
-      - explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "204":
-          description: Employee deleted
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: API rate limit exceeded.
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorListResponse'
-          description: Something is broken.
-        "502":
-          description: The cloud is down or being upgraded.
-        "503":
-          description: The cloud is up but overloaded with requests.
-        "504":
-          description: The cloud is up but there is a failure somewhere causing the
-            request to fail.
-      security:
-      - bearerAuth: []
-      summary: Delete Employee
+    get:
       tags:
       - Employees
-      x-openapi-router-controller: domains.employees.controllers.delete.controller
-    get:
-      operationId: get_employee
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
       responses:
         "200":
           description: Successfully retrieved Employee
@@ -1838,27 +1685,65 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: get_employee
       summary: Get Employee
+      x-openapi-router-controller: domains.employees.controllers.get.controller
+    delete:
       tags:
       - Employees
-      x-openapi-router-controller: domains.employees.controllers.get.controller
-    patch:
-      operationId: patch_employee
       parameters:
-      - explode: false
-        in: path
+      - style: simple
+        explode: false
         name: id
-        required: true
         schema:
           type: string
-        style: simple
+        in: path
+        required: true
+      responses:
+        "204":
+          description: Employee deleted
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: delete_employee
+      summary: Delete Employee
+      x-openapi-router-controller: domains.employees.controllers.delete.controller
+    patch:
       requestBody:
         content:
           application/json:
             schema:
+              type: array
               items:
                 $ref: '#/components/schemas/PatchDocument'
-              type: array
+        required: true
+      tags:
+      - Employees
+      parameters:
+      - style: simple
+        explode: false
+        name: id
+        schema:
+          type: string
+        in: path
         required: true
       responses:
         "204":
@@ -1884,18 +1769,18 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: patch_employee
       summary: Patch Employee
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.patch.controller
   /employees/login:
     post:
-      operationId: authenticate_user
       requestBody:
         content:
           application/json:
             schema:
-                $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/UserLoginRequest'
+      tags:
+      - Employees
       responses:
         "200":
           content:
@@ -1922,19 +1807,19 @@ paths:
         "504":
           description: The cloud is up but there is a failure somewhere causing the
             request to fail.
+      operationId: authenticate_user
       summary: Login User
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.post.controller
   /user/signup:
     post:
-      operationId: signup_user
       requestBody:
-        x-body-name: employee
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+        x-body-name: employee
+      tags:
+      - Employees
       responses:
         "200":
           content:
@@ -1963,108 +1848,264 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
+      operationId: signup_user
       summary: Signup Employee
-      tags:
-      - Employees
       x-openapi-router-controller: domains.employees.controllers.post.controller
+  /companies:
+    get:
+      tags:
+      - Companies
+      parameters:
+      - style: form
+        explode: true
+        name: q
+        description: default query parameter
+        schema:
+          type: string
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: include_totals
+        description: include the total count in the response
+        schema:
+          type: string
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: page
+        description: The page to query from. This will take precedence over a limit
+          and offset.
+        schema:
+          type: string
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: fields
+        description: "Fields to exclude {\"measurements\": 0} or only include {\"\
+          measurements\": 1}"
+        schema:
+          type: string
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: sort
+        description: "comma-separated list of fields to define the sort order. To\
+          \ indicate sorting direction, may be prefixed with + (ascending) or - (descending),\
+          \ e.g. /sales-orders?sort=+id"
+        schema:
+          type: string
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: offset
+        description: numeric offset of the first element on a page
+        schema:
+          type: integer
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: limit
+        description: client suggested limit to restrict the number of entries on a
+          page
+        schema:
+          type: integer
+        in: query
+        required: false
+      - style: form
+        explode: true
+        name: lang
+        description: "language code to prefer for document elements (en-US, fr ...)\
+          \ page"
+        schema:
+          type: string
+        in: query
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyListResponse'
+          description: Successully retrieved list of companies.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: list_companies
+      summary: List Companies
+      x-openapi-router-controller: domains.companies.controllers.get.controller
+    post:
+      requestBody:
+        description: Add Company
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+        x-body-name: company
+      tags:
+      - Companies
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddResponse'
+          description: company added
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: API rate limit exceeded.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorListResponse'
+          description: Something is broken.
+        "502":
+          description: The cloud is down or being upgraded.
+        "503":
+          description: The cloud is up but overloaded with requests.
+        "504":
+          description: The cloud is up but there is a failure somewhere causing the
+            request to fail.
+      security:
+      - bearerAuth: []
+      operationId: add_company
+      summary: Add Company
+      x-openapi-router-controller: domains.companies.controllers.post.controller
 components:
   schemas:
     AddResponse:
+      title: AddResponse
       description: Response to adding a new row.
-      example:
-        id: id
+      required:
+      - id
+      type: object
       properties:
         id:
           title: id
           type: integer
-      required:
-      - id
-      title: AddResponse
-      type: object
+      example:
+        id: id
     Clockin:
       description: A duration of time worked by an employee.
+      required:
+      - employee_id
+      - clockin_time
+      - department_id
+      properties:
+        id:
+          title: id
+          description: Unique identifier
+          type: integer
+        employee_id:
+          title: employee_id
+          description: Unique identifier for an employee.
+          type: integer
+        clockin_time:
+          title: clockin_time
+          description: Clockin time
+          type: string
+        clockout_time:
+          title: clockout_time
+          description: Clockout time
+          type: string
+        department_id:
+          title: department_id
+          description: Unique identifier for a department.
+          type: string
       example:
         id: id
         employee_id: employee_id
         clockin_time: clockin_time
         clockout_time: clockout_time
         department_id: department_id
-      properties:
-        id:
-          description: Unique identifier
-          title: id
-          type: integer
-        employee_id:
-          description: Unique identifier for an employee.
-          title: employee_id
-          type: integer
-        clockin_time:
-          description: Clockin time
-          title: clockin_time
-          type: string
-        clockout_time:
-          description: Clockout time
-          title: clockout_time
-          type: string
-        department_id:
-          description: Unique identifier for a department.
-          title: department_id
-          type: string
-      required:
-        - employee_id
-        - clockin_time
-        - department_id
     Company:
+      title: Company
       description: "A grouping of multiple departments, users, and events."
-      example:
-        zip_code: zip_code
-        phone: phone
-        city: city
-        name: name
-        about: about
-        address_street: address_street
-        id: id
-        state: state
-      properties:
-        id:
-          description: Unique identifier
-          title: id
-          type: string
-        name:
-          description: The name of the company.
-          title: name
-          type: string
-        about:
-          description: The company's about us.
-          title: about
-          type: string
-        phone:
-          description: organization phone
-          title: phone
-          type: string
-        address_street:
-          description: The street address of the company.
-          title: address_street
-          type: string
-        city:
-          description: The city in which the company is located.
-          title: city
-          type: string
-        state:
-          description: state
-          title: state
-          type: string
-        zip_code:
-          description: zipCode
-          title: zip_code
-          type: string
       required:
       - name
-      title: Company
       type: object
+      properties:
+        id:
+          title: id
+          description: Unique identifier
+          type: integer
+        name:
+          title: name
+          description: The name of the company.
+          type: string
+        about:
+          title: about
+          description: The company's about us.
+          type: string
+        phone:
+          title: phone
+          description: organization phone
+          type: string
+        address_street:
+          title: address_street
+          description: The street address of the company.
+          type: string
+        city:
+          title: city
+          description: The city in which the company is located.
+          type: string
+        state:
+          title: state
+          description: state
+          type: string
+        zip_code:
+          title: zip_code
+          description: zipCode
+          type: string
+        img_url:
+          description: Represents the url of the company's image.
+          type: string
+      example: |-
+        {
+            "zip_code": "zip_code",
+            "phone": "phone",
+            "city": "city",
+            "name": "name",
+            "about": "about",
+            "address_street": "address_street",
+            "id": "id",
+            "state": "state"
+            "img_url": "img_url"
+        }
     Department:
+      title: Department
       description: Subdivisions of companies.
-      example: "{'department_name': 'Example', 'manager_id': 1, 'company_id': 2 }"
+      required:
+      - department_name
+      type: object
       properties:
         id:
           description: The id of the department.
@@ -2074,29 +2115,26 @@ components:
           type: string
         manager_id:
           description: An id representing the ID of the department manager.
-          type: string
+          type: integer
         company_id:
           description: The id representing the company the department is in.
-          type: string
-      required:
-      - department_name
-      title: Department
-      type: object
+          type: integer
+      example: "{'department_name': 'Example', 'manager_id': 1, 'company_id': 2 }"
     Error:
+      title: Root Type for ErrorMessage
       description: A single error message.
-      example: "{\n    \"code\": \"error.general.badGateway\",\n    \"status\": 502,\n\
-        \    \"developerMessage\": \"Insitucloud is currently down.\",\n    \"userMessage\"\
-        : \"\",\n    \"resolution\": \"Check the status page or try again later.\"\
-        ,\n    \"moreInfo\": \"\",\n    \"field\": \"\",\n    \"errorId\": \"886313e1-3b8a-5372-9b90-0c9aee199e5d\"\
-        \n}"
+      required:
+      - code
+      - status
+      type: object
       properties:
         code:
           description: A machine-readable unique identifier of the error. The code
             will never change and should be used to identify the specific error.
           type: string
         status:
-          description: The HTTP status code. Included here for quick reference.
           format: int32
+          description: The HTTP status code. Included here for quick reference.
           type: integer
         developerMessage:
           description: A message to the developer about the error message. This may
@@ -2122,28 +2160,44 @@ components:
           description: "A unique identifier that relates the error to our internal\
             \ logs. If you contact support, this should be included."
           type: string
-      required:
-      - code
-      - status
-      title: Root Type for ErrorMessage
-      type: object
+      example: |-
+        {
+            "code": "error.general.badGateway",
+            "status": 502,
+            "developerMessage": "Insitucloud is currently down.",
+            "userMessage": "",
+            "resolution": "Check the status page or try again later.",
+            "moreInfo": "",
+            "field": "",
+            "errorId": "886313e1-3b8a-5372-9b90-0c9aee199e5d"
+        }
     ErrorListResponse:
+      title: Root Type for ErrorListResponse
       description: A list of error messages.
-      example: "{'detail': 'The server encountered an unexpected error. Please try again later.','status': 500,'suggestion': 'Please wait 5 minutes and re-attempt your request.'}"
+      required:
+      - errors
+      type: object
       properties:
         errors:
           description: List of all error messages.
-          items:
-            type: object
-            title: ErrorMessage
           type: array
-      required:
-      - errors
-      title: Root Type for ErrorListResponse
-      type: object
+          items:
+            title: ErrorMessage
+            type: object
+      example: "{'detail': 'The server encountered an unexpected error. Please try\
+        \ again later.','status': 500,'suggestion': 'Please wait 5 minutes and re-attempt\
+        \ your request.'}"
     Event:
+      title: Event
       description: Represents a type of event that can be created.
-      example: "{'name': 'Example', 'description': 'Example description', 'agreed_price': 'price', 'start_datetime': '203919174', 'end_datetime': '239829328', 'package_id': 1, 'employee_id': 1, 'questions': [{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+      required:
+      - name
+      - description
+      - agreed_price
+      - start_datetime
+      - package_id
+      - questions
+      type: object
       properties:
         id:
           description: The identifier for the event.
@@ -2156,7 +2210,7 @@ components:
           type: string
         agreed_price:
           description: The agreed upon price.
-          type: integer
+          type: number
         start_datetime:
           description: The start datetime.
           type: string
@@ -2164,30 +2218,41 @@ components:
           description: The end datetime.
           type: string
         package_id:
-            description: The ID of the package associated with this event.
-            type: integer
+          description: The ID of the package associated with this event.
+          type: integer
         company_id:
-            description: The ID of the company associated to the event.
-            type: integer
+          description: The ID of the company associated to the event.
+          type: integer
         employee_id:
-            description: The ID of the employee servicing the event.
-            type: integer
+          description: The ID of the employee servicing the event.
+          type: integer
         questions:
           description: The questions to include in the event form.
           type: array
           items:
             $ref: '#/components/schemas/PackageQuestion'
-      required:
-      - name
-      - description
-      - agreed_price
-      - start_datetime
-      - package_id
-      - questions
-      title: Event
-      type: object
+      example: "{'name': 'Example', 'description': 'Example description', 'agreed_price':\
+        \ 'price', 'start_datetime': '203919174', 'end_datetime': '239829328', 'package_id':\
+        \ 1, 'employee_id': 1, 'questions': [{'title': 'Example', 'value': '', 'values':\
+        \ ['Test'], 'data_type': 'multiselect'}] }"
     ListResponse:
+      title: ListResponse
       description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
       example:
         message: Success.
         status: 200
@@ -2208,25 +2273,13 @@ components:
           addressStreet: addressStreet
           id: id
           state: state
-      properties:
-        data:
-          title: data
-          type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
-      required:
-      - data
-      - message
-      - status
-      title: ListResponse
-      type: object
     Package:
+      title: Package
       description: Represents a type of event that can be created.
-      example: "{'name': 'Example', 'description': 'Example description', 'img_url': 'url', 'price': '15.00', 'companyId': 1, 'questions': [{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+      required:
+      - name
+      - description
+      type: object
       properties:
         id:
           description: The identifier for the role.
@@ -2241,8 +2294,8 @@ components:
           description: The url to display the image tag.
           type: string
         price:
-          description: The price of the package, in USD.
-          type: string
+          description: "The price of the package, in USD."
+          type: number
         company_id:
           description: The ID of the company created by.
           type: integer
@@ -2251,14 +2304,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PackageQuestion'
-      required:
-      - name
-      - description
-      title: Package
-      type: object
+      example: "{'name': 'Example', 'description': 'Example description', 'img_url':\
+        \ 'url', 'price': '15.00', 'companyId': 1, 'questions': [{'title': 'Example',\
+        \ 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
     PackageQuestion:
+      title: PackageQuestion
       description: Represents a question type to be included in a package.
-      example: "{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type': 'multiselect'}"
+      required:
+      - title
+      - data_type
+      type: object
       properties:
         title:
           description: Text that outlines the question.
@@ -2267,20 +2322,20 @@ components:
           description: The value stored by the question.
           type: string
         values:
-          description: The potential values, if any, of the question.
+          description: "The potential values, if any, of the question."
           type: array
         data_type:
           description: The type of the question.
           type: string
-      required:
-      - title
-      - data_type
-      title: PackageQuestion
-      type: object
+      example: "{'title': 'Example', 'value': '', 'values': ['Test'], 'data_type':\
+        \ 'multiselect'}"
     PatchDocument:
+      title: PatchDocument
       description: A JSONPatch document as defined by RFC 6902.
-      example: "{\n    \"op\": \"replace\",\n    \"path\": \"/name\",\n    \"value\"\
-        : \"Sample3\"\n}"
+      required:
+      - op
+      - path
+      type: object
       properties:
         op:
           description: The operation to be performed
@@ -2301,15 +2356,19 @@ components:
         fromPath:
           description: A string containing a JSON Pointer value.
           type: string
-      required:
-      - op
-      - path
-      title: PatchDocument
-      type: object
+      example: |-
+        {
+            "op": "replace",
+            "path": "/name",
+            "value": "Sample3"
+        }
     Role:
+      title: Role
       description: A single role.
-      example: "{\n    \"name\": \"Role1\",\n    \"description\": \"Role1 description\"\
-        \n}"
+      required:
+      - name
+      - permissions
+      type: object
       properties:
         id:
           description: The identifier for the role.
@@ -2323,19 +2382,21 @@ components:
         permissions:
           description: Permissions for role
           type: string
-      required:
-      - name
-      - permissions
-      title: Role
-      type: object
+      example: |-
+        {
+            "name": "Role1",
+            "description": "Role1 description"
+        }
     User:
+      title: User
       description: A single user.
-      example: "{\n    \"name\": \"User1\",\n    \"description\": \"User1 description\"\
-        \n}"
+      required:
+      - email
+      type: object
       properties:
         id:
           description: A unique identifier for a user.
-          type: string
+          type: integer
         email:
           description: email
           type: string
@@ -2347,63 +2408,74 @@ components:
           type: string
         pay_rate:
           description: The user's pay rate.
-          type: integer
+          type: number
         department_id:
           description: The user's department id.
           type: integer
         role_id:
           description: The user's role id.
           type: integer
+      example: |-
+        {
+            "name": "User1",
+            "description": "User1 description"
+        }
+    UserLoginRequest:
+      title: UserLoginRequest
+      description: Request for user login.
       required:
       - email
-      title: User
+      - password
       type: object
-    UserLoginRequest:
-      description: Request for user login.
+      properties:
+        email:
+          title: email
+          description: The users email
+          type: string
+        password:
+          title: password
+          description: The users password
+          type: string
       example:
         email: email
         password: password
-      properties:
-        email:
-          description: The users email
-          title: email
-          type: string
-        password:
-            description: The users password
-            title: password
-            type: string
-      required:
-        - email
-        - password
-      title: UserLoginRequest
-      type: object
     UserLoginResponse:
+      title: UserLoginResponse
       description: Response on user login.
-      example:
-        accessToken: accessToken
-      properties:
-        accessToken:
-          description: accessToken that can be passed as authorization for endpoints
-          title: accessToken
-          type: string
       required:
       - accessToken
-      title: UserLoginResponse
       type: object
-    UserSignUpResponse:
-      description: Response to user signup
+      properties:
+        accessToken:
+          title: accessToken
+          description: accessToken that can be passed as authorization for endpoints
+          type: string
       example:
-        id: id
+        accessToken: accessToken
+    UserSignUpResponse:
+      title: UserSignUpResponse
+      description: Response to user signup
+      required:
+      - id
+      type: object
       properties:
         id:
           title: id
           type: string
-      required:
-      - id
-      title: UserSignUpResponse
-      type: object
+      example:
+        id: id
     UserValidationList:
+      title: UserValidationList
       description: A list of user validations.
+      required:
+      - employee_validations
+      type: object
+      properties:
+        employee_validations:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/UserValidation'
       example:
         message: Success.
         status: 200
@@ -2424,16 +2496,14 @@ components:
           addressStreet: addressStreet
           id: id
           state: state
-      properties:
-        employee_validations:
-          title: data
-          type: array
-      required:
-      - employee_validations
-      title: UserValidationList
-      type: object
     UserValidation:
+      title: UserValidation
       description: A user validation request object.
+      required:
+      - first_name
+      - last_name
+      - company_name
+      - department_name
       type: object
       properties:
         email:
@@ -2475,15 +2545,262 @@ components:
         is_employee_valid:
           title: is_employee_valid
           type: string
+    DepartmentListResponse:
+      title: ListResponse
+      description: A response that contains data.
       required:
-        - first_name
-        - last_name
-        - company_name
-        - department_name
-      title: UserValidation
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+    PackageListResponse:
+      title: ListResponse
+      description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/Package'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+    CompanyListResponse:
+      title: ListResponse
+      description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/Company'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+    UserListResponse:
+      title: ListResponse
+      description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+    EventListResponse:
+      title: ListResponse
+      description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+    RoleListResponse:
+      title: ListResponse
+      description: A response that contains data.
+      required:
+      - data
+      - message
+      - status
+      type: object
+      properties:
+        data:
+          title: data
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        message:
+          title: message
+          type: string
+        status:
+          title: status
+          type: integer
+      example:
+        message: Success.
+        status: 200
+        data:
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
+        - zipCode: zipCode
+          phone: phone
+          city: city
+          name: name
+          about: about
+          addressStreet: addressStreet
+          id: id
+          state: state
   securitySchemes:
     bearerAuth:
-      bearerFormat: JWT
       scheme: bearer
+      bearerFormat: JWT
       type: http
       x-bearerInfoFunc: crosscutting.auth.authentication.authenticate_user
+tags:
+- name: Clockins
+  description: Durations of time that an employee has worked.
+- name: Companies
+  description: Groupings of users within the cloud.
+- name: Departments
+  description: Subdivisions of companies.
+- name: Events
+  description: Instantiations of packages.
+- name: Packages
+  description: Event types created by companies.
+- name: Roles
+  description: Roles that users can have in the Hourly cloud.

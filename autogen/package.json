@@ -1,0 +1,17 @@
+{
+  "name": "hourly-api-client",
+  "version": "1.0.0",
+  "description": "A client for use with the Hourly application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "openapi-server-generate-client": "openapi-generator-cli generate -g javascript -i ../openapi/openapi.yaml --output 'client/release' --skip-validate-spec --additional-properties=usePromises=true,projectVersion=1.0.0,projectName=hourly-api-client",
+    "openapi-server-generate-tests": "openapi-generator-cli generate -g python-fastapi -i http://localhost:8080/openapi.json --output 'server/release' --skip-validate-spec && node tests.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.4.26"
+  }
+}

@@ -21,7 +21,7 @@ def list_departments():
     return ListResponse(records=result, total_count=count).serve()
 
 
-def get_department(id):
+def get_department(id_):
     """Retrieves a department by ID.
 
     :param id: Represents the ID of the department.
@@ -31,13 +31,14 @@ def get_department(id):
 
     if role_id <= 2:
         filters = {
-            "company_id": company_id
+            "company_id": company_id,
+            "id": id_
         }
         if role_id < 2:
             filters["department_id"] = department_id
-        result, _ = Departments.find(additional_filters=filters)
+        result, _ = Departments.find(additional_filters=filters, serialize=True)
     else:
-        result, _ = Departments.find(additional_filters={"id": id})
+        result, _ = Departments.find(additional_filters={"id": id_}, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.DepartmentNotFound')
