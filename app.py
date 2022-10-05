@@ -12,7 +12,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 app = connexion.FlaskApp(__name__, specification_dir='openapi/')
-app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True, validate_responses=True)
+app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True)
 
 app.app.register_blueprint(employees)
 app.app.register_blueprint(clockins)

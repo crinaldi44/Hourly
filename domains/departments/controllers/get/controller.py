@@ -17,7 +17,7 @@ def list_departments():
             filters["department_id"] = department_id
         result, count = Departments.find(**search, additional_filters=filters, serialize=True)
     else:
-        result, count = Departments.find(**search, additional_filters={"id": id}, serialize=True)
+        result, count = Departments.find(**search, serialize=True)
     return ListResponse(records=result, total_count=count).serve()
 
 

@@ -6,6 +6,7 @@ from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from database.database import Session
 from domains.employees.services.employee_service import Employees
+from domains.roles.services.role_service import Roles
 from domains.companies.services.company_service import Companies
 from domains.departments.services.department_service import Departments
 
@@ -22,9 +23,12 @@ def add_employee(employee):
     :return: None
     """
 
+    init_controller(permissions="post:employees")
+
     validate_employee = Employees.from_json(data=employee)
-    validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt())
+    validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt()).decode()
     user_exists, _ = Employees.find(additional_filters={"email": validate_employee.email})
+    Roles.validate_exists(id=validate_employee.role_id)
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')

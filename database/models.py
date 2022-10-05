@@ -4,7 +4,7 @@ import re
 from typing import List, Any
 
 import bcrypt
-from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, JSON, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, func, DateTime, Float, text, JSON, Boolean, Text
 from sqlalchemy.orm import relationship
 
 from crosscutting.exception.hourly_exception import HourlyException
@@ -254,7 +254,7 @@ class Roles(HourlyTable, Base):
     __tablename__ = "roles"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
-    permissions = Column(String(255))
+    permissions = Column(Text())
 
     def as_dict(self):
         return {
@@ -341,5 +341,5 @@ Base.metadata.create_all(engine)
 
 # By default, at least one company and one department must exist. Create if
 # not already done so.
-get_or_create(Session, Company, id=1, name="Hourly")
-get_or_create(Session, Department, department_name="Default Department", company_id=1)
+# get_or_create(Session, Company, id=1, name="Hourly", about="")
+# get_or_create(Session, Department, department_name="Default Department", company_id=1)
