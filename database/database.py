@@ -8,6 +8,5 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # preferred practice is to use the 'with' keyword.
 engine = create_engine(
     "postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees", echo=False)
-# chris D41QYbmhlrjIXuQfJiQ4
 Session = sessionmaker(bind=engine)
 Base = declarative_base()

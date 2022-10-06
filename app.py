@@ -42,11 +42,11 @@ app.app.config['DEFAULT_JWT_EXPIRATION'] = {"hours": 2}
 app.app.config['DEFAULT_RATE_LIMIT'] = 100 # Measured in requests per minute
 app.app.config['CORS_HEADERS'] = 'X-Total-Count'
 
-app.run(port=8080)
+# app.run(port=80)
 
 
-# if __name__ == '__main__':
-#     port = int(os.environ.get('PORT', 5000))
-#     port = 8080
-#     bind_address = '0.0.0.0:' + str(port)
-#     app.run(host=bind_address)
+if __name__ == '__main__':
+    # port = int(os.environ.get('PORT', 5000))
+    port = 8080
+    bind_address = '0.0.0.0:' + str(port)
+    app.run(host=bind_address)

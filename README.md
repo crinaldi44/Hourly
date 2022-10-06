@@ -10,17 +10,8 @@ combining it into one general portal.
 # Getting Started
 
 ## Pre-requisites
-To get this project up and running, you'll need to ensure the latest version of python3 and pip3 are up and running.
-
-For the server side, a requirements.txt file has been included. By default, it is recommended to
-install a python3 virtualenv folder in the home directory to avoid conflicts with other projects.
-Once this has been completed, you can simply activate your virtual environment using:
-
-source venv/bin/activate (MacOS)
-OR
-venv/Scripts/activate (Windows Powershell/GitBash)
-
-And pip3 install each of the required dependencies.
+To get this project up and running, you'll need to ensure the latest version of python3 and pip3 are up and running. From
+the home directory, run pip3 install in preferably a virtualenv or globally to install each of the required dependencies.
 
 ## Structure of the Cloud
 This is a Flask application wrapped in a library called Connexion, which maps an OpenAPI 3.x spec to controllers
@@ -30,16 +21,20 @@ which provides automated deserialization and validation of the data. Additionall
 tests folder and should be updated each time a new route has been added. You may run a script to validate all tests
 at once. Unit tests should be batch-run by this method before each deployment.
 
-There are 2 cloud servers which are hosted on IaaS platform Heroku which provides SSL certificates and a personalized
-domain. They are located at:
+There are 2 AWS resources which are hosted on Amazon Web Services. They are:
 
-  * hourly-cloud-dev
-  * hourly-cloud-prod
+  * hourly-cloudapi-prod (EBS application)
+  * hourly-postgres-prod (PostgreSQL RDS instance)
 
-## Security
-A rate limit of 100 requests per minute is imposed on the application as a whole to prevent flooding the backend with
-requests. On endpoints that require heavier logic, joins or complex querying, it is suggested to use the default secure
-rate limit of 50 requests per minute.
+### Deployment
+Deployment is managed by AWS Elastic Beanstalk, which manages and procures the surrounding network infrastructure. 
+You can deploy the hourly-cloudapi application to dev or prod thru the EB CLI by running:
+
+```commandline
+eb deploy
+```
+
+This will trigger the deploy.
 
 ## The Data Layer
 By default, this package uses SQLAlchemy's Object-Relational-Mapping library. In the server folder,

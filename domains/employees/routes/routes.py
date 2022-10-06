@@ -1,5 +1,4 @@
 from flask_cors import CORS
-from pymysql import IntegrityError
 import bcrypt
 
 from crosscutting.exception.hourly_exception import HourlyException
@@ -54,7 +53,7 @@ def log_time(id):
                     session.add(Clockin(employee_id=id, department_id=active_employee.department_id))
                     session.commit()
                     return jsonify({'message': 'You have been successfully clocked in.'}), 201
-                except exc.IntegrityError:
+                except:
                     session.rollback()
                     raise HourlyException('err.hourly.UserNotFound')
 
