@@ -47,6 +47,6 @@ app.app.config['CORS_HEADERS'] = 'X-Total-Count'
 
 if __name__ == '__main__':
     # port = int(os.environ.get('PORT', 5000))
-    port = 8080
+    port = 80
     bind_address = '0.0.0.0:' + str(port)
     app.run(host=bind_address)
