@@ -36,13 +36,13 @@ CORS(app=app.app, expose_headers=['X-Total-Count'])
 # Represents the JWT secret key.
 app.app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
 app.app.config['PRODUCTION'] = False
-app.app.config['DEV_DATABASE_URI'] = 'mysql+pymysql://root:test123@localhost:3306/employees'
-app.app.config['PROD_DATABASE_URI'] = 'mysql+pymysql://admin:testing123456@database-1.cicovww9r07h.us-east-1.rds.amazonaws.com:3306/employees' # Update for production
+app.app.config['DEV_DATABASE_URI'] = 'postgresql://root:test123@localhost:5432/employees'
+app.app.config['PROD_DATABASE_URI'] = 'postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees' # Update for production
 app.app.config['DEFAULT_JWT_EXPIRATION'] = {"hours": 2}
 app.app.config['DEFAULT_RATE_LIMIT'] = 100 # Measured in requests per minute
 app.app.config['CORS_HEADERS'] = 'X-Total-Count'
 
-# app.run(port=80)
+# app.run(port=8080)
 
 
 if __name__ == '__main__':
