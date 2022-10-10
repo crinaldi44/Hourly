@@ -8,6 +8,6 @@ from flask import current_app as app
 # close the session at the end of the request. The general
 # preferred practice is to use the 'with' keyword.
 engine = create_engine(
-    "postgresql://root:test123@localhost:5432/employees", echo=False)
+    "postgresql://postgres:test123@localhost:5432/employees", echo=False)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
