@@ -147,6 +147,16 @@ class Service:
             raise HourlyException('err.hourly.' + self.name + 'NotFound')
         return result[0]
 
+    def deserialize(self, model):
+        """Deserialize a model.
+        """
+        return self.schema.load(model)
+
+    def serialize(self, model):
+        """Serialzie a model.
+        """
+        return self.schema.dump(model)
+
     def as_dict(self, model):
         """Serializes this model into dict format.
 

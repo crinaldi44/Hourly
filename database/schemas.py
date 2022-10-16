@@ -63,17 +63,14 @@ class PackageQuestionModel(Schema):
     values = fields.List(fields.Str())
 
 
-class QueryFilter(Schema):
-    """Represents a query filter object that will test that the specified filters
+class EventSearch(Schema):
+    """Represents a event query filter object that will test that the specified filters
     meet expectations.
 
     """
-    filters = fields.Dict(validate=validate.NoneOf(['company_id', 'id']))
-    page = fields.Integer()
-    offset = fields.Integer()
-    limit = fields.Integer(validate=validate.Range(min=0, max=100))
-    sort = fields.Str()
-    include_totals = fields.Str()
+    from_date = fields.DateTime(required=True)
+    to_date = fields.DateTime(required=True)
+    package_name = fields.Str()
 
 
 class ClockinModel(SQLAlchemyAutoSchema):

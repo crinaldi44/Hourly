@@ -2,7 +2,8 @@ from datetime import datetime
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
+from crosscutting.response.list_response import serve_response, ListResponse
+from database.schemas import EventSearch
 from domains.employees.services.employee_service import Employees
 from domains.events.services.event_service import Events
 from domains.packages.services.package_service import Packages
@@ -32,3 +33,17 @@ def add_event(event):
     Events.add_row(validate_event)
 
     return serve_response(status=201, message='Success')
+
+
+def search_events(search_query):
+    """Searches events within the user's company using the specified criteria.
+    """
+    employee, company, department, role = init_controller(permissions="search:events")
+    if 'package_name' in search_query.keys():
+        package_exists, _ = Packages.find(additional_filters={'name': search_query['package_name']})
+        if len(package_exists) > 0:
+            search_query['package_id'] = package_exists[0].id
+        else:
+            search_query['package_id'] = -1
+    results = Events.search_events(query=search_query, company_id=company)
+    return ListResponse(records=results).serve()
