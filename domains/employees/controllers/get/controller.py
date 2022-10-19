@@ -3,7 +3,7 @@ import connexion
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
-from database.models import Employee
+from database.employee import Employee
 from domains.employees.services.employee_service import Employees
 
 

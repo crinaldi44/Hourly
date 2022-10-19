@@ -1,8 +1,7 @@
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
 from database.database import Session
-from database.models import Event
-from database.schemas import EventModel, EventSearch
+from database.event import Event, EventSearch, EventModel
 
 
 class EventService(Service):

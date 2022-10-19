@@ -1,7 +1,6 @@
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
-from database.models import Roles
-from database.schemas import RoleModel
+from database.role import Roles, RoleModel
 
 
 class RolesService(Service):

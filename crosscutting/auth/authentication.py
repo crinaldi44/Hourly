@@ -12,7 +12,7 @@ from functools import wraps
 from flask_cors import CORS
 
 from crosscutting.exception.hourly_exception import HourlyException
-from database.models import Employee
+from database.employee import Employee
 from database.database import Session
 from domains.employees.services.employee_service import EmployeeService
 

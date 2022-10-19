@@ -1,7 +1,7 @@
 import connexion
 
 from crosscutting.response.list_response import serve_response
-from domains.roles.services.role_service import Roles
+from database.role import Roles
 
 
 def add_role():

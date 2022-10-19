@@ -3,7 +3,13 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from database.database import Base
-from database.models import Company, Department, Package, Event, Employee, Roles, Clockin
+from database.event import Event
+from database.package import Package
+from database.clockin import Clockin
+from database.role import Roles
+from database.company import Company
+from database.department import Department
+from database.employee import Employee
 
 from alembic import context
 

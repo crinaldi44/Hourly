@@ -6,7 +6,7 @@ from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
 from database.database import Session
 from domains.employees.services.employee_service import Employees
-from domains.roles.services.role_service import Roles
+from database.role import Roles
 from domains.companies.services.company_service import Companies
 from domains.departments.services.department_service import Departments
 

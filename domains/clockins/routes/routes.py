@@ -1,4 +1,4 @@
-from database.models import Clockin
+from database.clockin import Clockin
 
 from crosscutting.response.list_response import serve_response, ListResponse
 from crosscutting.auth.authentication import token_required

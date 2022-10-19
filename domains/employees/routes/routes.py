@@ -8,7 +8,9 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
 
 from database.database import Session
-from database.models import Department, Employee, Clockin
+from database.clockin import Clockin
+from database.department import Department
+from database.employee import Employee
 from domains.employees.services.employee_service import Employees
 
 employees = Blueprint('employees', __name__, template_folder='templates', url_prefix='/api/v0')

@@ -3,7 +3,7 @@ from datetime import datetime
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response, ListResponse
-from database.schemas import EventSearch
+from database.event import EventSearch
 from domains.employees.services.employee_service import Employees
 from domains.events.services.event_service import Events
 from domains.packages.services.package_service import Packages

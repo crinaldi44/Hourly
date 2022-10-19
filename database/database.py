@@ -11,3 +11,4 @@ engine = create_engine(
     "postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees", echo=False)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
+Base.metadata.create_all(engine)
