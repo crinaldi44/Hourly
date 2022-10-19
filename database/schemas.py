@@ -117,6 +117,14 @@ class EmployeeModel(SQLAlchemyAutoSchema):
     company_id = fields.Integer(validate=validate_company)
 
 
+class InvoiceItemModel(Schema):
+    """Represents a set of data containing the invoice item data.
+
+    """
+    name = fields.String(required=True)
+    price = fields.List(fields.Float(required=True, default=0.0))
+
+
 class EventModel(SQLAlchemyAutoSchema):
     class Meta:
         model = Event
@@ -131,6 +139,7 @@ class EventModel(SQLAlchemyAutoSchema):
     start_datetime = fields.DateTime(required=True)
     end_datetime = fields.DateTime(required=True)
     questions = fields.List(fields.Nested(PackageQuestionModel))
+    invoice_items = fields.List(fields.Nested(InvoiceItemModel))
 
 
 class PackageModel(SQLAlchemyAutoSchema):

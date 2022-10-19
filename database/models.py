@@ -333,6 +333,7 @@ class Event(HourlyTable, Base):
     company_id = Column(Integer(), ForeignKey('companies.id'), nullable=False)
     employee_id = Column(Integer(), ForeignKey('employees.id'))
     questions = Column(JSON(), nullable=False, default=[])
+    invoice_items = Column(JSON(), default=[])
 
 
 # If a table does not yet exist, create one on the database with
