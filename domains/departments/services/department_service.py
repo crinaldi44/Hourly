@@ -1,6 +1,6 @@
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
-from database.department import Department, DepartmentModel
+from models.department import Department, DepartmentModel
 
 
 class DepartmentService(Service):

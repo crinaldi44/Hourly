@@ -7,7 +7,7 @@ from domains.companies.services.company_service import Companies
 
 
 def add_company(company):
-    """Add a new company to the database.
+    """Add a new company to the models.
 
     :return:
     """

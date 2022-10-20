@@ -4,9 +4,9 @@ import connexion
 from crosscutting.auth.authentication import validate_credentials, init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
-from database.database import Session
+from models.database import Session
 from domains.employees.services.employee_service import Employees
-from database.role import Roles
+from models.role import Roles
 from domains.companies.services.company_service import Companies
 from domains.departments.services.department_service import Departments
 
@@ -18,7 +18,7 @@ def authenticate_user():
 
 
 def add_employee(employee):
-    """Posts a new employee to the database.
+    """Posts a new employee to the models.
 
     :return: None
     """
@@ -34,7 +34,7 @@ def add_employee(employee):
         raise HourlyException('err.hourly.UserExists')
 
     Employees.add_row(validate_employee)
-    return serve_response(message="Successfully added employee to the database!", status=201)
+    return serve_response(message="Successfully added employee to the models!", status=201)
 
 
 def signup_user(employee):

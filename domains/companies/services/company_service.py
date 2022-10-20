@@ -1,5 +1,5 @@
 from crosscutting.service.service import Service
-from database.company import Company, CompanyModel
+from models.company import Company, CompanyModel
 
 
 class CompanyService(Service):

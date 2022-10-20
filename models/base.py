@@ -2,7 +2,7 @@ from inflection import underscore, camelize
 from marshmallow import pre_load, post_dump, Schema, fields, validate
 
 from crosscutting.exception.hourly_exception import HourlyException
-from database.database import engine, Base, Session
+from models.database import engine, Base, Session
 
 """Represents the default number of rows per page for a user
    response.

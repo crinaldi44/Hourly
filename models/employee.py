@@ -8,11 +8,11 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from crosscutting.exception.hourly_exception import HourlyException
-from database.database import Base
-from database.base import HourlyTable
-from database.role import Roles
-from database.company import Company, validate_company
-from database.department import Department, validate_department
+from models.database import Base
+from models.base import HourlyTable
+from models.role import Roles
+from models.company import Company, validate_company
+from models.department import Department, validate_department
 
 
 class Employee(HourlyTable, Base):

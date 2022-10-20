@@ -2401,7 +2401,7 @@ components:
                     type: string
                 price:
                     description: 'The price of the package, in USD.'
-                    type: number
+                    type: string
                 company_id:
                     description: The ID of the company created by.
                     type: integer

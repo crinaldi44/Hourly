@@ -2,7 +2,7 @@ import connexion
 
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
-from database.role import Roles
+from domains.roles.services.role_service import Roles
 
 
 def list_roles():

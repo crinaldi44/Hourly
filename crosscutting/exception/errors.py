@@ -61,6 +61,13 @@ err_codes = {
             "suggestion": "Please check the ID of the event and re-attempt your query."
         },
 
+        "err.hourly.InvalidEventSearch": {
+            "status": 400,
+            "message": "The event search is invalid.",
+            "title": "InvalidEventSearch",
+            "suggestion": "Please check the query and re-attempt your request."
+        },
+
         "err.hourly.InvalidEventDelete": {
             "status": 400,
             "message": "No event was found with that ID.",

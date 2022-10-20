@@ -3,9 +3,9 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database.database import Base
-from database.base import HourlyTable
-from database.company import validate_company
+from models.database import Base
+from models.base import HourlyTable
+from models.company import validate_company
 
 
 class Department(HourlyTable, Base):

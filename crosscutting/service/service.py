@@ -6,7 +6,7 @@ from marshmallow import Schema
 from sqlalchemy import text
 
 from crosscutting.exception.hourly_exception import HourlyException
-from database.database import Session
+from models.database import Session
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
@@ -122,7 +122,7 @@ class Service:
                     return resultant_rows.all(), count
 
     def validate_exists(self, id: int, in_company: int = None, in_department: int = None):
-        """Finds an entry within the database with the specified id. If
+        """Finds an entry within the models with the specified id. If
         fields for in_company or in_department or specified, the model must
         have a field called "company_id" or "department_id" respectively,
         otherwise this will not return a value.
@@ -167,7 +167,7 @@ class Service:
     def from_json(self, data):
         """Validates the specified model. If an invalid value has been encountered,
         raises an exception which will call back to the user with the fields that
-        are invalid. Deserializes the model into a database model.
+        are invalid. Deserializes the model into a models model.
 
         :param data:
         :param dikt:

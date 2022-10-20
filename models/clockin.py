@@ -2,8 +2,8 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 
-from database.database import Base
-from database.base import HourlyTable
+from models.database import Base
+from models.base import HourlyTable
 
 
 class Clockin(HourlyTable, Base):

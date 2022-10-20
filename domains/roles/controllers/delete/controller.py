@@ -1,5 +1,5 @@
 from crosscutting.response.list_response import serve_response
-from database.role import Roles
+from models.role import Roles
 
 
 def delete_role():

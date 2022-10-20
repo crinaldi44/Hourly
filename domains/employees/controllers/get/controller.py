@@ -3,7 +3,7 @@ import connexion
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import ListResponse
-from database.employee import Employee
+from models.employee import Employee
 from domains.employees.services.employee_service import Employees
 
 
@@ -37,7 +37,7 @@ def get_employee(id_):
 
 
 def get_users_profile(id_):
-    """Retrieves a user's profile from within the database
+    """Retrieves a user's profile from within the models
     by joining the fields for their company and role IDs.
 
     This endpoint is primarily intended for use by organization

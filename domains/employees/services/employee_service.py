@@ -1,7 +1,7 @@
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
-from database.database import Session
-from database.employee import Employee, EmployeeModel, EmployeeValidationModel
+from models.database import Session
+from models.employee import Employee, EmployeeModel, EmployeeValidationModel
 
 
 class EmployeeService(Service):

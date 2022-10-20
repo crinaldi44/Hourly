@@ -2,9 +2,9 @@ from marshmallow import Schema, fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, JSON
 
-from database.database import Base
-from database.base import HourlyTable
-from database.package import PackageQuestionModel
+from models.database import Base
+from models.base import HourlyTable
+from models.package import PackageQuestionModel
 
 
 class Event(HourlyTable, Base):

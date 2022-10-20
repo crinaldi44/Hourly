@@ -4,8 +4,8 @@ from marshmallow import Schema, fields, validate, pre_load
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON
 
-from database.database import Base
-from database.base import HourlyTable
+from models.database import Base
+from models.base import HourlyTable
 
 
 class Package(HourlyTable, Base):

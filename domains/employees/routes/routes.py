@@ -7,10 +7,10 @@ from crosscutting.auth.authentication import token_required, validate_credential
 from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
 
-from database.database import Session
-from database.clockin import Clockin
-from database.department import Department
-from database.employee import Employee
+from models.database import Session
+from models.clockin import Clockin
+from models.department import Department
+from models.employee import Employee
 from domains.employees.services.employee_service import Employees
 
 employees = Blueprint('employees', __name__, template_folder='templates', url_prefix='/api/v0')
