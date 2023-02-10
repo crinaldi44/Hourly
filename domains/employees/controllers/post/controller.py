@@ -4,7 +4,7 @@ import connexion
 from crosscutting.auth.authentication import validate_credentials, init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
-from models.database import Session
+from crosscutting.db.database import Session
 from domains.employees.services.employee_service import Employees
 from models.role import Roles
 from domains.companies.services.company_service import Companies

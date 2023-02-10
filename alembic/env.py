@@ -2,19 +2,13 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from models.database import Base
-from models.event import Event
-from models.package import Package
-from models.clockin import Clockin
-from models.role import Roles
-from models.company import Company
-from models.department import Department
-from models.employee import Employee
 
 from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+from crosscutting.db.database import Base
+
 config = context.config
 
 # Interpret the config file for Python logging.

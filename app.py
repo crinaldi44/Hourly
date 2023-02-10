@@ -1,7 +1,9 @@
+import bcrypt
 import connexion
 import sqlalchemy.exc
 from marshmallow import ValidationError
 
+from crosscutting.db.database import Session
 from domains.employees.routes.routes import employees
 from domains.clockins.routes.routes import clockins
 from flask_cors import CORS
@@ -10,6 +12,9 @@ from crosscutting.exception.error_handlers import handle_hourly_exception, handl
 import crosscutting.exception.hourly_exception
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+
+from domains.employees.utils.utils import get_or_create
+from models import Company, Department, Employee
 
 app = connexion.FlaskApp(__name__, specification_dir='openapi/')
 app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True)
@@ -33,20 +38,23 @@ limiter = Limiter(
 
 CORS(app=app.app, expose_headers=['X-Total-Count'])
 
-# Represents the JWT secret key.
 app.app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
 app.app.config['PRODUCTION'] = False
-app.app.config['DEV_DATABASE_URI'] = 'postgresql://postgres:test123@localhost:5432/employees'
-app.app.config['PROD_DATABASE_URI'] = 'postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees' # Update for production
+app.app.config['DEV_DATABASE_URI'] = 'postgresql://crinaldi:test123@0.0.0.0:5432/employees'
+app.app.config['PROD_DATABASE_URI'] = 'postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees'
 app.app.config['DEFAULT_JWT_EXPIRATION'] = {"hours": 2}
 app.app.config['DEFAULT_RATE_LIMIT'] = 100 # Measured in requests per minute
 app.app.config['CORS_HEADERS'] = 'X-Total-Count'
 
-# app.run(port=8080)
+# get_or_create(Session, Company, id=1, name="Hourly", about="")
+# get_or_create(Session, Department, department_name="Default Department", company_id=1)
+# get_or_create(Session, Employee, id=1, email="Test", password=bcrypt.hashpw("test123".encode('utf-8'), bcrypt.gensalt()).decode(), department_id=1, company_id=1, role_id=1)
+
+app.run(port=8080)
 
 
-if __name__ == '__main__':
-    # port = int(os.environ.get('PORT', 5000))
-    port = 80
-    bind_address = '0.0.0.0:' + str(port)
-    app.run(host=bind_address)
+# if __name__ == '__main__':
+#     # port = int(os.environ.get('PORT', 5000))
+#     port = 80
+#     bind_address = '0.0.0.0:' + str(port)
+#     app.run(host=bind_address)

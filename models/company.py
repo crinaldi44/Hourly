@@ -3,7 +3,7 @@ from marshmallow.validate import Length
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String
 
-from models.database import Base
+from crosscutting.db.database import Base
 from models.base import HourlyTable
 
 

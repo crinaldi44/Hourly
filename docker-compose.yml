@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+      - "8080:8080"
+
+  postgres:
+    container_name: hourly_db
+    image: postgres
+    environment:
+      POSTGRES_USER: crinaldi
+      POSTGRES_PASSWORD: test123
+      POSTGRES_DB: employees
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres:

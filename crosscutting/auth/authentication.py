@@ -1,19 +1,16 @@
-import json
-
 import bcrypt
 import connexion
 import sqlalchemy.exc
-from flask import Blueprint, jsonify, request
+from flask import jsonify, request
 from sqlalchemy.exc import NoResultFound
 from datetime import timedelta, datetime
 import jwt
 from flask import current_app
 from functools import wraps
-from flask_cors import CORS
 
 from crosscutting.exception.hourly_exception import HourlyException
 from models.employee import Employee
-from models.database import Session
+from crosscutting.db.database import Session
 from domains.employees.services.employee_service import EmployeeService
 
 

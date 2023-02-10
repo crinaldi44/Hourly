@@ -2351,6 +2351,8 @@ components:
                 data:
                     title: data
                     type: array
+                    items:
+                        $ref: '#/components/schemas/Department'
                 message:
                     title: message
                     type: string
@@ -2431,6 +2433,8 @@ components:
                 values:
                     description: 'The potential values, if any, of the question.'
                     type: array
+                    items:
+                        type: string
                 data_type:
                     description: The type of the question.
                     type: string

@@ -1,12 +1,11 @@
 import ast
-from typing import Tuple, List, Any
 
 from jsonpatch import JsonPatch, JsonPatchException
 from marshmallow import Schema
 from sqlalchemy import text
 
 from crosscutting.exception.hourly_exception import HourlyException
-from models.database import Session
+from crosscutting.db.database import Session
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100

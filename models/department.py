@@ -1,9 +1,8 @@
 from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
 
-from models.database import Base
+from crosscutting.db.database import Base
 from models.base import HourlyTable
 from models.company import validate_company
 
