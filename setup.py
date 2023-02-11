@@ -14,7 +14,6 @@ VERSION = "1.0.0"
 # http://pypi.python.org/pypi/setuptools
 
 REQUIRES = [
-    "six"
 ]
 
 setup(
@@ -29,7 +28,7 @@ setup(
     package_data={'': ['openapi/openapi.yaml']},
     include_package_data=True,
     entry_points={
-        'console_scripts': ['openapi_server=openapi_server.__main__:main']},
+        'console_scripts': ['start_server=domains.__main__:main']},
     long_description="""\
     Provides interaction with Hourly web app.
     """

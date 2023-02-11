@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: openapi-server
+Version: 1.0.0
+Summary: Hourly API
+Home-page: UNKNOWN
+Author-email: test@test.com
+License: UNKNOWN
+Keywords: OpenAPI,Hourly API
+Platform: UNKNOWN
+
+    Provides interaction with Hourly web app.
+    
+

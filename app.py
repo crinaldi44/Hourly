@@ -12,11 +12,13 @@ from crosscutting.exception.error_handlers import handle_hourly_exception, handl
 import crosscutting.exception.hourly_exception
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from openapi_server import encoder
 
 from domains.employees.utils.utils import get_or_create
 from models import Company, Department, Employee
 
-app = connexion.FlaskApp(__name__, specification_dir='openapi/')
+app = connexion.App(__name__, specification_dir='openapi/')
+app.app.json_encoder = encoder.JSONEncoder
 app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True)
 
 app.app.register_blueprint(employees)
@@ -32,7 +34,7 @@ app.app.register_error_handler(ValidationError, handle_marshmallow_validation_er
 
 limiter = Limiter(
     app.app,
-    key_func=get_remote_address,
+    # key_func=get_remote_address,
     default_limits=['150 per minute']
 )
 
