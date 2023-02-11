@@ -30,7 +30,6 @@ openapi_server/models/error_list_response.py
 openapi_server/models/event.py
 openapi_server/models/event_list_response.py
 openapi_server/models/event_search.py
-openapi_server/models/list_response.py
 openapi_server/models/package.py
 openapi_server/models/package_list_response.py
 openapi_server/models/package_question.py
@@ -41,9 +40,11 @@ openapi_server/models/user.py
 openapi_server/models/user_list_response.py
 openapi_server/models/user_login_request.py
 openapi_server/models/user_login_response.py
+openapi_server/models/user_profile.py
+openapi_server/models/user_profile_response.py
 openapi_server/models/user_sign_up_response.py
 openapi_server/models/user_validation.py
-openapi_server/models/user_validation_list.py
+openapi_server/models/user_validation_list_response.py
 openapi_server/openapi/openapi.yaml
 openapi_server/test/__init__.py
 openapi_server/typing_utils.py

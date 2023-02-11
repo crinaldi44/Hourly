@@ -2,8 +2,8 @@ import connexion
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import ListResponse
 from domains.packages.services.package_service import Packages
+from openapi_server.models import PackageListResponse
 
 
 def list_packages():
@@ -19,7 +19,10 @@ def list_packages():
         results, count = Packages.list_rows(**search, additional_filters={"company_id": company}, serialize=True)
     else:
         results, count = Packages.list_rows(**search, serialize=True)
-    return ListResponse(records=results, total_count=count).serve()
+    package_list_response = PackageListResponse(packages=results)
+    if "include_totals" in connexion.request.args:
+        return package_list_response, 200, {"X-Total-Count": count}
+    return package_list_response, 200
 
 
 def get_package(id_):
@@ -39,4 +42,4 @@ def get_package(id_):
     if len(result) == 0:
         raise HourlyException('err.hourly.PackageNotFound')
     else:
-        return ListResponse(records=result).serve()
+        return PackageListResponse(packages=result), 200

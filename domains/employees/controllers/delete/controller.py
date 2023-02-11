@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.employees.services.employee_service import Employees
 
 
@@ -14,4 +13,4 @@ def delete_employee(id_):
     except Exception as E:
         raise HourlyException('err.hourly.InvalidUserDelete')
 
-    return serve_response(message="User successfully deleted.", status=200)
+    return {}, 204

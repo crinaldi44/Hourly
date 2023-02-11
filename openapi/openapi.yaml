@@ -1905,6 +1905,10 @@ paths:
       responses:
         '200':
           description: Successfully retrieved Employee profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
         '429':
           content:
             application/json:
@@ -2545,6 +2549,40 @@ components:
         from_date: 01/01/2020
         to_date: 02/20/2022
         package_name: dj
+    UserProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        pay_rate:
+          type: number
+        department_id:
+          type: integer
+        role_id:
+          type: integer
+        company:
+          $ref: '#/components/schemas/Company'
+        role:
+          $ref: '#/components/schemas/Role'
+      title: UserProfile
+      x-stoplight:
+        id: b70697c9b7dd0
+    UserProfileResponse:
+      title: UserProfileResponse
+      x-stoplight:
+        id: ppl106rv0ilmq
+      type: object
+      properties:
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
+      description: Response for UserProfile
   securitySchemes:
     bearerAuth:
       scheme: bearer

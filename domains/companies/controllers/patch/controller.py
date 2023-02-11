@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.companies.services.company_service import Companies
 
 
@@ -16,4 +15,4 @@ def patch_company(id_, patch_document_list):
         raise HourlyException('err.hourly.CompanyNotFound')
     Companies.patch(uid=id_, patch_list=patch_document_list)
 
-    return serve_response(status=204, message="Success.")
+    return {}, 204

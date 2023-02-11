@@ -6,8 +6,8 @@ from typing import Union
 
 from openapi_server.models.add_response import AddResponse  # noqa: E501
 from openapi_server.models.clockin import Clockin  # noqa: E501
+from openapi_server.models.clockin_list_response import ClockinListResponse  # noqa: E501
 from openapi_server.models.error_list_response import ErrorListResponse  # noqa: E501
-from openapi_server.models.list_response import ListResponse  # noqa: E501
 from openapi_server.models.patch_document import PatchDocument  # noqa: E501
 from openapi_server import util
 
@@ -62,7 +62,7 @@ def list_clockins(q=None, include_totals=None, page=None, fields=None, sort=None
     :param lang: language code to prefer for document elements (en-US, fr ...) page
     :type lang: str
 
-    :rtype: Union[ListResponse, Tuple[ListResponse, int], Tuple[ListResponse, int, Dict[str, str]]
+    :rtype: Union[ClockinListResponse, Tuple[ClockinListResponse, int], Tuple[ClockinListResponse, int, Dict[str, str]]
     """
     return 'do some magic!'
 

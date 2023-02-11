@@ -47,12 +47,6 @@ class HourlyTable(object):
                 return result
 
 
-# By default, at least one company and one department must exist. Create if
-# not already done so.
-# get_or_create(Session, Company, id=1, name="Hourly", about="")
-# get_or_create(Session, Department, department_name="Default Department", company_id=1)
-
-
 class FormatConverter:
     """This mixin ensures uniform formatting for the user request data coming in
     as well as going out, specifically that all data that is returned to the user

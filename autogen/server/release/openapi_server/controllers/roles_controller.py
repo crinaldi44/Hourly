@@ -41,7 +41,7 @@ def delete_role(id):  # noqa: E501
 
 
 def list_roles(q=None, include_totals=None, page=None, fields=None, sort=None, offset=None, limit=None, lang=None):  # noqa: E501
-    """List the set of permissions a user may retain.
+    """List Roles
 
      # noqa: E501
 

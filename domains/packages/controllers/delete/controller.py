@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.packages.services.package_service import Packages
 
 
@@ -16,4 +15,4 @@ def delete_package(id_):
         Packages.delete_row(uid=id_)
     except Exception:
         raise HourlyException('err.hourly.InvalidPackageDelete', message="This package contains events!")
-    return serve_response(message="Successfully deleted package.", status=204)
+    return '', 204

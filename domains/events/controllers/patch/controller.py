@@ -1,5 +1,4 @@
 from crosscutting.auth.authentication import init_controller
-from crosscutting.response.list_response import serve_response
 from domains.events.services.event_service import Events
 from domains.packages.services.package_service import Packages
 
@@ -20,4 +19,4 @@ def patch_event(id_, patch_document_list):
     Events.validate_exists(id=id_, in_company=company)
     Events.patch(uid=id_, patch_list=patch_document_list)
 
-    return serve_response(status=204, message='')
+    return '', 204

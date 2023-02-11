@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.departments.services.department_service import Departments
 
 
@@ -23,5 +22,4 @@ def delete_department(id_):
                               message='The department contains employees!',
                               suggestion='Please move all employees before deleting!')
 
-    return serve_response(message="Successfully deleted department.", status=204)
-    pass
+    return {}, 204

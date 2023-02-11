@@ -111,7 +111,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/ClockinListResponse'
           description: Successully retrieved list of clockins.
         "429":
           content:
@@ -1000,14 +1000,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserValidationList'
+              $ref: '#/components/schemas/UserValidationListResponse'
         x-body-name: employee_validations
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListResponse'
+                $ref: '#/components/schemas/UserValidationListResponse'
           description: User validation successful
         "429":
           content:
@@ -1847,7 +1847,7 @@ paths:
             request to fail.
       security:
       - bearerAuth: []
-      summary: List the set of permissions a user may retain.
+      summary: List Roles
       tags:
       - Roles
       x-openapi-router-controller: domains.roles.controllers.get.controller
@@ -2033,6 +2033,10 @@ paths:
         style: simple
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
           description: Successfully retrieved Employee profile
         "429":
           content:
@@ -2060,9 +2064,10 @@ paths:
       - Employees
       x-openapi-router-controller: domains.employees.controllers.get.controller
 components:
+  parameters: {}
   schemas:
     AddResponse:
-      description: Response to adding a new row.
+      description: Response to adding a new row containing the id.
       example:
         id: 1
       properties:
@@ -2075,18 +2080,18 @@ components:
       type: object
     Clockin:
       example:
-        out_time: "{}"
-        in_time: "{}"
+        clockin_time: "{}"
+        clockout_time: "{}"
       properties:
-        in_time:
-          title: in_time
+        clockin_time:
+          title: clockin_time
           type: object
-        out_time:
+        clockout_time:
           nullable: true
-          title: out_time
+          title: clockout_time
           type: object
       required:
-      - in_time
+      - clockin_time
       title: Clockin
       type: object
       x-examples:
@@ -2143,6 +2148,11 @@ components:
         img_url:
           description: Represents the url of the company's image.
           type: string
+        private:
+          default: false
+          description: |
+            Whether the company's events are queryable.
+          type: boolean
       required:
       - name
       title: Company
@@ -2281,30 +2291,6 @@ components:
       - questions
       - start_datetime
       title: Event
-      type: object
-    ListResponse:
-      description: A response that contains data.
-      example:
-        message: Success.
-        status: 200
-        data: []
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Department'
-          title: data
-          type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
-      required:
-      - data
-      - message
-      - status
-      title: ListResponse
       type: object
     Package:
       description: Represents a type of event that can be created.
@@ -2499,7 +2485,7 @@ components:
       - id
       title: UserSignUpResponse
       type: object
-    UserValidationList:
+    UserValidationListResponse:
       description: A list of user validations.
       example:
         validations: []
@@ -2511,9 +2497,11 @@ components:
           type: array
       required:
       - validations
-      title: UserValidationList
+      title: UserValidationListResponse
       type: object
       x-internal: false
+      x-stoplight:
+        id: 80c0d3cb1526b
     UserValidation:
       description: A user validation request object.
       properties:
@@ -2593,10 +2581,17 @@ components:
       type: object
     ClockinListResponse:
       description: ""
+      example:
+        clockins:
+        - clockin_time: "{}"
+          clockout_time: "{}"
+        - clockin_time: "{}"
+          clockout_time: "{}"
       properties:
         clockins:
           items:
             $ref: '#/components/schemas/Clockin'
+          title: clockins
           type: array
       title: ClockinListResponse
       type: object
@@ -2692,7 +2687,7 @@ components:
       title: RoleListResponse
       type: object
     EventSearch:
-      description: Represents an entity used to search events within the user's company.
+      description: Query to search events upcoming by a certain company.
       example:
         from_date: 01/01/2020
         to_date: 02/20/2022
@@ -2710,8 +2705,100 @@ components:
       required:
       - from_date
       - to_date
-      title: Root Type for EventSearch
+      title: EventSearch
       type: object
+    UserProfile:
+      additionalProperties: false
+      example:
+        role: |-
+          {
+              "name": "Role1",
+              "description": "Role1 description"
+          }
+        department_id: 1
+        role_id: 5
+        last_name: last_name
+        company: |-
+          {
+              "zip_code": "zip_code",
+              "phone": "phone",
+              "city": "city",
+              "name": "name",
+              "about": "about",
+              "address_street": "address_street",
+              "id": "id",
+              "state": "state"
+              "img_url": "img_url"
+          }
+        id: 0
+        first_name: first_name
+        pay_rate: 6.027456183070403
+        email: email
+      properties:
+        id:
+          title: id
+          type: integer
+        email:
+          title: email
+          type: string
+        first_name:
+          title: first_name
+          type: string
+        last_name:
+          title: last_name
+          type: string
+        pay_rate:
+          title: pay_rate
+          type: number
+        department_id:
+          title: department_id
+          type: integer
+        role_id:
+          title: role_id
+          type: integer
+        company:
+          $ref: '#/components/schemas/Company'
+        role:
+          $ref: '#/components/schemas/Role'
+      title: UserProfile
+      type: object
+      x-stoplight:
+        id: b70697c9b7dd0
+    UserProfileResponse:
+      description: Response for UserProfile
+      example:
+        userProfile:
+          role: |-
+            {
+                "name": "Role1",
+                "description": "Role1 description"
+            }
+          department_id: 1
+          role_id: 5
+          last_name: last_name
+          company: |-
+            {
+                "zip_code": "zip_code",
+                "phone": "phone",
+                "city": "city",
+                "name": "name",
+                "about": "about",
+                "address_street": "address_street",
+                "id": "id",
+                "state": "state"
+                "img_url": "img_url"
+            }
+          id: 0
+          first_name: first_name
+          pay_rate: 6.027456183070403
+          email: email
+      properties:
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
+      title: UserProfileResponse
+      type: object
+      x-stoplight:
+        id: ppl106rv0ilmq
   securitySchemes:
     bearerAuth:
       bearerFormat: JWT

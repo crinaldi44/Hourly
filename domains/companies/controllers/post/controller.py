@@ -2,7 +2,7 @@ import connexion
 from crosscutting.auth.authentication import init_controller
 
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
+from openapi_server.models import AddResponse
 from domains.companies.services.company_service import Companies
 
 
@@ -17,5 +17,6 @@ def add_company(company):
     company_exists, _ = Companies.list_rows(additional_filters={"name": validate_company.name})
     if len(company_exists) > 0:
         raise HourlyException('err.hourly.CompanyExists')
-    Companies.add_row(validate_company)
-    return serve_response(message="Success", status=201)
+    result = Companies.add_row(validate_company)
+    add_response = AddResponse(id=result.id)
+    return add_response, 201

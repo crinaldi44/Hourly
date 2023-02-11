@@ -2,8 +2,8 @@ import connexion
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import ListResponse
 from domains.companies.services.company_service import Companies
+from openapi_server.models import CompanyListResponse
 
 
 def list_companies():
@@ -11,10 +11,13 @@ def list_companies():
     employee_id, company_id, department_id, role_id = init_controller(permissions="get:companies")
 
     if role_id <= 2:
-        results, count = Companies.list_rows(**request.args, serialize=True, additional_filters={"id": company_id})
+        results, count = Companies.list_rows(**request.args, additional_filters={"id": company_id})
     else:
-        results, count = Companies.list_rows(**request.args, serialize=True)
-    return ListResponse(records=results, total_count=count).serve()
+        results, count = Companies.list_rows(**request.args)
+    company_list_response = CompanyListResponse(companies=results)
+    if "include_totals" in connexion.request.args:
+        return company_list_response, 200, {"X-Total-Count": count}
+    return company_list_response, 200
 
 
 def get_company(id_):
@@ -22,9 +25,5 @@ def get_company(id_):
 
     :return:
     """
-    result, count = Companies.list_rows(additional_filters={"id": id_}, serialize=True)
-
-    if len(result) == 0:
-        raise HourlyException('err.hourly.CompanyNotFound')
-    else:
-        return ListResponse(records=result).serve()
+    result, count = Companies.validate_exists(filters={"id": id_})
+    return CompanyListResponse(companies=result), 200

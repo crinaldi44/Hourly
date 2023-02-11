@@ -2,7 +2,6 @@ import connexion
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.departments.services.department_service import Departments
 
 
@@ -16,4 +15,4 @@ def add_department(department):
         raise HourlyException('err.hourly.DepartmentExists')
     else:
         Departments.add_row(validate_department)
-    return serve_response(message="Success", status=201)
+    return {}, 201

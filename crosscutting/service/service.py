@@ -1,5 +1,6 @@
 import ast
 
+import sqlalchemy.exc
 from jsonpatch import JsonPatch, JsonPatchException
 from marshmallow import Schema
 from sqlalchemy import text
@@ -113,37 +114,23 @@ class Service:
                         resultant_rows = resultant_rows.offset(int(offset) or 0)
                     if limit is not None:
                         resultant_rows = resultant_rows.limit(limit or 0)
-                if serialize is True:
-                    iterator = map(lambda res: self.schema.dump(res), resultant_rows.all())
-                    return list(iterator), count
-                else:
-                    return resultant_rows.all(), count
+                return resultant_rows.all(), count
 
-    def validate_exists(self, id: int, in_company: int = None, in_department: int = None):
-        """Finds an entry within the models with the specified id. If
-        fields for in_company or in_department or specified, the model must
-        have a field called "company_id" or "department_id" respectively,
-        otherwise this will not return a value.
-
-        :param in_department: Represents the department to search within.
-        :type in_department: int
-        :param in_company: Represents the company to search within.
-        :type in_company: int
-        :param id: Represents the ID of the resource.
-        :type id: int
-        :return: A list containing the resource.
+    def validate_exists(self, filters=None):
         """
-        query = {
-            "id": id
-        }
-        if in_company is not None:
-            query["company_id"] = in_company
-        if in_department is not None:
-            query["department_id"] = in_department
-        result, count = self.list_rows(additional_filters=query, include_totals=True)
-        if count == 0:
-            raise HourlyException('err.hourly.' + self.name + 'NotFound')
-        return result[0]
+        Queries to find the first element that matches the specified search query. If none
+        is found, raises an exception to the user.
+
+        :param filters:
+        :return:
+        """
+        with Session(expire_on_commit=False) as session:
+            with session.begin():
+                try:
+                    result = session.query(self.model).filter_by(**filters).one()
+                    return result
+                except sqlalchemy.exc.NoResultFound:
+                    raise HourlyException('err.hourly.' + self.name + 'NotFound')
 
     def deserialize(self, model):
         """Deserialize a model.

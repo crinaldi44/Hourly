@@ -3,12 +3,12 @@ import connexion
 
 from crosscutting.auth.authentication import validate_credentials, init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from crosscutting.core.db.database import Session
 from domains.employees.services.employee_service import Employees
 from models.role import Roles
 from domains.companies.services.company_service import Companies
 from domains.departments.services.department_service import Departments
+from openapi_server.models import AddResponse, UserValidationListResponse
 
 
 def authenticate_user():
@@ -33,8 +33,8 @@ def add_employee(employee):
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
 
-    Employees.add_row(validate_employee)
-    return serve_response(message="Successfully added employee to the models!", status=201)
+    employee = Employees.add_row(validate_employee)
+    return AddResponse(id=employee.id), 201
 
 
 def signup_user(employee):
@@ -57,8 +57,8 @@ def signup_user(employee):
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
 
-    Employees.add_row(validate_employee)
-    return serve_response(message='Success! Employee has been entered into the registry.', status=201)
+    employee = Employees.add_row(validate_employee)
+    return AddResponse(id=employee.id), 201
 
 
 def validate_employees(employee_validations):
@@ -73,7 +73,8 @@ def validate_employees(employee_validations):
         Employees.validation_from_json(employee_validation=validations[i])
         email_exists, _ = Employees.list_rows(additional_filters={"email": validations[i]["email"]})
         validations[i]["is_email_valid"] = len(email_exists) == 0
-        company_exists, _ = Companies.list_rows(additional_filters={"name": validations[i]['company_name']}, serialize=True)
+        company_exists, _ = Companies.list_rows(additional_filters={"name": validations[i]['company_name']},
+                                                serialize=True)
         if len(company_exists) == 0:
             validations[i]["is_company_valid"] = False
             validations[i]["is_department_valid"] = False
@@ -81,8 +82,8 @@ def validate_employees(employee_validations):
             validations[i]["is_company_valid"] = True
             validations[i]["company_id"] = company_exists[0]["id"]
             department_exists, _ = Departments.list_rows(additional_filters=
-                             {"department_name": validations[i]['department_name'],
-                              "company_id": company_exists[0]["id"]}, serialize=True)
+                                                         {"department_name": validations[i]['department_name'],
+                                                          "company_id": company_exists[0]["id"]}, serialize=True)
             validations[i]["is_department_valid"] = len(department_exists) > 0
             if validations[i]["is_department_valid"]:
                 validations[i]["department_id"] = department_exists[0]["id"]
@@ -91,4 +92,5 @@ def validate_employees(employee_validations):
                                               and validations[i]["is_company_valid"] \
                                               and validations[i]["is_department_valid"] \
                                               and validations[i]["is_email_valid"]
-    return serve_response(message="Successfully validated employees.", status=200, data=validations)
+    validation_list_response = UserValidationListResponse(userValidations=validations)
+    return validation_list_response, 200

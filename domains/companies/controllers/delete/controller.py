@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response
 from domains.companies.services.company_service import Companies
 from domains.departments.services.department_service import Departments
 
@@ -31,4 +30,4 @@ def delete_company(id_):
             raise HourlyException('err.hourly.InvalidCompanyDelete',
                                   message=response_message,
                                   suggestion="Please ensure the company is cleared prior to deletion.")
-        return serve_response(message="Successfully deleted company.", status=204)
+        return {}, 204

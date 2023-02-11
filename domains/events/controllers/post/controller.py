@@ -2,11 +2,10 @@ from datetime import datetime
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import serve_response, ListResponse
-from models.event import EventSearch
 from domains.employees.services.employee_service import Employees
 from domains.events.services.event_service import Events
 from domains.packages.services.package_service import Packages
+from openapi_server.models import AddResponse, EventListResponse
 
 
 def add_event(event):
@@ -30,9 +29,9 @@ def add_event(event):
     if validate_event.employee_id is not None:
         Employees.validate_exists(id=validate_event.employee_id, in_company=validate_event.company_id)
 
-    Events.add_row(validate_event)
+    event = Events.add_row(validate_event)
 
-    return serve_response(status=201, message='Success')
+    return AddResponse(id=event.id), 201
 
 
 def search_events(search_query):
@@ -46,4 +45,5 @@ def search_events(search_query):
         else:
             search_query['package_id'] = -1
     results = Events.search_events(query=search_query, company_id=company)
-    return ListResponse(records=results).serve()
+    event_list_response = EventListResponse(events=results)
+    return event_list_response, 200

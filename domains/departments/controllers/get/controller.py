@@ -2,8 +2,8 @@ import connexion
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.response.list_response import ListResponse
 from domains.departments.services.department_service import Departments
+from openapi_server.models import DepartmentListResponse
 
 
 def list_departments():
@@ -18,7 +18,10 @@ def list_departments():
         result, count = Departments.list_rows(**search, additional_filters=filters, serialize=True)
     else:
         result, count = Departments.list_rows(**search, serialize=True)
-    return ListResponse(records=result, total_count=count).serve()
+    department_list_response = DepartmentListResponse(departments=result)
+    if "include_totals" in connexion.request.args:
+        return department_list_response, 200, {"X-Total-Count": count}
+    return department_list_response, 200
 
 
 def get_department(id_):
@@ -29,18 +32,12 @@ def get_department(id_):
     """
     employee_id, company_id, department_id, role_id = init_controller(permissions="get:departments")
 
-    if role_id <= 2:
-        filters = {
-            "company_id": company_id,
-            "id": id_
-        }
-        if role_id < 2:
-            filters["department_id"] = department_id
-        result, _ = Departments.list_rows(additional_filters=filters, serialize=True)
+    if role_id < 2:
+        result, _ = Departments.validate_exists(filters={"id": employee_id})
     else:
-        result, _ = Departments.list_rows(additional_filters={"id": id_}, serialize=True)
+        result, _ = Departments.validate_exists(filters={"id": id_})
 
     if len(result) == 0:
         raise HourlyException('err.hourly.DepartmentNotFound')
     else:
-        return ListResponse(records=result).serve()
+        return DepartmentListResponse(departments=result)

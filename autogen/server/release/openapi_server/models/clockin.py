@@ -15,26 +15,26 @@ class Clockin(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, in_time=None, out_time=None):  # noqa: E501
+    def __init__(self, clockin_time=None, clockout_time=None):  # noqa: E501
         """Clockin - a model defined in OpenAPI
 
-        :param in_time: The in_time of this Clockin.  # noqa: E501
-        :type in_time: object
-        :param out_time: The out_time of this Clockin.  # noqa: E501
-        :type out_time: object
+        :param clockin_time: The clockin_time of this Clockin.  # noqa: E501
+        :type clockin_time: object
+        :param clockout_time: The clockout_time of this Clockin.  # noqa: E501
+        :type clockout_time: object
         """
         self.openapi_types = {
-            'in_time': object,
-            'out_time': object
+            'clockin_time': object,
+            'clockout_time': object
         }
 
         self.attribute_map = {
-            'in_time': 'in_time',
-            'out_time': 'out_time'
+            'clockin_time': 'clockin_time',
+            'clockout_time': 'clockout_time'
         }
 
-        self.in_time = in_time
-        self.out_time = out_time
+        self.clockin_time = clockin_time
+        self.clockout_time = clockout_time
 
     @classmethod
     def from_dict(cls, dikt) -> 'Clockin':
@@ -48,45 +48,45 @@ class Clockin(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def in_time(self):
-        """Gets the in_time of this Clockin.
+    def clockin_time(self):
+        """Gets the clockin_time of this Clockin.
 
 
-        :return: The in_time of this Clockin.
+        :return: The clockin_time of this Clockin.
         :rtype: object
         """
-        return self._in_time
+        return self._clockin_time
 
-    @in_time.setter
-    def in_time(self, in_time):
-        """Sets the in_time of this Clockin.
+    @clockin_time.setter
+    def clockin_time(self, clockin_time):
+        """Sets the clockin_time of this Clockin.
 
 
-        :param in_time: The in_time of this Clockin.
-        :type in_time: object
+        :param clockin_time: The clockin_time of this Clockin.
+        :type clockin_time: object
         """
-        if in_time is None:
-            raise ValueError("Invalid value for `in_time`, must not be `None`")  # noqa: E501
+        if clockin_time is None:
+            raise ValueError("Invalid value for `clockin_time`, must not be `None`")  # noqa: E501
 
-        self._in_time = in_time
+        self._clockin_time = clockin_time
 
     @property
-    def out_time(self):
-        """Gets the out_time of this Clockin.
+    def clockout_time(self):
+        """Gets the clockout_time of this Clockin.
 
 
-        :return: The out_time of this Clockin.
+        :return: The clockout_time of this Clockin.
         :rtype: object
         """
-        return self._out_time
+        return self._clockout_time
 
-    @out_time.setter
-    def out_time(self, out_time):
-        """Sets the out_time of this Clockin.
+    @clockout_time.setter
+    def clockout_time(self, clockout_time):
+        """Sets the clockout_time of this Clockin.
 
 
-        :param out_time: The out_time of this Clockin.
-        :type out_time: object
+        :param clockout_time: The clockout_time of this Clockin.
+        :type clockout_time: object
         """
 
-        self._out_time = out_time
+        self._clockout_time = clockout_time

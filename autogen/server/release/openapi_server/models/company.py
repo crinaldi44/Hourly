@@ -15,7 +15,7 @@ class Company(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, name=None, about=None, phone=None, address_street=None, city=None, state=None, zip_code=None, img_url=None):  # noqa: E501
+    def __init__(self, id=None, name=None, about=None, phone=None, address_street=None, city=None, state=None, zip_code=None, img_url=None, private=False):  # noqa: E501
         """Company - a model defined in OpenAPI
 
         :param id: The id of this Company.  # noqa: E501
@@ -36,6 +36,8 @@ class Company(Model):
         :type zip_code: str
         :param img_url: The img_url of this Company.  # noqa: E501
         :type img_url: str
+        :param private: The private of this Company.  # noqa: E501
+        :type private: bool
         """
         self.openapi_types = {
             'id': int,
@@ -46,7 +48,8 @@ class Company(Model):
             'city': str,
             'state': str,
             'zip_code': str,
-            'img_url': str
+            'img_url': str,
+            'private': bool
         }
 
         self.attribute_map = {
@@ -58,7 +61,8 @@ class Company(Model):
             'city': 'city',
             'state': 'state',
             'zip_code': 'zip_code',
-            'img_url': 'img_url'
+            'img_url': 'img_url',
+            'private': 'private'
         }
 
         self.id = id
@@ -70,6 +74,7 @@ class Company(Model):
         self.state = state
         self.zip_code = zip_code
         self.img_url = img_url
+        self.private = private
 
     @classmethod
     def from_dict(cls, dikt) -> 'Company':
@@ -290,3 +295,26 @@ class Company(Model):
         """
 
         self._img_url = img_url
+
+    @property
+    def private(self):
+        """Gets the private of this Company.
+
+        Whether the company's events are queryable.   # noqa: E501
+
+        :return: The private of this Company.
+        :rtype: bool
+        """
+        return self._private
+
+    @private.setter
+    def private(self, private):
+        """Sets the private of this Company.
+
+        Whether the company's events are queryable.   # noqa: E501
+
+        :param private: The private of this Company.
+        :type private: bool
+        """
+
+        self._private = private
