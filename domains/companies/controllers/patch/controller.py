@@ -1,6 +1,5 @@
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from domains.companies.services.company_service import Companies
 
 
 def patch_company(id_, patch_document_list):
@@ -13,6 +12,5 @@ def patch_company(id_, patch_document_list):
     employee, company, department, role = init_controller(permissions='patch:companies')
     if role <= 2 and int(id_) != company:
         raise HourlyException('err.hourly.CompanyNotFound')
-    Companies.patch(uid=id_, patch_list=patch_document_list)
 
     return {}, 204

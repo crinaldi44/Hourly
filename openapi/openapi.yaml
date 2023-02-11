@@ -1988,15 +1988,18 @@ components:
         id: 1
     Clockin:
       type: object
-      x-examples:
-        Example 1:
-          in_time: '2021-20-01:04:30:01PM'
-          out_time: '2021-20-01:04:31:01PM'
+      x-tablename: clockins
       properties:
+        id:
+          title: id
+          description: Unique identifier
+          type: integer
+          x-primary-key: true
+          x-autoincrement: true
         clockin_time:
-          type: object
+          type: string
         clockout_time:
-          type: object
+          type: string
           nullable: true
       required:
         - clockin_time
@@ -2004,6 +2007,7 @@ components:
       title: Company
       description: 'A grouping of multiple departments, users, and events.'
       type: object
+      x-tablename: companies
       example: |-
         {
             "zip_code": "zip_code",
@@ -2021,6 +2025,8 @@ components:
           title: id
           description: Unique identifier
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
         name:
           title: name
           description: The name of the company.
@@ -2063,21 +2069,26 @@ components:
       title: Department
       description: Subdivisions of companies.
       required:
-        - department_name
+        - name
       type: object
+      x-tablename: departments
       properties:
         id:
           description: The id of the department.
           type: integer
-        department_name:
+          x-primary-key: true
+          x-autoincrement: true
+        name:
           description: Block of text containing the name of the department.
           type: string
         manager_id:
           description: An id representing the ID of the department manager.
           type: integer
+          x-foreign-key: users.id
         company_id:
           description: The id representing the company the department is in.
           type: integer
+          x-foreign-key: companies.id
       example: '{''department_name'': ''Example'', ''manager_id'': 1, ''company_id'': 2 }'
     Error:
       title: Root Type for ErrorMessage
@@ -2140,6 +2151,7 @@ components:
     Event:
       title: Event
       description: Represents a type of event that can be created.
+      x-tablename: events
       required:
         - name
         - description
@@ -2152,6 +2164,8 @@ components:
         id:
           description: The identifier for the event.
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
         name:
           description: name
           type: string
@@ -2170,21 +2184,26 @@ components:
         package_id:
           description: The ID of the package associated with this event.
           type: integer
+          x-foreign-key: packages.id
         company_id:
           description: The ID of the company associated to the event.
           type: integer
+          x-foreign-key: companies.id
         employee_id:
           description: The ID of the employee servicing the event.
           type: integer
+          x-foreign-key: users.id
         questions:
           description: The questions to include in the event form.
           type: array
+          x-json: true
           items:
             $ref: '#/components/schemas/PackageQuestion'
       example: '{''name'': ''Example'', ''description'': ''Example description'', ''agreed_price'': ''price'', ''start_datetime'': ''203919174'', ''end_datetime'': ''239829328'', ''package_id'': 1, ''employee_id'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
     Package:
       title: Package
       description: Represents a type of event that can be created.
+      x-tablename: packages
       required:
         - name
         - description
@@ -2193,6 +2212,8 @@ components:
         id:
           description: The identifier for the role.
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
         name:
           description: name
           type: string
@@ -2208,9 +2229,11 @@ components:
         company_id:
           description: The ID of the company created by.
           type: integer
+          x-foreign-key: companies.id
         questions:
           description: The questions to include in the event form.
           type: array
+          x-json: true
           items:
             $ref: '#/components/schemas/PackageQuestion'
       example: '{''name'': ''Example'', ''description'': ''Example description'', ''img_url'': ''url'', ''price'': ''15.00'', ''companyId'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
@@ -2273,6 +2296,7 @@ components:
     Role:
       title: Role
       description: A single role.
+      x-tablename: roles
       required:
         - name
         - permissions
@@ -2281,6 +2305,8 @@ components:
         id:
           description: The identifier for the role.
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
         name:
           description: name
           type: string
@@ -2298,6 +2324,7 @@ components:
     User:
       title: User
       description: A single user.
+      x-tablename: users
       required:
         - email
       type: object
@@ -2305,6 +2332,8 @@ components:
         id:
           description: A unique identifier for a user.
           type: integer
+          x-primary-key: true
+          x-autoincrement: true
         email:
           description: email
           type: string
@@ -2320,9 +2349,11 @@ components:
         department_id:
           description: The user's department id.
           type: integer
+          x-foreign-key: departments.id
         role_id:
           description: The user's role id.
           type: integer
+          x-foreign-key: roles.id
       example: |-
         {
             "name": "User1",

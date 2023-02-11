@@ -2,7 +2,6 @@ import connexion
 
 from crosscutting.auth.authentication import init_controller
 from crosscutting.exception.hourly_exception import HourlyException
-from domains.packages.services.package_service import Packages
 from openapi_server.models import AddResponse
 
 
@@ -11,11 +10,11 @@ def add_package(package):
 
         :return: None
     """
-    employee, company, department, role = init_controller(permissions='post:packages')
-    package["company_id"] = company
-    validate_package = Packages.from_json(data=package)
-    package_exists, _ = Packages.list_rows(additional_filters={"name": package['name'], "company_id": company})
-    if len(package_exists) > 0:
-        raise HourlyException('err.hourly.PackageExists')
-    package = Packages.add_row(validate_package)
-    return AddResponse(id=package.id), 201
+    # employee, company, department, role = init_controller(permissions='post:packages')
+    # package["company_id"] = company
+    # validate_package = Packages.from_json(data=package)
+    # package_exists, _ = Packages.list_rows(additional_filters={"name": package['name'], "company_id": company})
+    # if len(package_exists) > 0:
+    #     raise HourlyException('err.hourly.PackageExists')
+    # package = Packages.add_row(validate_package)
+    return AddResponse(id=0), 201

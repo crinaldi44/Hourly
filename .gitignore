@@ -1,6 +1,8 @@
 autogen/client/*
 autogen/node_modules
 
+__open_alchemy*
+
 *.pyc
 venv
 # Elastic Beanstalk Files

@@ -4,9 +4,11 @@ import connexion
 from flask_cors import CORS
 
 from crosscutting.core.config import config
+from crosscutting.core.db.database2 import database
 from openapi_server.encoder import JSONEncoder
 
 from werkzeug.exceptions import UnprocessableEntity, InternalServerError, NotFound
+
 from crosscutting.exception.error_handlers import handle_attribute_exception, handle_hourly_exception, \
     handle_invalid_request, handle_marshmallow_validation_error, handle_notfound_exception, handle_unexpected_exception, \
     handle_validation_error
@@ -27,6 +29,7 @@ class HourlyAPI(connexion.FlaskApp):
         environment.
         """
         super().__init__(__name__, specification_dir=os.path.abspath(specification_dir), **kwargs)
+        self._init_db()
         self.add_api('openapi.yaml', strict_validation=True, validate_responses=True, pythonic_params=True)
         self._configure()
         self._init_env()
@@ -39,6 +42,12 @@ class HourlyAPI(connexion.FlaskApp):
         self.app.config.from_object("crosscutting.core.config.config.flask_config")
         self.app.config['SECRET_KEY'] = str(uuid.uuid4())
         self.app.config['CORS_HEADERS'] = config.config.CORS_HEADERS
+
+    def _init_db(self):
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = config.config.POSTGRES_URI
+        database.init_app(self.app)
+        with self.app.app_context():
+            database.create_all()
 
     def _configure(self):
         """

@@ -1,5 +1,4 @@
 from crosscutting.auth.authentication import init_controller
-from domains.events.services.event_service import Events
 
 
 def delete_event(id_):
@@ -9,6 +8,4 @@ def delete_event(id_):
         :return: None
     """
     employee, company, department, role = init_controller(permissions='delete:events')
-    Events.validate_exists(id=id_, in_company=company)
-    Events.delete_row(uid=id_)
     return {}, 204

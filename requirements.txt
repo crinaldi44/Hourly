@@ -6,10 +6,10 @@ SQLAlchemy==1.4.31
 gunicorn
 bcrypt
 Flask-Limiter
-marshmallow
-marshmallow-sqlalchemy
+flask-sqlalchemy
 connexion
 connexion[swagger-ui]
 jsonpatch
 Alembic
 uuid
+openalchemy
