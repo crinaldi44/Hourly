@@ -14,7 +14,7 @@ def add_package(package):
     employee, company, department, role = init_controller(permissions='post:packages')
     package["company_id"] = company
     validate_package = Packages.from_json(data=package)
-    package_exists, _ = Packages.find(additional_filters={"name": package['name'], "company_id": company})
+    package_exists, _ = Packages.list_rows(additional_filters={"name": package['name'], "company_id": company})
     if len(package_exists) > 0:
         raise HourlyException('err.hourly.PackageExists')
     Packages.add_row(validate_package)

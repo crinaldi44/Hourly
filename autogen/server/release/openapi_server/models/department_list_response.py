@@ -17,31 +17,21 @@ class DepartmentListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, departments=None):  # noqa: E501
         """DepartmentListResponse - a model defined in OpenAPI
 
-        :param data: The data of this DepartmentListResponse.  # noqa: E501
-        :type data: List[Department]
-        :param message: The message of this DepartmentListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this DepartmentListResponse.  # noqa: E501
-        :type status: int
+        :param departments: The departments of this DepartmentListResponse.  # noqa: E501
+        :type departments: List[Department]
         """
         self.openapi_types = {
-            'data': List[Department],
-            'message': str,
-            'status': int
+            'departments': List[Department]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'departments': 'departments'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.departments = departments
 
     @classmethod
     def from_dict(cls, dikt) -> 'DepartmentListResponse':
@@ -55,70 +45,24 @@ class DepartmentListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this DepartmentListResponse.
+    def departments(self):
+        """Gets the departments of this DepartmentListResponse.
 
 
-        :return: The data of this DepartmentListResponse.
+        :return: The departments of this DepartmentListResponse.
         :rtype: List[Department]
         """
-        return self._data
+        return self._departments
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this DepartmentListResponse.
+    @departments.setter
+    def departments(self, departments):
+        """Sets the departments of this DepartmentListResponse.
 
 
-        :param data: The data of this DepartmentListResponse.
-        :type data: List[Department]
+        :param departments: The departments of this DepartmentListResponse.
+        :type departments: List[Department]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
+        if departments is None:
+            raise ValueError("Invalid value for `departments`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this DepartmentListResponse.
-
-
-        :return: The message of this DepartmentListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this DepartmentListResponse.
-
-
-        :param message: The message of this DepartmentListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this DepartmentListResponse.
-
-
-        :return: The status of this DepartmentListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this DepartmentListResponse.
-
-
-        :param status: The status of this DepartmentListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._departments = departments

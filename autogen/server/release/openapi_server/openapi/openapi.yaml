@@ -5,15 +5,19 @@ info:
     name: Hourly
     url: http://www.hourly.com
   description: Provides interaction with Hourly web app.
+  license:
+    name: GNU
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+  termsOfService: http://api.hourly.com/terms
   title: Hourly API
   version: "0.1"
 servers:
-- description: Represents the local server.
+- description: Local
   url: http://localhost:8080/api/v0
-- description: The staging API environment.
-  url: http://hourly-timesheet-dev.herokuapp.com/api/v0
-- description: The prod API environment.
-  url: http://hourly-timesheet-prod.herokuapp.com/api/v0
+- description: Production
+  url: http://api.hourly.com/v0
+- description: Alpha
+  url: http://api.hourly.com/alpha/v0
 tags:
 - description: Durations of time that an employee has worked.
   name: Clockins
@@ -460,7 +464,7 @@ paths:
         style: simple
       responses:
         "200":
-          description: Successfully retrieved Company
+          description: Successfully deleted Company
         "429":
           content:
             application/json:
@@ -1004,7 +1008,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListResponse'
-          description: User validation successful!
+          description: User validation successful
         "429":
           content:
             application/json:
@@ -2060,7 +2064,7 @@ components:
     AddResponse:
       description: Response to adding a new row.
       example:
-        id: id
+        id: 1
       properties:
         id:
           title: id
@@ -2070,39 +2074,25 @@ components:
       title: AddResponse
       type: object
     Clockin:
-      description: A duration of time worked by an employee.
       example:
-        id: id
-        employee_id: employee_id
-        clockin_time: clockin_time
-        clockout_time: clockout_time
-        department_id: department_id
+        out_time: "{}"
+        in_time: "{}"
       properties:
-        id:
-          description: Unique identifier
-          title: id
-          type: integer
-        employee_id:
-          description: Unique identifier for an employee.
-          title: employee_id
-          type: integer
-        clockin_time:
-          description: Clockin time
-          title: clockin_time
-          type: string
-        clockout_time:
-          description: Clockout time
-          title: clockout_time
-          type: string
-        department_id:
-          description: Unique identifier for a department.
-          title: department_id
-          type: string
+        in_time:
+          title: in_time
+          type: object
+        out_time:
+          nullable: true
+          title: out_time
+          type: object
       required:
-      - clockin_time
-      - department_id
-      - employee_id
+      - in_time
       title: Clockin
+      type: object
+      x-examples:
+        Example 1:
+          in_time: 2021-20-01:04:30:01PM
+          out_time: 2021-20-01:04:31:01PM
     Company:
       description: "A grouping of multiple departments, users, and events."
       example: |-
@@ -2297,23 +2287,7 @@ components:
       example:
         message: Success.
         status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
+        data: []
       properties:
         data:
           items:
@@ -2516,11 +2490,11 @@ components:
     UserSignUpResponse:
       description: Response to user signup
       example:
-        id: id
+        id: 1
       properties:
         id:
           title: id
-          type: string
+          type: integer
       required:
       - id
       title: UserSignUpResponse
@@ -2528,35 +2502,18 @@ components:
     UserValidationList:
       description: A list of user validations.
       example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
+        validations: []
       properties:
-        employee_validations:
+        validations:
           items:
             $ref: '#/components/schemas/UserValidation'
           title: data
           type: array
       required:
-      - employee_validations
+      - validations
       title: UserValidationList
       type: object
+      x-internal: false
     UserValidation:
       description: A user validation request object.
       properties:
@@ -2609,242 +2566,130 @@ components:
     DepartmentListResponse:
       description: A response that contains data.
       example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
+        departments: []
       properties:
-        data:
+        departments:
           items:
             $ref: '#/components/schemas/Department'
           title: data
           type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
       required:
-      - data
-      - message
-      - status
-      title: ListResponse
-      type: object
-    PackageListResponse:
-      description: A response that contains data.
-      example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Package'
-          title: data
-          type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
-      required:
-      - data
-      - message
-      - status
-      title: ListResponse
-      type: object
-    CompanyListResponse:
-      description: A response that contains data.
-      example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Company'
-          title: data
-          type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
-      required:
-      - data
-      - message
-      - status
-      title: ListResponse
-      type: object
-    UserListResponse:
-      description: A response that contains data.
-      example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/User'
-          title: data
-          type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
-      required:
-      - data
-      - message
-      - status
-      title: ListResponse
+      - departments
+      title: DepartmentListResponse
       type: object
     EventListResponse:
       description: A response that contains data.
       example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
+        events: []
       properties:
-        data:
+        events:
           items:
             $ref: '#/components/schemas/Event'
           title: data
           type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
       required:
-      - data
-      - message
-      - status
-      title: ListResponse
+      - events
+      title: EventListResponse
+      type: object
+    ClockinListResponse:
+      description: ""
+      properties:
+        clockins:
+          items:
+            $ref: '#/components/schemas/Clockin'
+          type: array
+      title: ClockinListResponse
+      type: object
+      x-examples:
+        Example 1:
+          clockins: []
+      x-stoplight:
+        id: 50d55cda308fa
+    CompanyListResponse:
+      example:
+        companies:
+        - |-
+          {
+              "zip_code": "zip_code",
+              "phone": "phone",
+              "city": "city",
+              "name": "name",
+              "about": "about",
+              "address_street": "address_street",
+              "id": "id",
+              "state": "state"
+              "img_url": "img_url"
+          }
+        - |-
+          {
+              "zip_code": "zip_code",
+              "phone": "phone",
+              "city": "city",
+              "name": "name",
+              "about": "about",
+              "address_street": "address_street",
+              "id": "id",
+              "state": "state"
+              "img_url": "img_url"
+          }
+      properties:
+        companies:
+          items:
+            $ref: '#/components/schemas/Company'
+          title: companies
+          type: array
+      title: CompanyListResponse
+      type: object
+      x-examples:
+        Example 1:
+          companies: []
+    PackageListResponse:
+      example:
+        packages:
+        - "{'name': 'Example', 'description': 'Example description', 'img_url': 'url',\
+          \ 'price': '15.00', 'companyId': 1, 'questions': [{'title': 'Example', 'value':\
+          \ '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+        - "{'name': 'Example', 'description': 'Example description', 'img_url': 'url',\
+          \ 'price': '15.00', 'companyId': 1, 'questions': [{'title': 'Example', 'value':\
+          \ '', 'values': ['Test'], 'data_type': 'multiselect'}] }"
+      properties:
+        packages:
+          items:
+            $ref: '#/components/schemas/Package'
+          title: packages
+          type: array
+      title: PackageListResponse
+      type: object
+      x-examples:
+        Example 1:
+          packages: []
+    UserListResponse:
+      description: A response that contains data.
+      example:
+        users: []
+      properties:
+        users:
+          items:
+            $ref: '#/components/schemas/User'
+          title: data
+          type: array
+      required:
+      - users
+      title: UserListResponse
       type: object
     RoleListResponse:
       description: A response that contains data.
       example:
-        message: Success.
-        status: 200
-        data:
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
-        - zipCode: zipCode
-          phone: phone
-          city: city
-          name: name
-          about: about
-          addressStreet: addressStreet
-          id: id
-          state: state
+        roles: []
       properties:
-        data:
+        roles:
           items:
             $ref: '#/components/schemas/Role'
           title: data
           type: array
-        message:
-          title: message
-          type: string
-        status:
-          title: status
-          type: integer
       required:
-      - data
-      - message
-      - status
-      title: ListResponse
+      - roles
+      title: RoleListResponse
       type: object
     EventSearch:
       description: Represents an entity used to search events within the user's company.
@@ -2873,3 +2718,5 @@ components:
       scheme: bearer
       type: http
       x-bearerInfoFunc: crosscutting.auth.authentication.authenticate_user
+x-stoplight:
+  id: axwawz2nfz5ol

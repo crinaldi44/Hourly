@@ -20,6 +20,7 @@ openapi_server/models/__init__.py
 openapi_server/models/add_response.py
 openapi_server/models/base_model_.py
 openapi_server/models/clockin.py
+openapi_server/models/clockin_list_response.py
 openapi_server/models/company.py
 openapi_server/models/company_list_response.py
 openapi_server/models/department.py

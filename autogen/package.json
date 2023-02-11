@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "openapi-server-run-all": "openapi-generator-cli generate -g python-flask -i ../openapi/openapi.yaml --output 'server/release'",
+    "openapi-copy-persistant": "cp server/persistant/setup.py server/release && cp server/persistant/util.py server/release/openapi_server",
+    "openapi-generate-server": "rm -rf autogen/server/release && openapi-generator-cli generate -g python-flask -i ../openapi/openapi.yaml --output 'server/release'",
+    "openapi-validate-server": "openapi-generator-cli validate -i ../openapi/openapi.yaml",
+    "openapi-server-run-all": "npm run openapi-validate-server && npm run openapi-generate-server && npm run openapi-copy-persistant",
     "openapi-server-generate-client": "openapi-generator-cli generate -g javascript -i ../openapi/openapi.yaml --output 'client/release' --skip-validate-spec --additional-properties=usePromises=true,projectVersion=1.0.0,projectName=hourly-api-client",
     "openapi-server-generate-tests": "openapi-generator-cli generate -g python-fastapi -i http://localhost:8080/openapi.json --output 'server/release' --skip-validate-spec && node tests.js"
   },

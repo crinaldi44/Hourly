@@ -7,7 +7,7 @@ from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-from crosscutting.db.database import Base
+from crosscutting.core.db.database import Base
 
 config = context.config
 

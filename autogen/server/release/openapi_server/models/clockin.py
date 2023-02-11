@@ -15,41 +15,26 @@ class Clockin(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, employee_id=None, clockin_time=None, clockout_time=None, department_id=None):  # noqa: E501
+    def __init__(self, in_time=None, out_time=None):  # noqa: E501
         """Clockin - a model defined in OpenAPI
 
-        :param id: The id of this Clockin.  # noqa: E501
-        :type id: int
-        :param employee_id: The employee_id of this Clockin.  # noqa: E501
-        :type employee_id: int
-        :param clockin_time: The clockin_time of this Clockin.  # noqa: E501
-        :type clockin_time: str
-        :param clockout_time: The clockout_time of this Clockin.  # noqa: E501
-        :type clockout_time: str
-        :param department_id: The department_id of this Clockin.  # noqa: E501
-        :type department_id: str
+        :param in_time: The in_time of this Clockin.  # noqa: E501
+        :type in_time: object
+        :param out_time: The out_time of this Clockin.  # noqa: E501
+        :type out_time: object
         """
         self.openapi_types = {
-            'id': int,
-            'employee_id': int,
-            'clockin_time': str,
-            'clockout_time': str,
-            'department_id': str
+            'in_time': object,
+            'out_time': object
         }
 
         self.attribute_map = {
-            'id': 'id',
-            'employee_id': 'employee_id',
-            'clockin_time': 'clockin_time',
-            'clockout_time': 'clockout_time',
-            'department_id': 'department_id'
+            'in_time': 'in_time',
+            'out_time': 'out_time'
         }
 
-        self.id = id
-        self.employee_id = employee_id
-        self.clockin_time = clockin_time
-        self.clockout_time = clockout_time
-        self.department_id = department_id
+        self.in_time = in_time
+        self.out_time = out_time
 
     @classmethod
     def from_dict(cls, dikt) -> 'Clockin':
@@ -63,122 +48,45 @@ class Clockin(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def id(self):
-        """Gets the id of this Clockin.
+    def in_time(self):
+        """Gets the in_time of this Clockin.
 
-        Unique identifier  # noqa: E501
 
-        :return: The id of this Clockin.
-        :rtype: int
+        :return: The in_time of this Clockin.
+        :rtype: object
         """
-        return self._id
+        return self._in_time
 
-    @id.setter
-    def id(self, id):
-        """Sets the id of this Clockin.
+    @in_time.setter
+    def in_time(self, in_time):
+        """Sets the in_time of this Clockin.
 
-        Unique identifier  # noqa: E501
 
-        :param id: The id of this Clockin.
-        :type id: int
+        :param in_time: The in_time of this Clockin.
+        :type in_time: object
         """
+        if in_time is None:
+            raise ValueError("Invalid value for `in_time`, must not be `None`")  # noqa: E501
 
-        self._id = id
+        self._in_time = in_time
 
     @property
-    def employee_id(self):
-        """Gets the employee_id of this Clockin.
+    def out_time(self):
+        """Gets the out_time of this Clockin.
 
-        Unique identifier for an employee.  # noqa: E501
 
-        :return: The employee_id of this Clockin.
-        :rtype: int
+        :return: The out_time of this Clockin.
+        :rtype: object
         """
-        return self._employee_id
+        return self._out_time
 
-    @employee_id.setter
-    def employee_id(self, employee_id):
-        """Sets the employee_id of this Clockin.
+    @out_time.setter
+    def out_time(self, out_time):
+        """Sets the out_time of this Clockin.
 
-        Unique identifier for an employee.  # noqa: E501
 
-        :param employee_id: The employee_id of this Clockin.
-        :type employee_id: int
-        """
-        if employee_id is None:
-            raise ValueError("Invalid value for `employee_id`, must not be `None`")  # noqa: E501
-
-        self._employee_id = employee_id
-
-    @property
-    def clockin_time(self):
-        """Gets the clockin_time of this Clockin.
-
-        Clockin time  # noqa: E501
-
-        :return: The clockin_time of this Clockin.
-        :rtype: str
-        """
-        return self._clockin_time
-
-    @clockin_time.setter
-    def clockin_time(self, clockin_time):
-        """Sets the clockin_time of this Clockin.
-
-        Clockin time  # noqa: E501
-
-        :param clockin_time: The clockin_time of this Clockin.
-        :type clockin_time: str
-        """
-        if clockin_time is None:
-            raise ValueError("Invalid value for `clockin_time`, must not be `None`")  # noqa: E501
-
-        self._clockin_time = clockin_time
-
-    @property
-    def clockout_time(self):
-        """Gets the clockout_time of this Clockin.
-
-        Clockout time  # noqa: E501
-
-        :return: The clockout_time of this Clockin.
-        :rtype: str
-        """
-        return self._clockout_time
-
-    @clockout_time.setter
-    def clockout_time(self, clockout_time):
-        """Sets the clockout_time of this Clockin.
-
-        Clockout time  # noqa: E501
-
-        :param clockout_time: The clockout_time of this Clockin.
-        :type clockout_time: str
+        :param out_time: The out_time of this Clockin.
+        :type out_time: object
         """
 
-        self._clockout_time = clockout_time
-
-    @property
-    def department_id(self):
-        """Gets the department_id of this Clockin.
-
-        Unique identifier for a department.  # noqa: E501
-
-        :return: The department_id of this Clockin.
-        :rtype: str
-        """
-        return self._department_id
-
-    @department_id.setter
-    def department_id(self, department_id):
-        """Sets the department_id of this Clockin.
-
-        Unique identifier for a department.  # noqa: E501
-
-        :param department_id: The department_id of this Clockin.
-        :type department_id: str
-        """
-        if department_id is None:
-            raise ValueError("Invalid value for `department_id`, must not be `None`")  # noqa: E501
-
-        self._department_id = department_id
+        self._out_time = out_time

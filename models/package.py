@@ -4,7 +4,7 @@ from marshmallow import Schema, fields, validate, pre_load
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, JSON
 
-from crosscutting.db.database import Base
+from crosscutting.core.db.database import Base
 from models.base import HourlyTable
 
 

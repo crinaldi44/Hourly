@@ -17,31 +17,21 @@ class PackageListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, packages=None):  # noqa: E501
         """PackageListResponse - a model defined in OpenAPI
 
-        :param data: The data of this PackageListResponse.  # noqa: E501
-        :type data: List[Package]
-        :param message: The message of this PackageListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this PackageListResponse.  # noqa: E501
-        :type status: int
+        :param packages: The packages of this PackageListResponse.  # noqa: E501
+        :type packages: List[Package]
         """
         self.openapi_types = {
-            'data': List[Package],
-            'message': str,
-            'status': int
+            'packages': List[Package]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'packages': 'packages'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.packages = packages
 
     @classmethod
     def from_dict(cls, dikt) -> 'PackageListResponse':
@@ -55,70 +45,22 @@ class PackageListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this PackageListResponse.
+    def packages(self):
+        """Gets the packages of this PackageListResponse.
 
 
-        :return: The data of this PackageListResponse.
+        :return: The packages of this PackageListResponse.
         :rtype: List[Package]
         """
-        return self._data
+        return self._packages
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this PackageListResponse.
+    @packages.setter
+    def packages(self, packages):
+        """Sets the packages of this PackageListResponse.
 
 
-        :param data: The data of this PackageListResponse.
-        :type data: List[Package]
+        :param packages: The packages of this PackageListResponse.
+        :type packages: List[Package]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this PackageListResponse.
-
-
-        :return: The message of this PackageListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this PackageListResponse.
-
-
-        :param message: The message of this PackageListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this PackageListResponse.
-
-
-        :return: The status of this PackageListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this PackageListResponse.
-
-
-        :param status: The status of this PackageListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._packages = packages

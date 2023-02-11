@@ -40,7 +40,7 @@ def search_events(search_query):
     """
     employee, company, department, role = init_controller(permissions="search:events")
     if 'package_name' in search_query.keys():
-        package_exists, _ = Packages.find(additional_filters={'name': search_query['package_name']})
+        package_exists, _ = Packages.list_rows(additional_filters={'name': search_query['package_name']})
         if len(package_exists) > 0:
             search_query['package_id'] = package_exists[0].id
         else:

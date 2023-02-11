@@ -1,7 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, Text
 
-from crosscutting.db.database import Base
+from crosscutting.core.db.database import Base
 from models.base import HourlyTable
 
 

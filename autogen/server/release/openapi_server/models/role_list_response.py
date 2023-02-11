@@ -17,31 +17,21 @@ class RoleListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, roles=None):  # noqa: E501
         """RoleListResponse - a model defined in OpenAPI
 
-        :param data: The data of this RoleListResponse.  # noqa: E501
-        :type data: List[Role]
-        :param message: The message of this RoleListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this RoleListResponse.  # noqa: E501
-        :type status: int
+        :param roles: The roles of this RoleListResponse.  # noqa: E501
+        :type roles: List[Role]
         """
         self.openapi_types = {
-            'data': List[Role],
-            'message': str,
-            'status': int
+            'roles': List[Role]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'roles': 'roles'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.roles = roles
 
     @classmethod
     def from_dict(cls, dikt) -> 'RoleListResponse':
@@ -55,70 +45,24 @@ class RoleListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this RoleListResponse.
+    def roles(self):
+        """Gets the roles of this RoleListResponse.
 
 
-        :return: The data of this RoleListResponse.
+        :return: The roles of this RoleListResponse.
         :rtype: List[Role]
         """
-        return self._data
+        return self._roles
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this RoleListResponse.
+    @roles.setter
+    def roles(self, roles):
+        """Sets the roles of this RoleListResponse.
 
 
-        :param data: The data of this RoleListResponse.
-        :type data: List[Role]
+        :param roles: The roles of this RoleListResponse.
+        :type roles: List[Role]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
+        if roles is None:
+            raise ValueError("Invalid value for `roles`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this RoleListResponse.
-
-
-        :return: The message of this RoleListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this RoleListResponse.
-
-
-        :param message: The message of this RoleListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this RoleListResponse.
-
-
-        :return: The status of this RoleListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this RoleListResponse.
-
-
-        :param status: The status of this RoleListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._roles = roles

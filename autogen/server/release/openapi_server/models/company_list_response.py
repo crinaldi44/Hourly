@@ -17,31 +17,21 @@ class CompanyListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, companies=None):  # noqa: E501
         """CompanyListResponse - a model defined in OpenAPI
 
-        :param data: The data of this CompanyListResponse.  # noqa: E501
-        :type data: List[Company]
-        :param message: The message of this CompanyListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this CompanyListResponse.  # noqa: E501
-        :type status: int
+        :param companies: The companies of this CompanyListResponse.  # noqa: E501
+        :type companies: List[Company]
         """
         self.openapi_types = {
-            'data': List[Company],
-            'message': str,
-            'status': int
+            'companies': List[Company]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'companies': 'companies'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.companies = companies
 
     @classmethod
     def from_dict(cls, dikt) -> 'CompanyListResponse':
@@ -55,70 +45,22 @@ class CompanyListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this CompanyListResponse.
+    def companies(self):
+        """Gets the companies of this CompanyListResponse.
 
 
-        :return: The data of this CompanyListResponse.
+        :return: The companies of this CompanyListResponse.
         :rtype: List[Company]
         """
-        return self._data
+        return self._companies
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this CompanyListResponse.
+    @companies.setter
+    def companies(self, companies):
+        """Sets the companies of this CompanyListResponse.
 
 
-        :param data: The data of this CompanyListResponse.
-        :type data: List[Company]
+        :param companies: The companies of this CompanyListResponse.
+        :type companies: List[Company]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this CompanyListResponse.
-
-
-        :return: The message of this CompanyListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this CompanyListResponse.
-
-
-        :param message: The message of this CompanyListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this CompanyListResponse.
-
-
-        :return: The status of this CompanyListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this CompanyListResponse.
-
-
-        :param status: The status of this CompanyListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._companies = companies

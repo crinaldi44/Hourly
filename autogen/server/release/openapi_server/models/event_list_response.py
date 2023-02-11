@@ -17,31 +17,21 @@ class EventListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, events=None):  # noqa: E501
         """EventListResponse - a model defined in OpenAPI
 
-        :param data: The data of this EventListResponse.  # noqa: E501
-        :type data: List[Event]
-        :param message: The message of this EventListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this EventListResponse.  # noqa: E501
-        :type status: int
+        :param events: The events of this EventListResponse.  # noqa: E501
+        :type events: List[Event]
         """
         self.openapi_types = {
-            'data': List[Event],
-            'message': str,
-            'status': int
+            'events': List[Event]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'events': 'events'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.events = events
 
     @classmethod
     def from_dict(cls, dikt) -> 'EventListResponse':
@@ -55,70 +45,24 @@ class EventListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this EventListResponse.
+    def events(self):
+        """Gets the events of this EventListResponse.
 
 
-        :return: The data of this EventListResponse.
+        :return: The events of this EventListResponse.
         :rtype: List[Event]
         """
-        return self._data
+        return self._events
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this EventListResponse.
+    @events.setter
+    def events(self, events):
+        """Sets the events of this EventListResponse.
 
 
-        :param data: The data of this EventListResponse.
-        :type data: List[Event]
+        :param events: The events of this EventListResponse.
+        :type events: List[Event]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
+        if events is None:
+            raise ValueError("Invalid value for `events`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this EventListResponse.
-
-
-        :return: The message of this EventListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this EventListResponse.
-
-
-        :param message: The message of this EventListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this EventListResponse.
-
-
-        :return: The status of this EventListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this EventListResponse.
-
-
-        :param status: The status of this EventListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._events = events

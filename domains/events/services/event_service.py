@@ -2,7 +2,7 @@ import datetime
 
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.service.service import Service
-from crosscutting.db.database import Session
+from crosscutting.core.db.database import Session
 from models.event import Event, EventSearch, EventModel
 
 

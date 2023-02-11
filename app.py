@@ -1,62 +1,19 @@
-import bcrypt
-import connexion
-import sqlalchemy.exc
-from marshmallow import ValidationError
-
-from crosscutting.db.database import Session
-from domains.employees.routes.routes import employees
-from domains.clockins.routes.routes import clockins
-from flask_cors import CORS
-from werkzeug.exceptions import UnprocessableEntity, InternalServerError, NotFound
-from crosscutting.exception.error_handlers import handle_hourly_exception, handle_validation_error, handle_unexpected_exception, handle_attribute_exception, handle_marshmallow_validation_error, handle_invalid_request, handle_notfound_exception
-import crosscutting.exception.hourly_exception
+from crosscutting.core.app.app import HourlyAPI
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from openapi_server import encoder
 
-from domains.employees.utils.utils import get_or_create
-from models import Company, Department, Employee
+from crosscutting.core.config.config import config
 
-app = connexion.App(__name__, specification_dir='openapi/')
-app.app.json_encoder = encoder.JSONEncoder
-app.add_api('openapi.yaml', strict_validation=True, pythonic_params=True)
-
-app.app.register_blueprint(employees)
-app.app.register_blueprint(clockins)
-
-app.app.register_error_handler(UnprocessableEntity, handle_validation_error)
-app.app.register_error_handler(AttributeError, handle_attribute_exception)
-app.app.register_error_handler(crosscutting.exception.hourly_exception.HourlyException, handle_hourly_exception)
-app.app.register_error_handler(InternalServerError, handle_unexpected_exception)
-app.app.register_error_handler(sqlalchemy.exc.InvalidRequestError, handle_invalid_request)
-app.app.register_error_handler(NotFound, handle_notfound_exception)
-app.app.register_error_handler(ValidationError, handle_marshmallow_validation_error)
-
+app = HourlyAPI(specification_dir="openapi/")
 limiter = Limiter(
     app.app,
     # key_func=get_remote_address,
-    default_limits=['150 per minute']
+    default_limits=config.DEFAULT_RATE_LIMIT
 )
-
-CORS(app=app.app, expose_headers=['X-Total-Count'])
-
-app.app.config['SECRET_KEY'] = 'c70665d063ec6aff812d5a58c2118e18'
-app.app.config['PRODUCTION'] = False
-app.app.config['DEV_DATABASE_URI'] = 'postgresql://crinaldi:test123@0.0.0.0:5432/employees'
-app.app.config['PROD_DATABASE_URI'] = 'postgresql://chris:D41QYbmhlrjIXuQfJiQ4@hourly-postgres-prod.cicovww9r07h.us-east-1.rds.amazonaws.com:5432/employees'
-app.app.config['DEFAULT_JWT_EXPIRATION'] = {"hours": 2}
-app.app.config['DEFAULT_RATE_LIMIT'] = 100 # Measured in requests per minute
-app.app.config['CORS_HEADERS'] = 'X-Total-Count'
-
-# get_or_create(Session, Company, id=1, name="Hourly", about="")
-# get_or_create(Session, Department, department_name="Default Department", company_id=1)
-# get_or_create(Session, Employee, id=1, email="Test", password=bcrypt.hashpw("test123".encode('utf-8'), bcrypt.gensalt()).decode(), department_id=1, company_id=1, role_id=1)
-
 app.run(port=8080)
 
 
 # if __name__ == '__main__':
-#     # port = int(os.environ.get('PORT', 5000))
+#     port = int(os.environ.get('PORT', 8080))
 #     port = 80
 #     bind_address = '0.0.0.0:' + str(port)
 #     app.run(host=bind_address)

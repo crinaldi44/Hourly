@@ -16,9 +16,9 @@ def list_packages():
     search = connexion.request.args.to_dict()
     employee, company, department, role = init_controller(permissions='get:packages')
     if role <= 2:
-        results, count = Packages.find(**search, additional_filters={"company_id": company}, serialize=True)
+        results, count = Packages.list_rows(**search, additional_filters={"company_id": company}, serialize=True)
     else:
-        results, count = Packages.find(**search, serialize=True)
+        results, count = Packages.list_rows(**search, serialize=True)
     return ListResponse(records=results, total_count=count).serve()
 
 
@@ -34,7 +34,7 @@ def get_package(id_):
     }
     if role <= 2:
         query["company_id"] = company
-    result, count = Packages.find(additional_filters=query, serialize=True)
+    result, count = Packages.list_rows(additional_filters=query, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.PackageNotFound')

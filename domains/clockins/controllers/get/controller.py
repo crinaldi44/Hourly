@@ -1,6 +1,9 @@
 import connexion
+
+from crosscutting.auth.authentication import init_controller
+from domains.clockins.services.clockin_service import clockin_service
 from openapi_server.models import (
-    CompanyListResponse,
+    CompanyListResponse, ClockinListResponse,
 )
 from domains.companies.services.company_service import Companies
 
@@ -9,11 +12,13 @@ def list_clockins():
     """
     List clockins.
     """
-    companies, _ = Companies.find(q=None, serialize=True)
 
-    company_list_response = CompanyListResponse(data=companies, message="", status=200)
+    _, _, department_id, _ = init_controller(permissions="get:clockins")
+
+    items, total = clockin_service.list_rows(additional_filters={"department_id": department_id}, serialize=True)
+    clockin_list_response = ClockinListResponse(clockins=items)
 
     if "include_totals" in connexion.request.args:
-        return company_list_response, 200, {"X-Total-Count": len(companies)}
+        return clockin_list_response, 200, {"X-Total-Count": total}
 
-    return company_list_response, 200
+    return clockin_list_response, 200

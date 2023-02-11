@@ -15,9 +15,9 @@ def list_departments():
         }
         if role_id < 2:
             filters["department_id"] = department_id
-        result, count = Departments.find(**search, additional_filters=filters, serialize=True)
+        result, count = Departments.list_rows(**search, additional_filters=filters, serialize=True)
     else:
-        result, count = Departments.find(**search, serialize=True)
+        result, count = Departments.list_rows(**search, serialize=True)
     return ListResponse(records=result, total_count=count).serve()
 
 
@@ -36,9 +36,9 @@ def get_department(id_):
         }
         if role_id < 2:
             filters["department_id"] = department_id
-        result, _ = Departments.find(additional_filters=filters, serialize=True)
+        result, _ = Departments.list_rows(additional_filters=filters, serialize=True)
     else:
-        result, _ = Departments.find(additional_filters={"id": id_}, serialize=True)
+        result, _ = Departments.list_rows(additional_filters={"id": id_}, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.DepartmentNotFound')

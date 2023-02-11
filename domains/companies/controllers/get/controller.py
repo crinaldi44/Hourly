@@ -11,9 +11,9 @@ def list_companies():
     employee_id, company_id, department_id, role_id = init_controller(permissions="get:companies")
 
     if role_id <= 2:
-        results, count = Companies.find(**request.args, serialize=True, additional_filters={"id": company_id})
+        results, count = Companies.list_rows(**request.args, serialize=True, additional_filters={"id": company_id})
     else:
-        results, count = Companies.find(**request.args, serialize=True)
+        results, count = Companies.list_rows(**request.args, serialize=True)
     return ListResponse(records=results, total_count=count).serve()
 
 
@@ -22,7 +22,7 @@ def get_company(id_):
 
     :return:
     """
-    result, count = Companies.find(additional_filters={"id": id_}, serialize=True)
+    result, count = Companies.list_rows(additional_filters={"id": id_}, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.CompanyNotFound')

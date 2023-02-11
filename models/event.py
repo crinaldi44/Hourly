@@ -2,7 +2,7 @@ from marshmallow import Schema, fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, JSON
 
-from crosscutting.db.database import Base
+from crosscutting.core.db.database import Base
 from models.base import HourlyTable
 from models.package import PackageQuestionModel
 

@@ -15,7 +15,7 @@ def list_events():
     employee, company, department, role = init_controller(permissions='get:events')
 
     search = connexion.request.args.to_dict()
-    results, count = Events.find(**search, additional_filters={"company_id": company}, serialize=True)
+    results, count = Events.list_rows(**search, additional_filters={"company_id": company}, serialize=True)
 
     return ListResponse(records=results, total_count=count).serve()
 
@@ -28,7 +28,7 @@ def get_event(id_):
     """
     employee, company, department, role = init_controller(permissions='get:packages')
 
-    result, count = Events.find(additional_filters={"id": id_, "company_id": company}, serialize=True)
+    result, count = Events.list_rows(additional_filters={"id": id_, "company_id": company}, serialize=True)
 
     if len(result) == 0:
         raise HourlyException('err.hourly.EventNotFound')

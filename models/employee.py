@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.db.database import Base
+from crosscutting.core.db.database import Base
 from models.base import HourlyTable
 from models.role import Roles
 from models.company import Company, validate_company

@@ -5,6 +5,7 @@ from __future__ import absolute_import
 # import models into model package
 from openapi_server.models.add_response import AddResponse
 from openapi_server.models.clockin import Clockin
+from openapi_server.models.clockin_list_response import ClockinListResponse
 from openapi_server.models.company import Company
 from openapi_server.models.company_list_response import CompanyListResponse
 from openapi_server.models.department import Department

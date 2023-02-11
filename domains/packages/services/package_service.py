@@ -20,9 +20,9 @@ class PackageService(Service):
                 :return: A Bool representing whether the row exists.
                 """
         if in_company is not None:
-            result, count = self.find(id=package_id, company_id=in_company)
+            result, count = self.list_rows(id=package_id, company_id=in_company)
         else:
-            result, count = self.find(id=package_id)
+            result, count = self.list_rows(id=package_id)
 
         if len(result) == 0:
             raise HourlyException('err.hourly.PackageNotFound')

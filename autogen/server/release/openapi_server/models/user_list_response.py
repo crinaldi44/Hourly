@@ -17,31 +17,21 @@ class UserListResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, data=None, message=None, status=None):  # noqa: E501
+    def __init__(self, users=None):  # noqa: E501
         """UserListResponse - a model defined in OpenAPI
 
-        :param data: The data of this UserListResponse.  # noqa: E501
-        :type data: List[User]
-        :param message: The message of this UserListResponse.  # noqa: E501
-        :type message: str
-        :param status: The status of this UserListResponse.  # noqa: E501
-        :type status: int
+        :param users: The users of this UserListResponse.  # noqa: E501
+        :type users: List[User]
         """
         self.openapi_types = {
-            'data': List[User],
-            'message': str,
-            'status': int
+            'users': List[User]
         }
 
         self.attribute_map = {
-            'data': 'data',
-            'message': 'message',
-            'status': 'status'
+            'users': 'users'
         }
 
-        self.data = data
-        self.message = message
-        self.status = status
+        self.users = users
 
     @classmethod
     def from_dict(cls, dikt) -> 'UserListResponse':
@@ -55,70 +45,24 @@ class UserListResponse(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def data(self):
-        """Gets the data of this UserListResponse.
+    def users(self):
+        """Gets the users of this UserListResponse.
 
 
-        :return: The data of this UserListResponse.
+        :return: The users of this UserListResponse.
         :rtype: List[User]
         """
-        return self._data
+        return self._users
 
-    @data.setter
-    def data(self, data):
-        """Sets the data of this UserListResponse.
+    @users.setter
+    def users(self, users):
+        """Sets the users of this UserListResponse.
 
 
-        :param data: The data of this UserListResponse.
-        :type data: List[User]
+        :param users: The users of this UserListResponse.
+        :type users: List[User]
         """
-        if data is None:
-            raise ValueError("Invalid value for `data`, must not be `None`")  # noqa: E501
+        if users is None:
+            raise ValueError("Invalid value for `users`, must not be `None`")  # noqa: E501
 
-        self._data = data
-
-    @property
-    def message(self):
-        """Gets the message of this UserListResponse.
-
-
-        :return: The message of this UserListResponse.
-        :rtype: str
-        """
-        return self._message
-
-    @message.setter
-    def message(self, message):
-        """Sets the message of this UserListResponse.
-
-
-        :param message: The message of this UserListResponse.
-        :type message: str
-        """
-        if message is None:
-            raise ValueError("Invalid value for `message`, must not be `None`")  # noqa: E501
-
-        self._message = message
-
-    @property
-    def status(self):
-        """Gets the status of this UserListResponse.
-
-
-        :return: The status of this UserListResponse.
-        :rtype: int
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """Sets the status of this UserListResponse.
-
-
-        :param status: The status of this UserListResponse.
-        :type status: int
-        """
-        if status is None:
-            raise ValueError("Invalid value for `status`, must not be `None`")  # noqa: E501
-
-        self._status = status
+        self._users = users

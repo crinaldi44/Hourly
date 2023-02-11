@@ -8,9 +8,10 @@ import jwt
 from flask import current_app
 from functools import wraps
 
+from crosscutting.core.config.config import config
 from crosscutting.exception.hourly_exception import HourlyException
 from models.employee import Employee
-from crosscutting.db.database import Session
+from crosscutting.core.db.database import Session
 from domains.employees.services.employee_service import EmployeeService
 
 
@@ -63,7 +64,7 @@ def init_controller(permissions: str) -> tuple:
     :return: A tuple containing the user info in the payload.
     """
     token = connexion.request.headers['Authorization'].split(' ')[1]
-    data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+    data = jwt.decode(token, config.JWT_SECRET_RANDOMIZED, algorithms=["HS256"])
     has_access = False
     role_data = data["role"]["permissions"].split(',')
     for i in range(0, len(role_data)):
@@ -91,8 +92,8 @@ def generate_auth_token(user: Employee):
                        'name': user.first_name + ' ' + user.last_name,
                        'role': user.role.as_dict(),
                        'iat': current_time_utc,
-                       'exp': current_time_utc + timedelta(**current_app.config['DEFAULT_JWT_EXPIRATION'])},
-                      current_app.config['SECRET_KEY'])
+                       'exp': current_time_utc + timedelta(**config.DEFAULT_JWT_EXPIRATION)},
+                      config.JWT_SECRET_RANDOMIZED)
 
 
 def validate_field_in_payload(token, field_name: str):
@@ -115,7 +116,7 @@ def authenticate_user(token):
     :return: None
     """
     try:
-        return jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+        return jwt.decode(token, config.JWT_SECRET_RANDOMIZED, algorithms=['HS256'])
     except jwt.exceptions.InvalidTokenError:
         raise HourlyException('err.hourly.UnauthorizedRequest',
                               message="Access token is expired or invalid. Please re-authenticate.")
@@ -148,7 +149,7 @@ def token_required(init_payload_params=False):
             with Session() as session:
                 with session.begin():
                     try:
-                        data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+                        data = jwt.decode(token, config.JWT_SECRET_RANDOMIZED, algorithms=["HS256"])
 
                         # Verify that the user exists.
                         try:

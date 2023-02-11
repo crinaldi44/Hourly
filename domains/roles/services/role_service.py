@@ -18,7 +18,7 @@ class RolesService(Service):
                 :param role_id: Represents the id of the role.
                 :return: A Bool representing whether the row exists.
                 """
-        result, count = self.find(id=role_id)
+        result, count = self.list_rows(id=role_id)
 
         if len(result) == 0:
             raise HourlyException('err.hourly.RoleNotFound')

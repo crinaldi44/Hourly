@@ -17,21 +17,21 @@ class UserValidationList(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, employee_validations=None):  # noqa: E501
+    def __init__(self, validations=None):  # noqa: E501
         """UserValidationList - a model defined in OpenAPI
 
-        :param employee_validations: The employee_validations of this UserValidationList.  # noqa: E501
-        :type employee_validations: List[UserValidation]
+        :param validations: The validations of this UserValidationList.  # noqa: E501
+        :type validations: List[UserValidation]
         """
         self.openapi_types = {
-            'employee_validations': List[UserValidation]
+            'validations': List[UserValidation]
         }
 
         self.attribute_map = {
-            'employee_validations': 'employee_validations'
+            'validations': 'validations'
         }
 
-        self.employee_validations = employee_validations
+        self.validations = validations
 
     @classmethod
     def from_dict(cls, dikt) -> 'UserValidationList':
@@ -45,24 +45,24 @@ class UserValidationList(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def employee_validations(self):
-        """Gets the employee_validations of this UserValidationList.
+    def validations(self):
+        """Gets the validations of this UserValidationList.
 
 
-        :return: The employee_validations of this UserValidationList.
+        :return: The validations of this UserValidationList.
         :rtype: List[UserValidation]
         """
-        return self._employee_validations
+        return self._validations
 
-    @employee_validations.setter
-    def employee_validations(self, employee_validations):
-        """Sets the employee_validations of this UserValidationList.
+    @validations.setter
+    def validations(self, validations):
+        """Sets the validations of this UserValidationList.
 
 
-        :param employee_validations: The employee_validations of this UserValidationList.
-        :type employee_validations: List[UserValidation]
+        :param validations: The validations of this UserValidationList.
+        :type validations: List[UserValidation]
         """
-        if employee_validations is None:
-            raise ValueError("Invalid value for `employee_validations`, must not be `None`")  # noqa: E501
+        if validations is None:
+            raise ValueError("Invalid value for `validations`, must not be `None`")  # noqa: E501
 
-        self._employee_validations = employee_validations
+        self._validations = validations

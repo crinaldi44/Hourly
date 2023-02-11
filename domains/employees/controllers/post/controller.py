@@ -4,7 +4,7 @@ import connexion
 from crosscutting.auth.authentication import validate_credentials, init_controller
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.response.list_response import serve_response
-from crosscutting.db.database import Session
+from crosscutting.core.db.database import Session
 from domains.employees.services.employee_service import Employees
 from models.role import Roles
 from domains.companies.services.company_service import Companies
@@ -27,7 +27,7 @@ def add_employee(employee):
 
     validate_employee = Employees.from_json(data=employee)
     validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt()).decode()
-    user_exists, _ = Employees.find(additional_filters={"email": validate_employee.email})
+    user_exists, _ = Employees.list_rows(additional_filters={"email": validate_employee.email})
     Roles.validate_exists(id=validate_employee.role_id)
 
     if len(user_exists) > 0:
@@ -52,7 +52,7 @@ def signup_user(employee):
 
     validate_employee = Employees.from_json(data=employee)
     validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt())
-    user_exists, _ = Employees.find(additional_filters={"email": validate_employee.email})
+    user_exists, _ = Employees.list_rows(additional_filters={"email": validate_employee.email})
 
     if len(user_exists) > 0:
         raise HourlyException('err.hourly.UserExists')
@@ -71,16 +71,16 @@ def validate_employees(employee_validations):
     validations = employee_validations["employee_validations"]
     for i in range(0, len(validations)):
         Employees.validation_from_json(employee_validation=validations[i])
-        email_exists, _ = Employees.find(additional_filters={"email": validations[i]["email"]})
+        email_exists, _ = Employees.list_rows(additional_filters={"email": validations[i]["email"]})
         validations[i]["is_email_valid"] = len(email_exists) == 0
-        company_exists, _ = Companies.find(additional_filters={"name": validations[i]['company_name']}, serialize=True)
+        company_exists, _ = Companies.list_rows(additional_filters={"name": validations[i]['company_name']}, serialize=True)
         if len(company_exists) == 0:
             validations[i]["is_company_valid"] = False
             validations[i]["is_department_valid"] = False
         else:
             validations[i]["is_company_valid"] = True
             validations[i]["company_id"] = company_exists[0]["id"]
-            department_exists, _ = Departments.find(additional_filters=
+            department_exists, _ = Departments.list_rows(additional_filters=
                              {"department_name": validations[i]['department_name'],
                               "company_id": company_exists[0]["id"]}, serialize=True)
             validations[i]["is_department_valid"] = len(department_exists) > 0

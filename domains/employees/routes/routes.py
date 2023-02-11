@@ -5,7 +5,7 @@ from crosscutting.auth.authentication import token_required
 from flask import Blueprint, jsonify, request
 from sqlalchemy import exc
 
-from crosscutting.db.database import Session
+from crosscutting.core.db.database import Session
 from models.clockin import Clockin
 from models.employee import Employee
 

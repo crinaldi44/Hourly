@@ -5,7 +5,7 @@ from marshmallow import Schema
 from sqlalchemy import text
 
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.db.database import Session
+from crosscutting.core.db.database import Session
 
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
@@ -68,8 +68,8 @@ class Service:
         else:
             self.sanitize_patch_document(patch_document_list, index + 1)
 
-    def find(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
-             additional_filters=None):
+    def list_rows(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
+                  additional_filters=None):
         """Queries this table with specified parameters as designated in the request.
 
         :param additional_filters: Represents the additional filters applied after the q by the API.
@@ -80,7 +80,6 @@ class Service:
         :param limit: Represents the maximum number of records returned.
         :param sort: Represents a field to sort by, denoted as a ^ for asc or - for desc
         :param include_totals: Represents whether to include totals in the response
-        :param kwargs: Represents the filters to be specified to query by.
         :return: Either a list of records or a tuple containing the records and totals, if specified.
         :rtype List or Tuple
         """
@@ -141,7 +140,7 @@ class Service:
             query["company_id"] = in_company
         if in_department is not None:
             query["department_id"] = in_department
-        result, count = self.find(additional_filters=query, include_totals=True)
+        result, count = self.list_rows(additional_filters=query, include_totals=True)
         if count == 0:
             raise HourlyException('err.hourly.' + self.name + 'NotFound')
         return result[0]

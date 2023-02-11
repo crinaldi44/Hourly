@@ -11,7 +11,7 @@ def add_department(department):
     department['company_id'] = company_id
     validate_department = Departments.from_json(data=department)
 
-    exists, count = Departments.find(additional_filters={"department_name": validate_department.department_name})
+    exists, count = Departments.list_rows(additional_filters={"department_name": validate_department.department_name})
     if len(exists) > 0:
         raise HourlyException('err.hourly.DepartmentExists')
     else:

@@ -15,9 +15,9 @@ def list_users():
     employee_id, company_id, department_id, role_id = init_controller(permissions='get:employees')
     search = connexion.request.args
     if role_id <= 2:
-        results, count = Employees.find(**search, serialize=True, additional_filters={"company_id": company_id})
+        results, count = Employees.list_rows(**search, serialize=True, additional_filters={"company_id": company_id})
     else:
-        results, count = Employees.find(**search, serialize=True)
+        results, count = Employees.list_rows(**search, serialize=True)
     return ListResponse(records=results, total_count=count).serve()
 
 
@@ -29,9 +29,9 @@ def get_employee(id_):
     """
     employee_id, company_id, department_id, role_id = init_controller(permissions='get:employees')
     if role_id <= 2:
-        result, _ = Employees.find(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
+        result, _ = Employees.list_rows(additional_filters={"id": id_, "company_id": company_id}, serialize=True)
     else:
-        result, _ = Employees.find(additional_filters={"id": id_}, serialize=True)
+        result, _ = Employees.list_rows(additional_filters={"id": id_}, serialize=True)
 
     return ListResponse(records=result).serve()
 

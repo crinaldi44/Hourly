@@ -19,10 +19,10 @@ class UserSignUpResponse(Model):
         """UserSignUpResponse - a model defined in OpenAPI
 
         :param id: The id of this UserSignUpResponse.  # noqa: E501
-        :type id: str
+        :type id: int
         """
         self.openapi_types = {
-            'id': str
+            'id': int
         }
 
         self.attribute_map = {
@@ -48,7 +48,7 @@ class UserSignUpResponse(Model):
 
 
         :return: The id of this UserSignUpResponse.
-        :rtype: str
+        :rtype: int
         """
         return self._id
 
@@ -58,7 +58,7 @@ class UserSignUpResponse(Model):
 
 
         :param id: The id of this UserSignUpResponse.
-        :type id: str
+        :type id: int
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
