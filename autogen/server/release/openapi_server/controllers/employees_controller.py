@@ -4,14 +4,15 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
+from openapi_server.models.add_response import AddResponse  # noqa: E501
 from openapi_server.models.error_list_response import ErrorListResponse  # noqa: E501
 from openapi_server.models.patch_document import PatchDocument  # noqa: E501
 from openapi_server.models.user import User  # noqa: E501
+from openapi_server.models.user_credentials import UserCredentials  # noqa: E501
 from openapi_server.models.user_list_response import UserListResponse  # noqa: E501
-from openapi_server.models.user_login_request import UserLoginRequest  # noqa: E501
 from openapi_server.models.user_login_response import UserLoginResponse  # noqa: E501
 from openapi_server.models.user_profile_response import UserProfileResponse  # noqa: E501
-from openapi_server.models.user_sign_up_response import UserSignUpResponse  # noqa: E501
+from openapi_server.models.user_sign_up_request import UserSignUpRequest  # noqa: E501
 from openapi_server.models.user_validation_list_response import UserValidationListResponse  # noqa: E501
 from openapi_server import util
 
@@ -24,25 +25,25 @@ def add_employee(user=None):  # noqa: E501
     :param user: 
     :type user: dict | bytes
 
-    :rtype: Union[UserSignUpResponse, Tuple[UserSignUpResponse, int], Tuple[UserSignUpResponse, int, Dict[str, str]]
+    :rtype: Union[AddResponse, Tuple[AddResponse, int], Tuple[AddResponse, int, Dict[str, str]]
     """
     if connexion.request.is_json:
         user = User.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def authenticate_user(user_login_request=None):  # noqa: E501
+def authenticate_user(user_credentials=None):  # noqa: E501
     """Login User
 
      # noqa: E501
 
-    :param user_login_request: 
-    :type user_login_request: dict | bytes
+    :param user_credentials: 
+    :type user_credentials: dict | bytes
 
     :rtype: Union[UserLoginResponse, Tuple[UserLoginResponse, int], Tuple[UserLoginResponse, int, Dict[str, str]]
     """
     if connexion.request.is_json:
-        user_login_request = UserLoginRequest.from_dict(connexion.request.get_json())  # noqa: E501
+        user_credentials = UserCredentials.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
@@ -129,18 +130,18 @@ def patch_employee(id, patch_document):  # noqa: E501
     return 'do some magic!'
 
 
-def signup_user(user=None):  # noqa: E501
+def signup_user(user_sign_up_request=None):  # noqa: E501
     """Signup Employee
 
      # noqa: E501
 
-    :param user: 
-    :type user: dict | bytes
+    :param user_sign_up_request: 
+    :type user_sign_up_request: dict | bytes
 
-    :rtype: Union[UserSignUpResponse, Tuple[UserSignUpResponse, int], Tuple[UserSignUpResponse, int, Dict[str, str]]
+    :rtype: Union[AddResponse, Tuple[AddResponse, int], Tuple[AddResponse, int, Dict[str, str]]
     """
     if connexion.request.is_json:
-        user = User.from_dict(connexion.request.get_json())  # noqa: E501
+        user_sign_up_request = UserSignUpRequest.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 

@@ -2,6 +2,7 @@ autogen/client/*
 autogen/node_modules
 
 __open_alchemy*
+openapi_server.egg-info
 
 *.pyc
 venv

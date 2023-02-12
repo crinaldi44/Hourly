@@ -22,11 +22,11 @@ from openapi_server.models.patch_document import PatchDocument
 from openapi_server.models.role import Role
 from openapi_server.models.role_list_response import RoleListResponse
 from openapi_server.models.user import User
+from openapi_server.models.user_credentials import UserCredentials
 from openapi_server.models.user_list_response import UserListResponse
-from openapi_server.models.user_login_request import UserLoginRequest
 from openapi_server.models.user_login_response import UserLoginResponse
 from openapi_server.models.user_profile import UserProfile
 from openapi_server.models.user_profile_response import UserProfileResponse
-from openapi_server.models.user_sign_up_response import UserSignUpResponse
+from openapi_server.models.user_sign_up_request import UserSignUpRequest
 from openapi_server.models.user_validation import UserValidation
 from openapi_server.models.user_validation_list_response import UserValidationListResponse

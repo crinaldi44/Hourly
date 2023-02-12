@@ -15,7 +15,7 @@ class Company(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, name=None, about=None, phone=None, address_street=None, city=None, state=None, zip_code=None, img_url=None, private=False):  # noqa: E501
+    def __init__(self, id=None, name='', about='', phone='', address_street='', city='', state='', zip_code='', img_url='', private=False):  # noqa: E501
         """Company - a model defined in OpenAPI
 
         :param id: The id of this Company.  # noqa: E501

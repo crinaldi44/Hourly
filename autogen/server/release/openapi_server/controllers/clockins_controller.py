@@ -4,7 +4,6 @@ from typing import Dict
 from typing import Tuple
 from typing import Union
 
-from openapi_server.models.add_response import AddResponse  # noqa: E501
 from openapi_server.models.clockin import Clockin  # noqa: E501
 from openapi_server.models.clockin_list_response import ClockinListResponse  # noqa: E501
 from openapi_server.models.error_list_response import ErrorListResponse  # noqa: E501
@@ -12,18 +11,14 @@ from openapi_server.models.patch_document import PatchDocument  # noqa: E501
 from openapi_server import util
 
 
-def add_clockin(clockin):  # noqa: E501
+def add_clockin():  # noqa: E501
     """Add Clockin
 
-     # noqa: E501
+    Clocks the user in or out, depending on whether they have active clockins. # noqa: E501
 
-    :param clockin: Add Clockin
-    :type clockin: dict | bytes
 
-    :rtype: Union[AddResponse, Tuple[AddResponse, int], Tuple[AddResponse, int, Dict[str, str]]
+    :rtype: Union[Clockin, Tuple[Clockin, int], Tuple[Clockin, int, Dict[str, str]]
     """
-    if connexion.request.is_json:
-        clockin = Clockin.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 

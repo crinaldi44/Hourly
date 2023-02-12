@@ -1,57 +1,40 @@
-import bcrypt
 import connexion
-import sqlalchemy.exc
-from flask import jsonify, request
-from sqlalchemy.exc import NoResultFound
+from openapi_server.models.user_login_response import UserLoginResponse
 from datetime import timedelta, datetime
 import jwt
-from flask import current_app
-from functools import wraps
 
 from crosscutting.core.config.config import config
 from crosscutting.exception.hourly_exception import HourlyException
-from crosscutting.core.db.database import Session
+from domains.departments.services.department_service import DepartmentService
+from domains.employees.services.user_service import UserService
 
 
-# def validate_credentials(session, req):
-#     """Validates user credentials.
-#
-#     :param session: Represents the current session.
-#     :param req: Represents the request.
-#     :return: A token bearing the credentials of the user.
-#     """
-#     auth_req = req.get_json()
-#
-#     employee_email = auth_req['email']
-#
-#     # Check the provided employee ID.
-#     try:
-#
-#         # Represents a stored instance of the employee's account.
-#         result = session.query(Employee).filter_by(email=employee_email).one()
-#     except NoResultFound as e:  # If no result found, inform the employee and deny the auth token.
-#         raise HourlyException('err.hourly.InvalidCredentials')
-#     else:
-#
-#         encoded_pw = auth_req['password'].encode('utf-8')
-#         check_pw = bcrypt.checkpw(password=encoded_pw, hashed_password=result.as_dict()['password'].encode('utf-8'))
-#
-#         # Verify the password.
-#         if check_pw:
-#             try:
-#
-#                 # Query the departments to verify that we either have a manager OR they belong to dept #1.
-#                 # if result.as_dict()['department']['manager_id'] == result.as_dict()['id']:
-#                 token = generate_auth_token(result)
-#                 return jsonify({'accessToken': token}), 200
-#
-#             except NoResultFound as e:
-#                 raise HourlyException('err.hourly.DepartmentNotFound')
-#         else:
-#             raise HourlyException('err.hourly.InvalidCredentials')
+def validate_credentials(session, req):
+    """
+    Validates user credentials and returns a token.
 
-def validate_credentials(session, request):
-    pass
+    :param session: Represents the current session.
+    :param req: Represents the request.
+
+    :return: token representation of the user
+    """
+    request = req.get_json()
+    user_service = UserService()
+    user = user_service.validate_user_credentials(email=request['email'], password=request['password'])
+    department_service = DepartmentService()
+    users_dept = department_service.validate_exists(filters={"id": user.department_id})
+    token = generate_auth_token(user, company_id=users_dept.company_id)
+    return UserLoginResponse(access_token=token), 200
+
+
+def has_elevated_privileges(role):
+    """
+    Checks whether or not the user has elevated privileges.
+
+    :param role:
+    :return:
+    """
+    return role == 1
 
 
 def init_controller(permissions: str) -> tuple:
@@ -76,10 +59,10 @@ def init_controller(permissions: str) -> tuple:
     if not has_access:
         raise HourlyException('err.hourly.UnauthorizedRequest')
 
-    return data["employee_id"], data["company_id"], data["department_id"], data["role"]["id"]
+    return data["sub"], data["company_id"], data["department_id"], data["role"]["id"]
 
 
-def generate_auth_token(user):
+def generate_auth_token(user, company_id):
     """Generates an access token for the user.
 
     :param user: The user
@@ -87,12 +70,13 @@ def generate_auth_token(user):
     """
     current_time_utc = datetime.utcnow()
 
-    return jwt.encode({'employee_id': user.id,
-                       'department_id': user.department_id,
-                       'company_id': user.company_id,
+    return jwt.encode({'department_id': user.department_id,
+                       'company_id': company_id,
                        'name': user.first_name + ' ' + user.last_name,
-                       'role': user.role.as_dict(),
+                       'role': user.role.to_dict(),
                        'iat': current_time_utc,
+                       'sub': user.id,
+                       'iss': 'api.hourly.com',
                        'exp': current_time_utc + timedelta(**config.DEFAULT_JWT_EXPIRATION)},
                       config.JWT_SECRET_RANDOMIZED)
 

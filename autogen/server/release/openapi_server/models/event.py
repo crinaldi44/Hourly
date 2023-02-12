@@ -17,7 +17,7 @@ class Event(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, name=None, description=None, agreed_price=None, start_datetime=None, end_datetime=None, package_id=None, company_id=None, employee_id=None, questions=None):  # noqa: E501
+    def __init__(self, id=None, name='', description='', agreed_price=0, start_datetime='', end_datetime='', package_id=None, company_id=None, employee_id=None, questions=None):  # noqa: E501
         """Event - a model defined in OpenAPI
 
         :param id: The id of this Event.  # noqa: E501

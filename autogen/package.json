@@ -10,7 +10,10 @@
     "openapi-validate-server": "openapi-generator-cli validate -i ../openapi/openapi.yaml",
     "openapi-server-run-all": "npm run openapi-validate-server && npm run openapi-generate-server && npm run openapi-copy-persistant",
     "openapi-server-generate-client": "openapi-generator-cli generate -g javascript -i ../openapi/openapi.yaml --output 'client/release' --skip-validate-spec --additional-properties=usePromises=true,projectVersion=1.0.0,projectName=hourly-api-client",
-    "openapi-server-generate-tests": "openapi-generator-cli generate -g python-fastapi -i http://localhost:8080/openapi.json --output 'server/release' --skip-validate-spec && node tests.js"
+    "openapi-server-generate-tests": "openapi-generator-cli generate -g python-fastapi -i http://localhost:8080/openapi.json --output 'server/release' --skip-validate-spec && node tests.js",
+    "make-migrations": "cd ../ && alembic revision --autogenerate -m 'Migration'",
+    "migrate": "cd ../ && alembic upgrade head",
+    "update-all": "npm run make-migrations && npm run migrate && npm run openapi-server-run-all"
   },
   "keywords": [],
   "author": "",

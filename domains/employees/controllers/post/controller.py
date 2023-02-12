@@ -6,6 +6,8 @@ from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.core.db.database import Session
 from openapi_server.models import AddResponse, UserValidationListResponse
 
+from domains.employees.services.user_service import UserService
+
 
 def authenticate_user():
     with Session() as session:
@@ -20,13 +22,12 @@ def add_employee(employee):
     """
 
     init_controller(permissions="post:employees")
+    user_service = UserService()
+    new_user = user_service.signup_user(credentials=employee)
+    # role_service.validate_exists(id=new_user.role_id)
+    # company_service.validate_exists(id=new_user.company_id)
 
-    # validate_employee = Employees.from_json(data=employee)
-    # validate_employee.password = bcrypt.hashpw(employee['password'].encode('utf-8'), bcrypt.gensalt()).decode()
-    # user_exists, _ = Employees.list_rows(additional_filters={"email": validate_employee.email})
-    # Roles.validate_exists(id=validate_employee.role_id)
-
-    return AddResponse(id=employee.id), 201
+    return AddResponse(id=new_user.id), 201
 
 
 def signup_user(employee):

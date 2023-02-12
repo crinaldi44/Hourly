@@ -23,6 +23,7 @@ class ClockinDict(_ClockinDictBase, total=False):
 
     id: int
     clockout_time: typing.Optional[str]
+    user_id: typing.Optional[int]
 
 
 class TClockin(typing.Protocol):
@@ -33,6 +34,7 @@ class TClockin(typing.Protocol):
         id: Unique identifier
         clockin_time: The clockin_time of the Clockin.
         clockout_time: The clockout_time of the Clockin.
+        user_id: The user_id of the Clockin.
 
     """
 
@@ -45,8 +47,9 @@ class TClockin(typing.Protocol):
     id: 'sqlalchemy.Column[int]'
     clockin_time: 'sqlalchemy.Column[str]'
     clockout_time: 'sqlalchemy.Column[typing.Optional[str]]'
+    user_id: 'sqlalchemy.Column[typing.Optional[int]]'
 
-    def __init__(self, clockin_time: str, id: typing.Optional[int] = None, clockout_time: typing.Optional[str] = None) -> None:
+    def __init__(self, clockin_time: str, id: typing.Optional[int] = None, clockout_time: typing.Optional[str] = None, user_id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -54,12 +57,13 @@ class TClockin(typing.Protocol):
             id: Unique identifier
             clockin_time: The clockin_time of the Clockin.
             clockout_time: The clockout_time of the Clockin.
+            user_id: The user_id of the Clockin.
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, clockin_time: str, id: typing.Optional[int] = None, clockout_time: typing.Optional[str] = None) -> "TClockin":
+    def from_dict(cls, clockin_time: str, id: typing.Optional[int] = None, clockout_time: typing.Optional[str] = None, user_id: typing.Optional[int] = None) -> "TClockin":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -67,6 +71,7 @@ class TClockin(typing.Protocol):
             id: Unique identifier
             clockin_time: The clockin_time of the Clockin.
             clockout_time: The clockout_time of the Clockin.
+            user_id: The user_id of the Clockin.
 
         Returns:
             Model instance based on the dictionary.
@@ -119,13 +124,13 @@ class CompanyDict(_CompanyDictBase, total=False):
     """TypedDict for properties that are not required."""
 
     id: int
-    about: typing.Optional[str]
-    phone: typing.Optional[str]
-    address_street: typing.Optional[str]
-    city: typing.Optional[str]
-    state: typing.Optional[str]
-    zip_code: typing.Optional[str]
-    img_url: typing.Optional[str]
+    about: str
+    phone: str
+    address_street: str
+    city: str
+    state: str
+    zip_code: str
+    img_url: str
     private: bool
 
 
@@ -157,16 +162,16 @@ class TCompany(typing.Protocol):
     # Model properties
     id: 'sqlalchemy.Column[int]'
     name: 'sqlalchemy.Column[str]'
-    about: 'sqlalchemy.Column[typing.Optional[str]]'
-    phone: 'sqlalchemy.Column[typing.Optional[str]]'
-    address_street: 'sqlalchemy.Column[typing.Optional[str]]'
-    city: 'sqlalchemy.Column[typing.Optional[str]]'
-    state: 'sqlalchemy.Column[typing.Optional[str]]'
-    zip_code: 'sqlalchemy.Column[typing.Optional[str]]'
-    img_url: 'sqlalchemy.Column[typing.Optional[str]]'
+    about: 'sqlalchemy.Column[str]'
+    phone: 'sqlalchemy.Column[str]'
+    address_street: 'sqlalchemy.Column[str]'
+    city: 'sqlalchemy.Column[str]'
+    state: 'sqlalchemy.Column[str]'
+    zip_code: 'sqlalchemy.Column[str]'
+    img_url: 'sqlalchemy.Column[str]'
     private: 'sqlalchemy.Column[bool]'
 
-    def __init__(self, name: str, id: typing.Optional[int] = None, about: typing.Optional[str] = None, phone: typing.Optional[str] = None, address_street: typing.Optional[str] = None, city: typing.Optional[str] = None, state: typing.Optional[str] = None, zip_code: typing.Optional[str] = None, img_url: typing.Optional[str] = None, private: bool = False) -> None:
+    def __init__(self, name: str, id: typing.Optional[int] = None, about: str = "", phone: str = "", address_street: str = "", city: str = "", state: str = "", zip_code: str = "", img_url: str = "", private: bool = False) -> None:
         """
         Construct.
 
@@ -186,7 +191,7 @@ class TCompany(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, name: str, id: typing.Optional[int] = None, about: typing.Optional[str] = None, phone: typing.Optional[str] = None, address_street: typing.Optional[str] = None, city: typing.Optional[str] = None, state: typing.Optional[str] = None, zip_code: typing.Optional[str] = None, img_url: typing.Optional[str] = None, private: bool = False) -> "TCompany":
+    def from_dict(cls, name: str, id: typing.Optional[int] = None, about: str = "", phone: str = "", address_street: str = "", city: str = "", state: str = "", zip_code: str = "", img_url: str = "", private: bool = False) -> "TCompany":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -362,7 +367,7 @@ class EventDict(_EventDictBase, total=False):
     """TypedDict for properties that are not required."""
 
     id: int
-    end_datetime: typing.Optional[str]
+    end_datetime: str
     company_id: typing.Optional[int]
     employee_id: typing.Optional[int]
 
@@ -398,13 +403,13 @@ class TEvent(typing.Protocol):
     description: 'sqlalchemy.Column[str]'
     agreed_price: 'sqlalchemy.Column[float]'
     start_datetime: 'sqlalchemy.Column[str]'
-    end_datetime: 'sqlalchemy.Column[typing.Optional[str]]'
+    end_datetime: 'sqlalchemy.Column[str]'
     package_id: 'sqlalchemy.Column[int]'
     company_id: 'sqlalchemy.Column[typing.Optional[int]]'
     employee_id: 'sqlalchemy.Column[typing.Optional[int]]'
     questions: 'sqlalchemy.Column[typing.Any]'
 
-    def __init__(self, name: str, description: str, agreed_price: float, start_datetime: str, package_id: int, questions: typing.Any, id: typing.Optional[int] = None, end_datetime: typing.Optional[str] = None, company_id: typing.Optional[int] = None, employee_id: typing.Optional[int] = None) -> None:
+    def __init__(self, name: str, description: str, agreed_price: float, start_datetime: str, package_id: int, questions: typing.Any, id: typing.Optional[int] = None, end_datetime: str = "", company_id: typing.Optional[int] = None, employee_id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
@@ -424,7 +429,7 @@ class TEvent(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, name: str, description: str, agreed_price: float, start_datetime: str, package_id: int, questions: typing.Any, id: typing.Optional[int] = None, end_datetime: typing.Optional[str] = None, company_id: typing.Optional[int] = None, employee_id: typing.Optional[int] = None) -> "TEvent":
+    def from_dict(cls, name: str, description: str, agreed_price: float, start_datetime: str, package_id: int, questions: typing.Any, id: typing.Optional[int] = None, end_datetime: str = "", company_id: typing.Optional[int] = None, employee_id: typing.Optional[int] = None) -> "TEvent":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -492,8 +497,8 @@ class PackageDict(_PackageDictBase, total=False):
     """TypedDict for properties that are not required."""
 
     id: int
-    img_url: typing.Optional[str]
-    price: typing.Optional[str]
+    img_url: str
+    price: float
     company_id: typing.Optional[int]
     questions: typing.Any
 
@@ -524,12 +529,12 @@ class TPackage(typing.Protocol):
     id: 'sqlalchemy.Column[int]'
     name: 'sqlalchemy.Column[str]'
     description: 'sqlalchemy.Column[str]'
-    img_url: 'sqlalchemy.Column[typing.Optional[str]]'
-    price: 'sqlalchemy.Column[typing.Optional[str]]'
+    img_url: 'sqlalchemy.Column[str]'
+    price: 'sqlalchemy.Column[float]'
     company_id: 'sqlalchemy.Column[typing.Optional[int]]'
     questions: 'sqlalchemy.Column[typing.Any]'
 
-    def __init__(self, name: str, description: str, id: typing.Optional[int] = None, img_url: typing.Optional[str] = None, price: typing.Optional[str] = None, company_id: typing.Optional[int] = None, questions: typing.Optional[typing.Any] = None) -> None:
+    def __init__(self, name: str, description: str, id: typing.Optional[int] = None, img_url: str = "", price: float = 0, company_id: typing.Optional[int] = None, questions: typing.Optional[typing.Any] = None) -> None:
         """
         Construct.
 
@@ -546,7 +551,7 @@ class TPackage(typing.Protocol):
         ...
 
     @classmethod
-    def from_dict(cls, name: str, description: str, id: typing.Optional[int] = None, img_url: typing.Optional[str] = None, price: typing.Optional[str] = None, company_id: typing.Optional[int] = None, questions: typing.Optional[typing.Any] = None) -> "TPackage":
+    def from_dict(cls, name: str, description: str, id: typing.Optional[int] = None, img_url: str = "", price: float = 0, company_id: typing.Optional[int] = None, questions: typing.Optional[typing.Any] = None) -> "TPackage":
         """
         Construct from a dictionary (eg. a POST payload).
 
@@ -714,10 +719,12 @@ class UserDict(_UserDictBase, total=False):
     """TypedDict for properties that are not required."""
 
     id: int
-    first_name: typing.Optional[str]
-    last_name: typing.Optional[str]
-    pay_rate: typing.Optional[float]
+    password: str
+    first_name: str
+    last_name: str
+    pay_rate: float
     department_id: typing.Optional[int]
+    role: typing.Optional["RoleDict"]
     role_id: typing.Optional[int]
 
 
@@ -730,10 +737,12 @@ class TUser(typing.Protocol):
     Attrs:
         id: A unique identifier for a user.
         email: email
+        password: The password of the User.
         first_name: The user's first name.
         last_name: The user's last name.
         pay_rate: The user's pay rate.
         department_id: The user's department id.
+        role: The role of the User.
         role_id: The user's role id.
 
     """
@@ -746,40 +755,46 @@ class TUser(typing.Protocol):
     # Model properties
     id: 'sqlalchemy.Column[int]'
     email: 'sqlalchemy.Column[str]'
-    first_name: 'sqlalchemy.Column[typing.Optional[str]]'
-    last_name: 'sqlalchemy.Column[typing.Optional[str]]'
-    pay_rate: 'sqlalchemy.Column[typing.Optional[float]]'
+    password: 'sqlalchemy.Column[str]'
+    first_name: 'sqlalchemy.Column[str]'
+    last_name: 'sqlalchemy.Column[str]'
+    pay_rate: 'sqlalchemy.Column[float]'
     department_id: 'sqlalchemy.Column[typing.Optional[int]]'
+    role: 'sqlalchemy.Column[typing.Optional["TRole"]]'
     role_id: 'sqlalchemy.Column[typing.Optional[int]]'
 
-    def __init__(self, email: str, id: typing.Optional[int] = None, first_name: typing.Optional[str] = None, last_name: typing.Optional[str] = None, pay_rate: typing.Optional[float] = None, department_id: typing.Optional[int] = None, role_id: typing.Optional[int] = None) -> None:
+    def __init__(self, email: str, id: typing.Optional[int] = None, password: str = "", first_name: str = "", last_name: str = "", pay_rate: float = 0, department_id: typing.Optional[int] = None, role: typing.Optional["TRole"] = None, role_id: typing.Optional[int] = None) -> None:
         """
         Construct.
 
         Args:
             id: A unique identifier for a user.
             email: email
+            password: The password of the User.
             first_name: The user's first name.
             last_name: The user's last name.
             pay_rate: The user's pay rate.
             department_id: The user's department id.
+            role: The role of the User.
             role_id: The user's role id.
 
         """
         ...
 
     @classmethod
-    def from_dict(cls, email: str, id: typing.Optional[int] = None, first_name: typing.Optional[str] = None, last_name: typing.Optional[str] = None, pay_rate: typing.Optional[float] = None, department_id: typing.Optional[int] = None, role_id: typing.Optional[int] = None) -> "TUser":
+    def from_dict(cls, email: str, id: typing.Optional[int] = None, password: str = "", first_name: str = "", last_name: str = "", pay_rate: float = 0, department_id: typing.Optional[int] = None, role: typing.Optional["RoleDict"] = None, role_id: typing.Optional[int] = None) -> "TUser":
         """
         Construct from a dictionary (eg. a POST payload).
 
         Args:
             id: A unique identifier for a user.
             email: email
+            password: The password of the User.
             first_name: The user's first name.
             last_name: The user's last name.
             pay_rate: The user's pay rate.
             department_id: The user's department id.
+            role: The role of the User.
             role_id: The user's role id.
 
         Returns:

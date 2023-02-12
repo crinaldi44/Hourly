@@ -17,7 +17,7 @@ class Package(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, name=None, description=None, img_url=None, price=None, company_id=None, questions=None):  # noqa: E501
+    def __init__(self, id=None, name='', description='', img_url='', price=0, company_id=None, questions=None):  # noqa: E501
         """Package - a model defined in OpenAPI
 
         :param id: The id of this Package.  # noqa: E501
@@ -29,7 +29,7 @@ class Package(Model):
         :param img_url: The img_url of this Package.  # noqa: E501
         :type img_url: str
         :param price: The price of this Package.  # noqa: E501
-        :type price: str
+        :type price: float
         :param company_id: The company_id of this Package.  # noqa: E501
         :type company_id: int
         :param questions: The questions of this Package.  # noqa: E501
@@ -40,7 +40,7 @@ class Package(Model):
             'name': str,
             'description': str,
             'img_url': str,
-            'price': str,
+            'price': float,
             'company_id': int,
             'questions': List[PackageQuestion]
         }
@@ -177,7 +177,7 @@ class Package(Model):
         The price of the package, in USD.  # noqa: E501
 
         :return: The price of this Package.
-        :rtype: str
+        :rtype: float
         """
         return self._price
 
@@ -188,7 +188,7 @@ class Package(Model):
         The price of the package, in USD.  # noqa: E501
 
         :param price: The price of this Package.
-        :type price: str
+        :type price: float
         """
 
         self._price = price

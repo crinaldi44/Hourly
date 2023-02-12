@@ -15,26 +15,36 @@ class Clockin(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, clockin_time=None, clockout_time=None):  # noqa: E501
+    def __init__(self, id=None, clockin_time=None, clockout_time=None, user_id=None):  # noqa: E501
         """Clockin - a model defined in OpenAPI
 
+        :param id: The id of this Clockin.  # noqa: E501
+        :type id: int
         :param clockin_time: The clockin_time of this Clockin.  # noqa: E501
-        :type clockin_time: object
+        :type clockin_time: str
         :param clockout_time: The clockout_time of this Clockin.  # noqa: E501
-        :type clockout_time: object
+        :type clockout_time: str
+        :param user_id: The user_id of this Clockin.  # noqa: E501
+        :type user_id: int
         """
         self.openapi_types = {
-            'clockin_time': object,
-            'clockout_time': object
+            'id': int,
+            'clockin_time': str,
+            'clockout_time': str,
+            'user_id': int
         }
 
         self.attribute_map = {
+            'id': 'id',
             'clockin_time': 'clockin_time',
-            'clockout_time': 'clockout_time'
+            'clockout_time': 'clockout_time',
+            'user_id': 'user_id'
         }
 
+        self.id = id
         self.clockin_time = clockin_time
         self.clockout_time = clockout_time
+        self.user_id = user_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'Clockin':
@@ -48,12 +58,35 @@ class Clockin(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
+    def id(self):
+        """Gets the id of this Clockin.
+
+        Unique identifier  # noqa: E501
+
+        :return: The id of this Clockin.
+        :rtype: int
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        """Sets the id of this Clockin.
+
+        Unique identifier  # noqa: E501
+
+        :param id: The id of this Clockin.
+        :type id: int
+        """
+
+        self._id = id
+
+    @property
     def clockin_time(self):
         """Gets the clockin_time of this Clockin.
 
 
         :return: The clockin_time of this Clockin.
-        :rtype: object
+        :rtype: str
         """
         return self._clockin_time
 
@@ -63,7 +96,7 @@ class Clockin(Model):
 
 
         :param clockin_time: The clockin_time of this Clockin.
-        :type clockin_time: object
+        :type clockin_time: str
         """
         if clockin_time is None:
             raise ValueError("Invalid value for `clockin_time`, must not be `None`")  # noqa: E501
@@ -76,7 +109,7 @@ class Clockin(Model):
 
 
         :return: The clockout_time of this Clockin.
-        :rtype: object
+        :rtype: str
         """
         return self._clockout_time
 
@@ -86,7 +119,28 @@ class Clockin(Model):
 
 
         :param clockout_time: The clockout_time of this Clockin.
-        :type clockout_time: object
+        :type clockout_time: str
         """
 
         self._clockout_time = clockout_time
+
+    @property
+    def user_id(self):
+        """Gets the user_id of this Clockin.
+
+
+        :return: The user_id of this Clockin.
+        :rtype: int
+        """
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, user_id):
+        """Sets the user_id of this Clockin.
+
+
+        :param user_id: The user_id of this Clockin.
+        :type user_id: int
+        """
+
+        self._user_id = user_id

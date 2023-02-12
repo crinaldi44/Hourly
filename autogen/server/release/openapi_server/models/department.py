@@ -15,13 +15,13 @@ class Department(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, id=None, department_name=None, manager_id=None, company_id=None):  # noqa: E501
+    def __init__(self, id=None, name=None, manager_id=None, company_id=None):  # noqa: E501
         """Department - a model defined in OpenAPI
 
         :param id: The id of this Department.  # noqa: E501
         :type id: int
-        :param department_name: The department_name of this Department.  # noqa: E501
-        :type department_name: str
+        :param name: The name of this Department.  # noqa: E501
+        :type name: str
         :param manager_id: The manager_id of this Department.  # noqa: E501
         :type manager_id: int
         :param company_id: The company_id of this Department.  # noqa: E501
@@ -29,20 +29,20 @@ class Department(Model):
         """
         self.openapi_types = {
             'id': int,
-            'department_name': str,
+            'name': str,
             'manager_id': int,
             'company_id': int
         }
 
         self.attribute_map = {
             'id': 'id',
-            'department_name': 'department_name',
+            'name': 'name',
             'manager_id': 'manager_id',
             'company_id': 'company_id'
         }
 
         self.id = id
-        self.department_name = department_name
+        self.name = name
         self.manager_id = manager_id
         self.company_id = company_id
 
@@ -81,29 +81,29 @@ class Department(Model):
         self._id = id
 
     @property
-    def department_name(self):
-        """Gets the department_name of this Department.
+    def name(self):
+        """Gets the name of this Department.
 
         Block of text containing the name of the department.  # noqa: E501
 
-        :return: The department_name of this Department.
+        :return: The name of this Department.
         :rtype: str
         """
-        return self._department_name
+        return self._name
 
-    @department_name.setter
-    def department_name(self, department_name):
-        """Sets the department_name of this Department.
+    @name.setter
+    def name(self, name):
+        """Sets the name of this Department.
 
         Block of text containing the name of the department.  # noqa: E501
 
-        :param department_name: The department_name of this Department.
-        :type department_name: str
+        :param name: The name of this Department.
+        :type name: str
         """
-        if department_name is None:
-            raise ValueError("Invalid value for `department_name`, must not be `None`")  # noqa: E501
+        if name is None:
+            raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
 
-        self._department_name = department_name
+        self._name = name
 
     @property
     def manager_id(self):

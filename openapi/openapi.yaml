@@ -643,14 +643,6 @@ paths:
       summary: List Clockins
       x-openapi-router-controller: domains.clockins.controllers.get.controller
     post:
-      requestBody:
-        description: Add Clockin
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Clockin'
-        required: true
-        x-body-name: clockin
       tags:
         - Clockins
       responses:
@@ -658,7 +650,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddResponse'
+                $ref: '#/components/schemas/Clockin'
           description: clockin added
         '429':
           content:
@@ -683,6 +675,7 @@ paths:
       operationId: add_clockin
       summary: Add Clockin
       x-openapi-router-controller: domains.clockins.controllers.post.controller
+      description: 'Clocks the user in or out, depending on whether they have active clockins.'
   '/clockins/{id}':
     delete:
       tags:
@@ -879,7 +872,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserSignUpResponse'
+                $ref: '#/components/schemas/AddResponse'
           description: User registration successful!
         '429':
           content:
@@ -1030,7 +1023,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/UserCredentials'
       tags:
         - Employees
       responses:
@@ -1938,7 +1931,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserSignUpRequest'
         x-body-name: employee
       tags:
         - Employees
@@ -1947,7 +1940,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserSignUpResponse'
+                $ref: '#/components/schemas/AddResponse'
           description: User signup successful!
         '429':
           content:
@@ -2000,7 +1993,11 @@ components:
           type: string
         clockout_time:
           type: string
+          default: null
           nullable: true
+        user_id:
+          type: integer
+          x-foreign-key: users.id
       required:
         - clockin_time
     Company:
@@ -2031,33 +2028,41 @@ components:
           title: name
           description: The name of the company.
           type: string
+          default: ''
         about:
           title: about
           description: The company's about us.
           type: string
+          default: ''
         phone:
           title: phone
           description: organization phone
           type: string
+          default: ''
         address_street:
           title: address_street
           description: The street address of the company.
           type: string
+          default: ''
         city:
           title: city
           description: The city in which the company is located.
           type: string
+          default: ''
         state:
           title: state
           description: state
           type: string
+          default: ''
         zip_code:
           title: zip_code
           description: zipCode
           type: string
+          default: ''
         img_url:
           description: Represents the url of the company's image.
           type: string
+          default: ''
         private:
           type: boolean
           default: false
@@ -2152,14 +2157,8 @@ components:
       title: Event
       description: Represents a type of event that can be created.
       x-tablename: events
-      required:
-        - name
-        - description
-        - agreed_price
-        - start_datetime
-        - package_id
-        - questions
       type: object
+      example: '{''name'': ''Example'', ''description'': ''Example description'', ''agreed_price'': ''price'', ''start_datetime'': ''203919174'', ''end_datetime'': ''239829328'', ''package_id'': 1, ''employee_id'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
       properties:
         id:
           description: The identifier for the event.
@@ -2169,18 +2168,23 @@ components:
         name:
           description: name
           type: string
+          default: ''
         description:
           description: Block of text describing the event.
           type: string
+          default: ''
         agreed_price:
           description: The agreed upon price.
           type: number
+          default: 0
         start_datetime:
           description: The start datetime.
           type: string
+          default: ''
         end_datetime:
           description: The end datetime.
           type: string
+          default: ''
         package_id:
           description: The ID of the package associated with this event.
           type: integer
@@ -2199,15 +2203,19 @@ components:
           x-json: true
           items:
             $ref: '#/components/schemas/PackageQuestion'
-      example: '{''name'': ''Example'', ''description'': ''Example description'', ''agreed_price'': ''price'', ''start_datetime'': ''203919174'', ''end_datetime'': ''239829328'', ''package_id'': 1, ''employee_id'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
+      required:
+        - name
+        - description
+        - agreed_price
+        - start_datetime
+        - package_id
+        - questions
     Package:
       title: Package
       description: Represents a type of event that can be created.
       x-tablename: packages
-      required:
-        - name
-        - description
       type: object
+      example: '{''name'': ''Example'', ''description'': ''Example description'', ''img_url'': ''url'', ''price'': ''15.00'', ''companyId'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
       properties:
         id:
           description: The identifier for the role.
@@ -2217,15 +2225,19 @@ components:
         name:
           description: name
           type: string
+          default: ''
         description:
           description: Block of text describing the role.
           type: string
+          default: ''
         img_url:
           description: The url to display the image tag.
           type: string
+          default: ''
         price:
           description: 'The price of the package, in USD.'
-          type: string
+          type: number
+          default: 0
         company_id:
           description: The ID of the company created by.
           type: integer
@@ -2236,7 +2248,9 @@ components:
           x-json: true
           items:
             $ref: '#/components/schemas/PackageQuestion'
-      example: '{''name'': ''Example'', ''description'': ''Example description'', ''img_url'': ''url'', ''price'': ''15.00'', ''companyId'': 1, ''questions'': [{''title'': ''Example'', ''value'': '''', ''values'': [''Test''], ''data_type'': ''multiselect''}] }'
+      required:
+        - name
+        - description
     PackageQuestion:
       title: PackageQuestion
       description: Represents a question type to be included in a package.
@@ -2325,9 +2339,12 @@ components:
       title: User
       description: A single user.
       x-tablename: users
-      required:
-        - email
       type: object
+      example: |-
+        {
+            "name": "User1",
+            "description": "User1 description"
+        }
       properties:
         id:
           description: A unique identifier for a user.
@@ -2337,35 +2354,44 @@ components:
         email:
           description: email
           type: string
+          default: ''
+        password:
+          type: string
+          default: ''
         first_name:
           description: The user's first name.
           type: string
+          default: ''
         last_name:
           description: The user's last name.
           type: string
+          default: ''
         pay_rate:
           description: The user's pay rate.
           type: number
+          default: 0
         department_id:
           description: The user's department id.
           type: integer
           x-foreign-key: departments.id
+        role:
+          $ref: '#/components/schemas/Role'
         role_id:
           description: The user's role id.
           type: integer
           x-foreign-key: roles.id
-      example: |-
-        {
-            "name": "User1",
-            "description": "User1 description"
-        }
-    UserLoginRequest:
-      title: UserLoginRequest
-      description: Request for user login.
       required:
         - email
-        - password
+    UserCredentials:
+      title: UserCredentials
+      description: Request for user login.
       type: object
+      example:
+        email: email
+        password: password
+      x-stoplight:
+        id: f845495043fce
+      x-examples: {}
       properties:
         email:
           title: email
@@ -2375,9 +2401,41 @@ components:
           title: password
           description: The users password
           type: string
+      required:
+        - email
+        - password
+    UserSignUpRequest:
+      title: UserSignUpRequest
+      description: Request for user login.
+      type: object
       example:
         email: email
         password: password
+      x-examples: {}
+      x-stoplight:
+        id: 27e737643aab6
+      properties:
+        email:
+          title: email
+          description: The users email
+          type: string
+        password:
+          title: password
+          description: The users password
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        role_id:
+          type: integer
+        pay_rate:
+          type: number
+      required:
+        - email
+        - password
+        - first_name
+        - last_name
     UserLoginResponse:
       title: UserLoginResponse
       description: Response on user login.
@@ -2391,18 +2449,6 @@ components:
           type: string
       example:
         accessToken: accessToken
-    UserSignUpResponse:
-      title: UserSignUpResponse
-      description: Response to user signup
-      required:
-        - id
-      type: object
-      properties:
-        id:
-          title: id
-          type: integer
-      example:
-        id: 1
     UserValidationListResponse:
       title: UserValidationListResponse
       description: A list of user validations.

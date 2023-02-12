@@ -26,6 +26,13 @@ err_codes = {
             "suggestion": "Please verify the patch documents and re-attempt your request."
         },
 
+        "err.hourly.InvalidQuery": {
+            "status": 422,
+            "message": "The query is of invalid or inoperable formatting.",
+            "title": "InvalidQuery",
+            "suggestion": "Please verify the query and re-attempt your request."
+        },
+
         "err.hourly.RequestTooLarge": {
             "status": 400,
             "message": "The content type must be provided as JSON or the request was too large.",

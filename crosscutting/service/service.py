@@ -1,9 +1,9 @@
 import ast
 
-import sqlalchemy.exc
 from jsonpatch import JsonPatch, JsonPatchException
 from marshmallow import Schema
 from sqlalchemy import text
+from sqlalchemy.orm import load_only
 
 from crosscutting.exception.hourly_exception import HourlyException
 from crosscutting.core.db.database import Session
@@ -19,7 +19,8 @@ PROTECTED_FIELDS = [
 
 
 class Service:
-    """The Service (schema) layer of a domain is generally designed to handle interaction
+    """
+    The Service (schema) layer of a domain is generally designed to handle interaction
     with the Data Access Layer (the model). Classes of this type provide functionality
     to manipulate and interact with data.
 
@@ -29,18 +30,16 @@ class Service:
 
     """
 
-    def __init__(self, model, schema: Schema, table_name="None"):
+    def __init__(self, model, openapi_type, table_name="None"):
         """Initializes a new Service.
 
-        :param model: Represents the Data Access Object this Service will interact with.
-        :type model: Base
-        :param schema: Represents the Schema this Service will interact with.
+        :param model: Represents the DAO this Service will interact with.
         :type schema: Schema
         """
         self.table_name = table_name
         self.name = table_name.capitalize()
+        self.openapi_type = openapi_type
         self.model = model
-        self.schema = schema()
 
     @classmethod
     def sanitize_q(cls, q_str):
@@ -69,52 +68,60 @@ class Service:
         else:
             self.sanitize_patch_document(patch_document_list, index + 1)
 
-    def list_rows(self, q=None, page=None, offset=None, limit=None, sort=None, include_totals=None, serialize=False,
+    def _process_fields(self, fields):
+        """
+        Parses the fields field.
+
+        :param fields:
+        :return:
+        """
+        new_fields = ast.literal_eval(fields)
+        return new_fields
+
+    def list_rows(self, q=None, offset=None, limit=None, sort=None, include_totals=True, fields=None,
                   additional_filters=None):
-        """Queries this table with specified parameters as designated in the request.
+        """
+        Lists the rows matching the specified query. Converts to dict and constructs the rows to the
+        OpenAPI type for use with controllers.
 
         :param additional_filters: Represents the additional filters applied after the q by the API.
         :param q: Represents the query object.
-        :param serialize: Represents whether to serialize results.
         :param page: Represents the page, calculated by the offset and, if any, a limit
         :param offset: Represents the offset from the first row in the table to query.
         :param limit: Represents the maximum number of records returned.
         :param sort: Represents a field to sort by, denoted as a ^ for asc or - for desc
-        :param include_totals: Represents whether to include totals in the response
+
         :return: Either a list of records or a tuple containing the records and totals, if specified.
         :rtype List or Tuple
         """
-        with Session(expire_on_commit=False) as session:
+        with Session() as session:
             with session.begin():
                 resultant_rows = session.query(self.model)
-                count = None
                 if q is not None:
                     resultant_rows = resultant_rows.filter_by(**ast.literal_eval(q))
                 if additional_filters is not None:
                     resultant_rows = resultant_rows.filter_by(**additional_filters)
-                if include_totals is not None:
-                    count = resultant_rows.count()
-                if sort is not None:
-                    sorting_criteria = {
-                        "^": "asc",
-                        "-": "desc",
-                    }
-                    resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
-                if limit is not None:
-                    limit = int(limit)
-                    if limit > MAX_LIMIT:
-                        limit = MAX_LIMIT
-                if page is not None:
-                    page = int(page)
-                    rows_per_page = limit if limit is not None else DEFAULT_LIMIT
-                    resultant_rows = resultant_rows.offset(rows_per_page * page)
-                    resultant_rows = resultant_rows.limit(rows_per_page)
-                if page is None and (offset is not None or limit is not None):
-                    if offset is not None:
-                        resultant_rows = resultant_rows.offset(int(offset) or 0)
+                count = resultant_rows.count()
+                try:
+                    if sort is not None:
+                        sorting_criteria = {
+                            "^": "asc",
+                            "-": "desc",
+                        }
+                        resultant_rows = resultant_rows.order_by(text(sort[1:] + " " + sorting_criteria[sort[0]]))
                     if limit is not None:
-                        resultant_rows = resultant_rows.limit(limit or 0)
-                return resultant_rows.all(), count
+                        limit = int(limit)
+                        if limit > MAX_LIMIT:
+                            limit = MAX_LIMIT
+                        resultant_rows.limit(limit)
+                    if offset is not None:
+                        resultant_rows = resultant_rows.offset(offset)
+                    if fields is not None:
+                        resultant_rows = resultant_rows.options(load_only(*self._process_fields(fields)))
+                except:
+                    raise HourlyException("err.hourly.InvalidQuery")
+                rows = list(map(lambda x: self._to_openapi_type(x), resultant_rows.all()))
+                return rows, count
 
     def validate_exists(self, filters=None):
         """
@@ -124,30 +131,19 @@ class Service:
         :param filters:
         :return:
         """
-        with Session(expire_on_commit=False) as session:
+        with Session() as session:
             with session.begin():
                 try:
                     result = session.query(self.model).filter_by(**filters).one()
-                    return result
-                except sqlalchemy.exc.NoResultFound:
+                    return self._to_openapi_type(result)
+                except:
                     raise HourlyException('err.hourly.' + self.name + 'NotFound')
 
-    def deserialize(self, model):
-        """Deserialize a model.
+    def _to_openapi_type(self, model):
         """
-        return self.schema.load(model)
-
-    def serialize(self, model):
-        """Serialzie a model.
+        Converts a SQLAlchemy model dict to an OpenAPI type.
         """
-        return self.schema.dump(model)
-
-    def as_dict(self, model):
-        """Serializes this model into dict format.
-
-        :return: A dict representation of the model.
-        """
-        return self.schema.dump(model)
+        return self.openapi_type(**model.to_dict())
 
     def from_json(self, data):
         """Validates the specified model. If an invalid value has been encountered,
@@ -158,7 +154,7 @@ class Service:
         :param dikt:
         :return: A dikt instance of the model
         """
-        return self.schema.load(data=data, session=Session())
+        return self.openapi_type(**data)
 
     def patch(self, uid: int, patch_list: list):
         """Patches the specified resource using RFC-6902 compliant patch documents.
@@ -184,47 +180,36 @@ class Service:
                 try:
                     # Dump existing model, apply the replacement doc with validations
                     # and update to new row.
-                    diff_doc = patch.apply(self.schema.dump(records[0]))
-                    self.from_json(diff_doc) # Validate the model.
+                    diff_doc = patch.apply(records[0].to_dict())
+                    self.from_json(diff_doc)  # Validate the model.
                     result.update(diff_doc)
                 except JsonPatchException as E:
                     raise HourlyException('err.hourly.InvalidPatch')
 
-    @classmethod
-    def add_row(cls, row):
-        """Adds a row to the table. Note that this does not deserialize or validate the model
-        you are attempting to add. For the version that achieves both of these, you may use
-        the Service.add_json() method. Otherwise, if you need to manipulate or utilize the
-        impending data, simply call validate_model which will deserialize the model from JSON,
-        then you may simply add the validated model using this method.
+    def add_row(self, row):
+        """
+        Adds the row to the target table. Attempts to validate the row prior to entry to ensure compliance
+        with the desired schema, then inserts.
 
         :param row: Represents the row to add.
         :return: None
         """
         with Session() as session:
             with session.begin():
-                session.add(row)
+                try:
+                    session.add(self.model(**row.to_dict()))
+                except ValueError as E:
+                    raise HourlyException(f"err.hourly.Bad{self.name}Formatting", message=E.__str__())
 
-    def add_json(self, dikt: dict):
-        """Adds a JSON serialized row to the specified table. Validates
-        the JSON. This generally should be utilized when no further manipulation
-        of user data is required and the document may be directly imported.
-
-        :param dikt:
-        :return:
-        """
-        with Session() as session:
-            with session.begin():
-                impending_row = self.schema.load(data=dikt, session=self.session)
-                session.add(impending_row)
-
-    def delete_row(self, uid: int):
+    def delete_row(self, row_id: int):
         """Deletes the specified row by ID.
 
-        :param uid: The id to delete by.
+        :param row_id: The id to delete by.
         :return: None
         """
         with Session() as session:
             with session.begin():
-                result = session.query(self.model).filter_by(id=uid)
+                result = session.query(self.model).filter_by(id=row_id)
+                if result is None:
+                    raise HourlyException(f"err.hourly.{self.name}NotFound")
                 result.delete()
