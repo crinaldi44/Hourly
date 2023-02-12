@@ -3,6 +3,8 @@ autogen/node_modules
 
 __open_alchemy*
 openapi_server.egg-info
+.idea
+__pycache__
 
 *.pyc
 venv
