@@ -5,11 +5,11 @@ from crosscutting.service.service import Service
 import models.models
 from openapi_server.models import User
 
+
 class UserService(Service):
 
     def __init__(self) -> None:
         super().__init__(model=models.models.User, openapi_type=User, table_name="user")
-
 
     def _validate_user_email(email):
         email_regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
@@ -44,5 +44,6 @@ class UserService(Service):
         new_user.department_id = department_id
         self.add_row(row=new_user)
         return new_user
+
 
 user_service = UserService()
